@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE (KOD z wersji 2_3.CXX - bardziej oryginalnej */
+/* Program symulujacy KOEWOLUCJE (kod z wersji 2_4.CXX) */
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.GEBA>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
@@ -14,7 +14,7 @@
 #include <math.h>
 #include <signal.h>
 #define USES_RANDG
-#include "random.h"
+#include "wb_rand.h"
 #include "wb_ptr.hpp"
 
 #include "datasour.hpp"
@@ -50,7 +50,7 @@ char     LogName[128]="coewo.log";
 /* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
 typedef unsigned char base;   // musi byc bez znaku
 typedef unsigned short base2; // musi miescic 2 zmienne base
-const base2 MAXBASE2=(base2)0xffffffffffffffffL;
+const base2 MAXBASE2=(base2)0xffffffffffffffffUL;
 const base  MAXBASE =(base)MAXBASE2;
 const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
 
@@ -103,12 +103,13 @@ static base2 kopioj(base2 r);  // kopiuje genotyp z mozliwa mutacja
 //base agent::* geba_ptr=&agent::w.w.geba;
 //base agent::* oslona_ptr=&agent::w.w.oslona;
 
-//TAK KOMPILUJE ALE WPISUJE 0
-base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
+//TAK MSVC KOMPILUJE ALE WPISUJE 0
+//base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
 //base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
 
 //RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
-#define RECZNIE_WPISZ_OSLONE_PTR
+#define RECZNIE_WPISZ_PTR
+base agent::* geba_ptr=NULL;
 base agent::* oslona_ptr=NULL;
 //(base agent::*)sizeof(base);
 
@@ -161,9 +162,13 @@ size_t szer_map=size_t(wys_map*2.3);
 if(szer_map>Menager.getwidth()-280)
 		szer_map=Menager.getwidth()-280;
 
-#ifdef RECZNIE_WPISZ_OSLONE_PTR
-int *hack=(int*)&oslona_ptr;
-*hack=sizeof(base);
+#ifdef RECZNIE_WPISZ_PTR
+{
+int *hack1=(int*)&oslona_ptr;
+*hack1=sizeof(base);
+int *hack2=(int*)&geba_ptr;
+*hack2=0;
+}
 #endif
 
 {
