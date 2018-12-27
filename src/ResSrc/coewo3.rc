@@ -7,11 +7,20 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-//#include "afxres.h"
-//#include "SYMSHELL/src/Windows/amngrcmd.h"
-#include "SYMSHELL/src/Windows/menagres/resamngr.h"
+
+//                                              #include "SYMSHELL/src/Windows/menagres/amngrcmd.h"
+#if 0
 #include "rosymbol.h"
-#include "symshwin.h"
+#include "symshwin.h"   //SYMSHELL/src/Windows
+
+#include "resamngr.h"   //SYMSHELL/src/Windows/menagres/
+#include "AFXRES.H"     //SYMSHELL/MFC5_include/
+#else
+#include "rosymbol.h"
+#include "src/Windows/symshwin.h"   //SYMSHELL/src/Windows
+#include "src/Windows/menagres/resamngr.h"   //SYMSHELL/src/Windows/menagres/
+#include "MFC5_include/AFXRES.H"     //SYMSHELL/MFC5_include/
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -49,16 +58,16 @@ BEGIN
         BLOCK "000004b0"
         BEGIN
             VALUE "Comments", "COEWO - simulation by Wojciech Borkowski\0"
-            VALUE "CompanyName", "Warsaw University\0"
+            VALUE "CompanyName", "University of Warsaw\0"
             VALUE "FileDescription", "Symshell Application\0"
-            VALUE "FileVersion", "1, 5, 0, 1\0"
+            VALUE "FileVersion", "3, 1, 6, 1\0"
             VALUE "InternalName", "SymShellAMngrApp\0"
-            VALUE "LegalCopyright", "Copyright © 2003\0"
+            VALUE "LegalCopyright", "Copyright © 2009\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "symshell.exe\0"
+            VALUE "OriginalFilename", "coewo3.exe\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "Warsaw University Symshell Application\0"
-            VALUE "ProductVersion", "1, 5, 0, 1\0"
+            VALUE "ProductName", "Wojciech Borkowski Symshell Application\0"
+            VALUE "ProductVersion", "3, 5, 0, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -97,31 +106,39 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Menu
 //
 
-SSH_AREAMNGR MENU DISCARDABLE 
+SSH_AREAMNGR MENU DISCARDABLE
 BEGIN
     POPUP "File"
     BEGIN
         MENUITEM "Dump screen",                 SSH_FILE_DUMPSCREEN
-        MENUITEM "Dump continously",            ID_VIEWOPT_DUMPCO
+        MENUITEM "Dump trophic network",        ID_VIEWOPT_DMPNET
+        MENUITEM "Dump scr. continously",       ID_VIEWOPT_DUMPCO
+        MENUITEM "Dump trophic NET cont. ",     ID_VIEWOPT_DMPCNET
+        MENUITEM "Dump trophic VNA cont. ",     ID_VIEWOPT_DMPCVNA
         MENUITEM "Exit",                        SSH_FILE_EXIT
     END
     MENUITEM "Start/Stop",                  SSH_STARTSTOP
     MENUITEM "One step",                    SSH_ONESTEP
     POPUP "View options"
     BEGIN
+        MENUITEM "More frequent"                 ID_VIEWOPT_MOREOFT
+        MENUITEM "Less frequent"                 ID_VIEWOPT_LESSOFT
         MENUITEM "Trace filogenetic tree",      ID_VIEWOPT_TRACETREE
         , CHECKED
-        MENUITEM " by trophic mask"              ID_VIEWOPT_TREETROPHY
-        MENUITEM " by defending mask"            ID_VIEWOPT_TREEDEFEND
-        MENUITEM " by specialisation"            ID_VIEWOPT_TREESPEC
+        MENUITEM "  by trophic mask"              ID_VIEWOPT_TREETROPHY
+        MENUITEM "  by defending mask"            ID_VIEWOPT_TREEDEFEND
+        MENUITEM "  by specialisation"            ID_VIEWOPT_TREESPEC
         , CHECKED
-        MENUITEM " by trophic spec"             ID_VIEWOPT_TREETRSPEC
-        MENUITEM " by defense spec"             ID_VIEWOPT_TREEDESPEC
-        MENUITEM " by clad size"                ID_VIEWOPT_TREESIZE
+        MENUITEM "  by trophic spec"             ID_VIEWOPT_TREETRSPEC
+        MENUITEM "  by defense spec"             ID_VIEWOPT_TREEDESPEC
+        MENUITEM "  by clad size"                ID_VIEWOPT_TREESIZE
         MENUITEM "Trace trophic network",       ID_VIEWOPT_TRACETROPHICNET
         , CHECKED
-        MENUITEM " more detailed"        ID_VIEWOPT_TRNETMORE
-        MENUITEM " less detailed"        ID_VIEWOPT_TRNETLESS
+        MENUITEM "  full detailed"        ID_VIEWOPT_TRNETFULL
+        MENUITEM "  more detailed"        ID_VIEWOPT_TRNETMORE
+        MENUITEM "  less detailed"        ID_VIEWOPT_TRNETLESS
+        MENUITEM "  default det."         ID_VIEWOPT_TRNETDEFA
+        MENUITEM "Low speciations!"       ID_LOWMUTATIONS
     END
     POPUP "Window"
     BEGIN

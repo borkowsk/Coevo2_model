@@ -5,14 +5,15 @@
 /* Osobniki rozmnazaja sie kosztem wolnego miejsca i zgromadzonej energii */
 /* Ruchy wlasne, ofiara ataku, jak i moment rozmnazania wybierane sa */
 /* losowo, aby nie zaciemniac modelu dodatkowymi parametrami. 	     */
+//W razie czego:  __sbh_heap_check
 
 #ifdef NDEBUG
-const char*	   ProgramName="CO-EVOLUTION wer. 3.05b (c)1994-2008: Wojciech Borkowski [idea i realizacja]";
+const char*	   ProgramName="CO-EVOLUTION wer. 3.12a (c)1994-2009: Wojciech Borkowski [idea i realizacja]";
 #else
-const char*	   ProgramName="CO-EVOLUTION wer. 3.05b DEBUG (c)1994-2008 Wojciech Borkowski";
+const char*	   ProgramName="CO-EVOLUTION wer. 3.12a DEBUG (c)1994-2009 Wojciech Borkowski";
 #endif
 
-#pragma warn -aus 
+#pragma warn -aus //??? i jaki kompilator?
 
 //Wersja 3 - nowe mo¿liwoœci
 //1. Ró¿ne dane do kolorowania drzewa filogenetycznego wybierane z menu
@@ -20,7 +21,10 @@ const char*	   ProgramName="CO-EVOLUTION wer. 3.05b DEBUG (c)1994-2008 Wojciech 
 //3. Dodanie miernika czasu procesora w g³ownej pêtli i wyprowadzenie wraz z krokiem na konsole
 //4. 25.04.08 Usuniêcie b³edu w bibliotecznym menagerze lufcików wywalaj¹cego program przy robieniu "TILE"
 //5. 11.09.08 Wypisywanie do pliku kompletnej filogenezy 
-//.....
+//6. Wersja 3.1 - poprawki techniczne i kompilowalnoœc pod MSVC 2008
+//7. Uelastycznienie wizualizacji sieci ekologicznej i jej zapisywania
+//8. Umo¿liwienie ci¹g³ych zrzutów "ekranu" i seci ekologicznej w dwu formatach
+//9. Regulacja czêstoœc zrzutów - NIEDOKOÑCZONA - B£ÊDNA NUMERACJA PLIKÓW I KROKÓW 
 
 //Istotne nowosci w wersji 2.5
 //1. Odwrotnosc prawdopodobienstwa mutacji wyprowadzona jako parametr RTG
@@ -49,12 +53,14 @@ const char*	   ProgramName="CO-EVOLUTION wer. 3.05b DEBUG (c)1994-2008 Wojciech 
 #include <string.h>
 #include <math.h>
 #include <signal.h>
+#include <time.h>
+
+#include "INCLUDE/platform.hpp"
 
 #define USES_RANDG
 #include "INCLUDE/random.hpp" //WB random generators for "C"
 
 #define HIDE_WB_PTR_IO	0 //Musi byc IO dla wb_dynarray
-
 #include "INCLUDE/wb_ptr.hpp"
 #include "INCLUDE/wb_ptrio.h"
 #include "INCLUDE/wb_cpucl.hpp"
@@ -79,6 +85,11 @@ const char*	   ProgramName="CO-EVOLUTION wer. 3.05b DEBUG (c)1994-2008 Wojciech 
 #include "SYMSHELL/sshmenuf.h"
 #include "ResSrc/coewo3rc.h"
 
+#ifdef __BORLANDC__
+#ifndef _getpid
+#define _getpid()  (getpid())
+#endif
+#endif
 
 class swiat; //Zapowiedz g³ównej klasy symulacji
 
@@ -116,17 +127,14 @@ and_exploatation_source ExpDemo("(G AND O)/O * (G AND O)/G");//... tzn ladne dyw
 //base agent::* geba_ptr=&agent::w.w.geba;      //TAK POWINNO BYC - ALE NIE KOMPILUJE
 //base agent::* oslona_ptr=&agent::w.w.oslona;
 
-//RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
-#define RECZNIE_WPISZ_PTR 
-
+#define RECZNIE_WPISZ_PTR //RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN" I WIDZIMISIE TWORCÓW KOMPILATORA
+						
 #ifdef  RECZNIE_WPISZ_PTR 
-base agent::* geba_ptr=NULL;
-base agent::* oslona_ptr=NULL;
+base agent::* geba_ptr=NULL; //Tu w zasadzie tylko deklaracja...
+base agent::* oslona_ptr=NULL;//Przypisanie jest dalej, te¿ zabezpieczone ifdef RECZNIE_WPISZ_PTR
 #else
-base agent::* geba_ptr=&agent::w.w.geba;
-base agent::* oslona_ptr=&agent::w.w.oslona;
-//base agent::* geba_ptr=NULL;
-//base agent::* oslona_ptr=NULL;//(base agent::*)sizeof(base);
+base agent::* geba_ptr=&(agent::w.w.geba); //TAK TE¯ NIE DZIA£A
+base agent::* oslona_ptr=&(agent::w.w.oslona);
 #endif    
 
 //TAK MSVC KOMPILUJE ALE WPISUJE 0
@@ -143,18 +151,17 @@ unsigned SWIDTH=1200;//750;//1200; Tez zadziala
 unsigned SHEIGHT=750;//550;//1000;
 
 //const unsigned TAX_OUT=256; //PO CO TO?  zamiast REJESTROWANY_ROZMIAR_TAKSONU?
-
-unsigned dlugosc_logow=50000; //Dlugoœæ wewnetrznych logów podrêcznych - do wizualizacji
-unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
-
-
 //PODSTAWOWE PARAMETRY MODELU
-unsigned IBOKSWIATA=300;                // FAKTYCZNIE UZYWANY BOK SWIATA
+unsigned IBOKSWIATA=200;                // FAKTYCZNIE UZYWANY BOK SWIATA
 unsigned MINIMALNY_ROZMIAR_TAKSONU=100;  //Arbitralny rozmiar klonu zeby go uznac za zarejestrowany takson
 unsigned REJESTROWANY_ROZMIAR_TAKSONU=MINIMALNY_ROZMIAR_TAKSONU;//Domyslna wartosc kasowania w wizualizacji drzewa
+unsigned REJESTROWANY_ROZMIAR_WEZLA=0;//MINIMALNY_ROZMIAR_TAKSONU-1;//Domyslna wartosc kasowania w wizualizacji sieci eko
 
 int			WSP_KATASTROF=0;//10-100		// Wykladnik rozkladu katastrof - 0 -wylaczone
+
 unsigned	PROMIENIOWANIE=BITS_PER_GENOM*100;	// Co ile kopiowanych bitow nastepuje mutacja
+bool		UZYWAJ_PELNE_PROM=true;				//Czy u¿ywamy pe³nego promieniowania, czy obni¿onego?
+
 double		EFEKTYWNOSC_AUTOTROFA=0.5;	// jaka czesc swiatla uzywa autotrof
 unsigned	NIEPLODNOSC=5;		// Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
 double		WYPOSAZENIE_POTOMSTWA=0.05; // jaka czesc sily oddac potomkowi 0.1 to ZA DUZO!!! {???}
@@ -164,15 +171,22 @@ unsigned int	ODWROCONY_KOSZT_OSLONY=0;//1 - czy koszty oslony sa odwrocone
 unsigned int	ODWROCONY_KOSZT_ATAKU=0;//1 - czy koszty ataku sa odwrocone
 
 unsigned int	PIRACTWO=1;				//Czy eksploatacja piracka czy pasozytnicza
-//const unsigned BIT_RUCHU=128;		//Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu
+//unsigned BIT_RUCHU=128;		//Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu
 unsigned	BIT_RUCHU=1024;		//Poza maske - bez mozliwosci utraty ruchliwosci
-unsigned	DYS_RUCHU=1;      //Dystans ruchu w jednym kierunku					
+unsigned	DYS_RUCHU=1;      //Dystans ruchu w jednym kierunku
 unsigned	ZAMIANY=255;        //Czy moze przeciskac sie na zajete pola (0 na nie lub inna liczba na tak)
 
-
+//Zewnêtrzne zarz¹dzanie symulacj¹ i zbieraniem danych
 unsigned long	MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
-double          MonteCarloMult=10; //Ewentualna modyfikacja multiplikacji dlugosci kroku MonteCarlo
+int          MonteCarloMult?????=10; //Ewentualna modyfikacja multiplikacji dlugosci kroku MonteCarlo
 									//... ale dlaczego double ??????
+unsigned dlugosc_logow=100000; //Dlugoœæ wewnetrznych logów podrêcznych - do wizualizacji
+unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
+
+bool DumpScreenContinously=false;
+bool DumpNETContinously=false;
+bool DumpVNAContinously=false;
+
 //unsigned        textY=(IBOKSWIATA>TAX_OUT?IBOKSWIATA:TAX_OUT);         ???
 
 
@@ -229,8 +243,8 @@ class swiat//Caly swiat symulacji
 {
 //Parametry jednowartosciowe
 /////////////////////////////////
-unsigned long	licznik;		// licznik krokow symulacji
-unsigned long	monte_carlo_licz;//licznik krokow monte-carlo
+unsigned long	licznik_krokow;	 // licznik wywo³an procedury kroku symulacji
+unsigned long	monte_carlo_licz;//licznik realnie wykonanych krokow monte-carlo
 
 unsigned 		klon_auto;		// Licznik klonow autotroficznych
 unsigned 		tax_auto;		// Licznik taksonow autotroficznych
@@ -270,6 +284,8 @@ net_graph*			TrophicNet;		//Sieæ zaleznoœci pokarmowych
 text_area*			OutArea;//Obszar do wypisywania statusu symulacji
 
 public:
+wb_pchar dumpmarker;//Uchwyt do nazwy eksperymentu
+
 //KONSTRUKCJA DESTRUKCJA
 swiat(size_t szerokosc,
 	  char* logname,   //Nazwa pliku do zapisywania histori
@@ -279,7 +295,7 @@ swiat(size_t szerokosc,
 ~swiat(){}
 
 //AKCJE
-void init();	  // stan startowy symulacji
+void iniciuj();	  // stan startowy symulacji
 void krok();	  // kolejny krok symulacji
 void kataklizm(); // wygenerowanie katastrofy - reczne lub losowe
 
@@ -290,15 +306,16 @@ void tworz_lufciki();//Tworzy domyslne lufciki
 
 //METODY POMOCNICZE
 agent& Ziemia(size_t Kolumna,size_t Wiersz) {return ziemia.get(Kolumna,Wiersz);}
-unsigned long	get_licznik(){return licznik;}		// licznik krokow symulacji
-unsigned long	get_monte_carlo_steps() {return monte_carlo_licz;}
+unsigned long	daj_licznik_krokow(){return licznik_krokow;}		// licznik krokow symulacji
+unsigned long   daj_kroki_monte_carlo(){return monte_carlo_licz;}   //suma realnie wykonanych kroków MC
 //Do wizualizacji
 void ZmienKoloryDrzewaFil(klad::Kolorowanie co);
 void UstalDetalicznoscSieci(int Ile,bool Relative=true);
 //Do statystyk
 void print_params(ostream& out);
 void ZapiszFilogeneze(ostream& out,unsigned min_time=0,unsigned max_time=0,unsigned size_tres=0);
-void ZapiszEkologie(ostream& out,unsigned size_tres=0);
+void ZapiszEkologieNET(ostream& out,unsigned size_tres=0,double weight_tres=0);
+void ZapiszEkologieVNA(ostream& out,unsigned size_tres=0,double weight_tres=0);
 };
 
 void swiat::tworz_lufciki()
@@ -322,9 +339,16 @@ if((long)szer_map>MyAreaMenager.getwidth()-280)
 #ifdef RECZNIE_WPISZ_PTR
 {
 int *hack1=(int*)&oslona_ptr;
-*hack1=2;//sizeof(base)?
 int *hack2=(int*)&geba_ptr;
-*hack2=1;
+
+#ifdef __MSVC__
+*hack2=0;//sizeof(base)?
+*hack1=1;//?
+#else //BDS2006
+*hack2=1;//sizeof(base)?
+*hack1=2;
+#endif
+
 }
 #endif
 
@@ -823,8 +847,8 @@ linear_source_base* Pred=trophNet.ConnPred();
 Sources.insert(Pred);
 linear_source_base* CW=trophNet.ConnWeight();
 Sources.insert(CW);
-data_source_base*  Dummy=new function_source< constans< 5 > >(1000000,0,1000000,"5",0,10);
-Sources.insert(Dummy,1);
+data_source_base*  Dummy=new function_source< constans< 5 > >(1000000,0,1000000,"const=5",0,10);
+Sources.insert(Dummy/*,1*/);
 //Sieæ zaleznoœci pokarmowych
 pom=TrophicNet=new net_graph(szer_map+1,130,szer_map+169,299,
 					  X,0,
@@ -834,14 +858,14 @@ pom=TrophicNet=new net_graph(szer_map+1,130,szer_map+169,299,
 
 					  W,0,
 					  W,0,
-					  Dummy,1,
+					  Dummy,0,
 					  CW,0,
 					  new circle_point,1
 					  );
 pom->setframe(128);
 //pom->setdatacolors(0,128);
 pom->setbackground(default_light_gray);
-pom->settitle("SIEÆ TROFICZNA");
+pom->settitle("SIEC TROFICZNA");
 MyAreaMenager.insert(pom);
 
 //szer_map+1,130,szer_map+119,130+84
@@ -901,9 +925,12 @@ void swiat::ZmienKoloryDrzewaFil(klad::Kolorowanie co)
 {
 	filogeneza.ChangeLineWeightsSource(co);
 }
-/*
-void swiat::UstalDetalicznoscSieci(int Ile,bool Relative=true);
-*/
+
+void swiat::UstalDetalicznoscSieci(int Ile,bool Relative)
+{
+	this->trophNet.set_tax_size_tres(Ile);//Relative jest ignorowane. Na razie?
+}
+
 void swiat::ZapiszFilogeneze(ostream& out,unsigned min_time,unsigned max_time,unsigned size_tres)
 {
 	//Tu byæ mo¿e trzeba cos dodaæ, ale na razie tak - bez kontroli
@@ -925,6 +952,20 @@ void swiat::ZapiszFilogeneze(ostream& out,unsigned min_time,unsigned max_time,un
 	out<<endl;
 	filogeneza.ZapiszTxt(out,min_time,max_time,size_tres);
 }
+
+void swiat::ZapiszEkologieNET(ostream& out,unsigned size_tres,double weight_tres)
+{/*    Nie wiem czy to bezpieczne...
+	if(trophNet.tax_size_tres()!=size_tres && trophNet.connection_tres()!=weight_tres)
+	{
+		this->trophNet.aktualizuj_liste_wezlow();
+	}*/
+	this->trophNet.ZapiszWFormacieNET(out,size_tres,weight_tres);
+}
+
+void swiat::ZapiszEkologieVNA(ostream& out,unsigned size_tres,double weight_tres)
+{
+	this->trophNet.ZapiszWFormacieVNA(out,size_tres,weight_tres);
+}
 /*
 void swiat::ZapiszEkologie(ostream& out,unsigned size_tres=0);
 */
@@ -935,7 +976,7 @@ void swiat::ZapiszEkologie(ostream& out,unsigned size_tres=0);
 //DEFINICJA KONSTRUKTORA
 swiat::swiat(size_t szerokosc,char* logname,char* mappname,my_area_menager& AreaMenager):	
 	MyAreaMenager(AreaMenager), 	
-	Sources(150), 
+	Sources(255),
 	zdatnosc(szerokosc,(szerokosc/2),128/*INICJALIZACJA*/),
 	ziemia(szerokosc,(szerokosc/2)/*DOMYSLNA INICJALIZACJA KONSTRUKTOREM*/), //Prostokat np 20x10
 	stats(szerokosc,(szerokosc/2)),
@@ -950,7 +991,7 @@ swiat::swiat(size_t szerokosc,char* logname,char* mappname,my_area_menager& Area
 	klon_auto(1),tax_auto(1),autotrofy(1),
 	log(100,logname),
     filogeneza(NULL),
-    trophNet(NULL)
+	trophNet(NULL,REJESTROWANY_ROZMIAR_WEZLA)
 {//!!!Nie mozna tu jeszcze polegac na wirtualnych metodach klasy swiat
 if(mappname)
     zdatnosc.init_from_bitmap(mappname);
@@ -964,8 +1005,9 @@ Ziemia(DLUG_WIERSZA/2,DLUG_WIERSZA/4).init(255,255,255);
 filogeneza=Ziemia(DLUG_WIERSZA/2,DLUG_WIERSZA/4).klon;
 trophNet=Ziemia(DLUG_WIERSZA/2,DLUG_WIERSZA/4).klon;
 
-long t=time(NULL);
-log.GetStream()<<"KO-EWOLUCJA ["<<t<<"]\n";
+dumpmarker.alloc(128);
+dumpmarker.prn("%lu",time(NULL));
+log.GetStream()<<"KO-EWOLUCJA ["<<dumpmarker.get()<<"]\n";
 //fprintf(log,"%ux%u\tWYP_POT=%f\tEFEKT=%f\tMAX_WIEK=%d\tPLOD=%f\tRTG=%f\tBUM=0.5^%d\n",
 print_params(log.GetStream());
 }
@@ -1273,41 +1315,40 @@ for(long i=0;i<ile;i++)
 	}
 
 
-//Koniec kroku monte-carlo po agentach
-//------------------------------------------
-kataklizm(); // jeden, chocby bardzo maly na krok monte-carlo
+	//Koniec kroku monte-carlo po agentach
+	//------------------------------------------
+	kataklizm(); // jeden, chocby bardzo bardzo maly na krok monte-carlo
 
-{//Uaktualnienie informacji o frakcjach autotrofow
-klon_auto=0;
-tax_auto=0;
-autotrofy=0;
-for(unsigned i=0xffff;i>0xffff-0x100;i--)//Ile niezerowych klonow autotroficznych
+	{//Uaktualnienie informacji o frakcjach autotrofow
+	klon_auto=0;
+	tax_auto=0;
+	autotrofy=0;
+	for(unsigned i=0xffff;i>0xffff-0x100;i--)//Ile niezerowych klonow autotroficznych
 	{
-	unsigned pom=agent::liczniki[i];
-	autotrofy+=pom;
-	if(pom>0)
-		klon_auto++;
-	if(pom>informacja_klonalna::tresh_taksonow())
-		tax_auto++;
+		unsigned pom=agent::liczniki[i];
+		autotrofy+=pom;
+		if(pom>0)
+			klon_auto++;
+		if(pom>informacja_klonalna::tresh_taksonow())
+			tax_auto++;
 	}
-}
-
-if(Liczniki)
-	{
-	Liczniki->setminmax(0,agent::max);//Oszczedza liczenia max
 	}
 
-Sources.new_data_version(1,1);//Oznajmia seriom ze dane sie uaktualnily
+	if(Liczniki)
+		Liczniki->setminmax(0,agent::max);//Oszczedza liczenia max
 
-if(MyAreaMenager.trace_trophic_network_enabled())
-    trophNet.aktualizuj_liste_wezlow();
-else
-    trophNet.zapomnij_liste(true);
+	Sources.new_data_version(1,1);//Oznajmia seriom ze dane sie uaktualnily
 
-if(MyAreaMenager.trace_filogenetic_tree_enabled())
-    filogeneza.aktualizuj_liste_zstepnych();
-else
-    filogeneza.zapomnij_liste(true);
+	//Aktualizacja danych filogenezy i seci troficznej
+	if(MyAreaMenager.trace_trophic_network_enabled())
+		trophNet.aktualizuj_liste_wezlow();
+	else
+		trophNet.zapomnij_liste(true);
+
+	if(MyAreaMenager.trace_filogenetic_tree_enabled())
+		filogeneza.aktualizuj_liste_zstepnych();
+	else
+		filogeneza.zapomnij_liste(true);
 }
 
 double poison(int n); // generuje rozklad para-poison w zakresie 0..1 o n stopniach
@@ -1339,9 +1380,9 @@ unsigned y=RANDOM(DLUG_WIERSZA/2);
 if(licznik%LogRatio==0)
 		log.try_writing();
 		
-char checker1[2]="AA";
-char bufor[2048];//ze sporym zapasem
-char checker2[2]="AA";
+char bufor[2048];//Bufor jest co prawda ze sporym zapasem
+bufor[2047]='A';//Mo¿e zostaæ albo A albo NULL ale jak coœ innego to przepelniony
+
 sprintf(bufor,"%ld KROK MONTE-CARLO [%lu - symulacji] PID=%lu\n"
 							"LICZBA AGENTOW:%lu "
 							"(%lu AUTOTROFICZNYCH)\n"
@@ -1354,7 +1395,7 @@ sprintf(bufor,"%ld KROK MONTE-CARLO [%lu - symulacji] PID=%lu\n"
 	//agent::nazwy[agent::plot_mode],
 	(long)licznik*(long)MonteCarloMult,
 	(unsigned long)licznik,
-	(unsigned long)getpid(),
+	(unsigned long)_getpid(), //ISO C++ standard name
 	(unsigned long)agent::ile_ind,
 	(unsigned long)autotrofy,
 	(unsigned long)agent::ile_big_tax,
@@ -1364,10 +1405,8 @@ sprintf(bufor,"%ld KROK MONTE-CARLO [%lu - symulacji] PID=%lu\n"
     (unsigned long)informacja_klonalna::ile_klonow(),
     (unsigned long)informacja_klonalna::ile_taksonow()
     );
-																assert(checker1[0]=='A');
-																assert(checker1[1]=='A');
-																assert(checker2[0]=='A');
-																assert(checker2[1]=='A');
+																assert(bufor[2047]=='A' || bufor[2047]=='\0');
+
 if(OutArea)
 	{
 	OutArea->clean();//Stare linie usuwamy - czyste okno
@@ -1386,20 +1425,19 @@ printf("CO-EWOLUCJA: program symulujacy kooewolucje wielu gatunkow\n");
 printf(ProgramName);
 printf("\nCompilation: " __DATE__ " " __TIME__ );
 //printf("POLECENIA: 'g': Trofia 'o':OSLONA 's':SILA 'w':WIEK 'q':QUIT\n");
-#if(sizeof(base)*2!=sizeof(base2))
+if((sizeof(base)*2)!=sizeof(base2))
 	{
 	fprintf(stderr,"Niewlasciwe rozmiary dla typow bazowych:2*%u!=%u\n",
 		sizeof(base),sizeof(base2));
 	exit(1);
 	}
-#endif
 printf("\nROZMIAR GENOMU: %uB\nLICZBA MOZLIWYCH KLONOW=%lu\nMAXINT=%d\n",sizeof(bity_wzoru),(unsigned long)MAXBASE2,INT_MAX);
 
 RANDOMIZE(); 
 if(!parse_options(argc,argv))
 		exit(1);
 
-my_area_menager Lufciki(24,SWIDTH,SHEIGHT,28);
+my_area_menager Lufciki(255,SWIDTH,SHEIGHT,28);//255 mo¿liwych lufcików
 swiat& tenSwiat=*new swiat(IBOKSWIATA,LogName,MappName,Lufciki);
 if(&tenSwiat==NULL)
 {
@@ -1420,9 +1458,9 @@ tenSwiat.tworz_lufciki();
 //Utworzenie sensownej nazwy pliku(-ów) do zrzutow ekranu
 {
 wb_pchar buf(strlen(SCREENDUMPNAME)+20);
-buf.prn("%s_%ld",SCREENDUMPNAME,time(NULL));
+buf.prn("%s_%s",SCREENDUMPNAME,tenSwiat.dumpmarker.get());
 Lufciki.set_dump_name(buf.get());
-printf("\nProcess PID: %u Dump files marker: %lu",getpid(),time(NULL));
+printf("\nProcess PID: %u Dump files marker: %lu",_getpid(),tenSwiat.dumpmarker.get());
 }
 
 //zamiast Lufciki.run_input_loop();
@@ -1433,25 +1471,59 @@ while(tenSwiat.get_licznik()<MAX_ITERATIONS) //Do za³o¿onego koñca
 	tenSwiat.wskazniki();//Aktualizacja informacji
 	Lufciki._replot();//Odrysowanie
 	Lufciki.flush();
-
+	Lufciki.reset_dump_number(tenSwiat.get_licznik());
 	Lufciki.process_input();//Obsluga zdarzen zewnetrznych
-	
+
 	if(!Lufciki.should_continue())
 				break;//Albo koniec zabawy wymuszony "klikiem"
-				
+
 	wb_cpu_clock steptimer;
 	tenSwiat.krok();  //Kolejny krok symulacji
-	cout<<'\r'<<'\t'<<tenSwiat.get_licznik()<<" krok. Czas pêtli:\t"<<double(fulltimer)<<"s. w tym krok:\t"<<double(steptimer)<<" s    ";
+	double czas_kroku=steptimer;
+
+	 //Ci¹g³e zrzuty plików jesli jest postrzeba
+	 if(DumpScreenContinously)  //Obrazek ekranu
+	 {
+		Lufciki.dump_screen();
+	 }
+	 if(DumpNETContinously)	 //stan sieci troficznej w formacie NET
+	 {
+		wb_pchar bufor(1024);
+		bufor.prn("%s_st%d.net",Lufciki.get_dump_name(),tenSwiat.get_licznik());
+		ofstream netstateout(bufor.get());
+		tenSwiat.ZapiszEkologieNET(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+		netstateout.close();
+	 }
+	 if(DumpVNAContinously)	 //stan sieci troficznej w formacie VNA
+	 {
+		wb_pchar bufor(1024);
+		bufor.prn("%s_st%d.vna",Lufciki.get_dump_name(),tenSwiat.get_licznik());
+		ofstream netstateout(bufor.get());
+		tenSwiat.ZapiszEkologieVNA(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+		netstateout.close();
+	 }
+
+	//OSTATECZNIE POMIAR CZASU OBROTU PÊTLI I NOWA PÊTLA
+		cout<<'\r'<<'\t'<<tenSwiat.get_licznik()<<" krok. Czas pêtli:\t"<<double(fulltimer)<<"s. w tym krok:\t"<<double(czas_kroku)<<" s    ";
 	}
 
 //Ostateczne zrzuty plików do analizy
 
 //Pelna filogeneza
 ofstream filogout("lastfilog.out");
-tenSwiat.ZapiszFilogeneze(filogout);
+tenSwiat.ZapiszFilogeneze(filogout);//Bez ograniczeñ, tzn. z domyœlnymi
 filogout.close();
 
+//Ostatni stan sieci troficznej
+ofstream netstateout("lasttrophnet.net");
+tenSwiat.ZapiszEkologieNET(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+netstateout.close();
+netstateout.open("lasttrophnet.vna");
+tenSwiat.ZapiszEkologieVNA(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+netstateout.close();
+
 //Dealokacja swiata wraz ze wszystkimi skladowymi
+cerr<<endl;
 delete &tenSwiat;
 printf("Do widzenia!!!\n");
 return 0;
@@ -1463,7 +1535,7 @@ double poison(int n)
 double pom=1;
 for(int i=1;i<=n;i++)
 	pom*= DRAND() ; // Mnozenie przez wartosc od 0..1
-assert(pom>=0 && pom<=1);
+														assert(pom>=0 && pom<=1);
 return pom;
 }
 
@@ -1480,7 +1552,7 @@ unsigned agent::liczniki[ /*TAXNUMBER*/MAXBASE2+1 ];// Liczniki liczebnosci taxo
 
 void koszty()
 {
-    ofstream tabkoszt("tabkoszt.out");
+	ofstream tabkoszt("tabela_kosztow.out");
     for(int i=0;i<=255;i++)
     {
 		base mask=i;
@@ -1568,9 +1640,9 @@ for(int i=1;i<argc;i++)
 		{
 		printf("Podano wartoœæ RBIT=%u",BIT_RUCHU);
 		if(MAXBASE>BIT_RUCHU)
-			printf("; %u bit maski obrony jest bitem ruchu\n",(BIT_RUCHU!=0?unsigned(log(BIT_RUCHU)/log(2.0)):0));
+			printf("; %u bit maski obrony jest bitem ruchu\n",(BIT_RUCHU!=0?unsigned(log(1.0*BIT_RUCHU)/log(2.0)):0));
 		else
-			printf("; %u bit jest poza mask¹ obrony\n",unsigned(log(BIT_RUCHU)/log(2.0)));//Tu 0 raczej sie nie pojawi
+			printf("; %u bit jest poza mask¹ obrony\n",unsigned(log(1.0*BIT_RUCHU)/log(2.0)));//Tu 0 raczej sie nie pojawi
 		}	
 	}
 	else
@@ -1794,6 +1866,7 @@ int my_area_menager::start(const char* wintitle,int argc,const char** argv,int d
 		ssh_menu_mark_item(menu,trace_fillog_tree,ID_VIEWOPT_TRACETREE);
 		ssh_menu_mark_item(menu,trace_trophi_netw,ID_VIEWOPT_TRACETROPHICNET);
 		ssh_menu_mark_item(menu,1,ID_VIEWOPT_TREESPEC);
+		ssh_menu_mark_item(menu,!UZYWAJ_PELNE_PROM,ID_LOWMUTATIONS);
 		ssh_realize_menu(menu);
 	}
 	return ret;
@@ -1804,18 +1877,65 @@ int my_area_menager::_pre_process_input(int input_char)
 {
 										assert(MojSwiat!=NULL);
 	switch(input_char){
-	case ID_VIEWOPT_DUMPCO:
+	case ID_VIEWOPT_DUMPCO:     //Sta³e zrzucanie grafiki
 		{
-
+			DumpScreenContinously=!DumpScreenContinously;
+			ssh_menu_handle menu=ssh_main_menu();
+			ssh_menu_mark_item(menu,DumpScreenContinously,ID_VIEWOPT_DUMPCO);
+			ssh_realize_menu(menu);
+		}
+		return 1;
+	case ID_VIEWOPT_DMPCNET:		//Sta³e zrzucanie sieci troficznej
+		{
+			DumpNETContinously=!DumpNETContinously;
+			ssh_menu_handle menu=ssh_main_menu();
+			ssh_menu_mark_item(menu,DumpNETContinously,ID_VIEWOPT_DMPCNET);
+			ssh_realize_menu(menu);
+		}
+		return 1;
+	case ID_VIEWOPT_LESSOFT:
+		{
+			switch(MonteCarloMult)
+			{
+			case 0:MonteCarloMult=1;break;
+			case 1:MonteCarloMult=2;break;
+			case 2:MonteCarloMult=10;break;
+			case 10:MonteCarloMult=100;break;
+			default:
+			MonteCarloMult*=2;break;
+			}
+			cerr<<endl<<"Visualisation freqency changed into "<<MonteCarloMult<<endl;
+		}
+		return 1;
+	case ID_VIEWOPT_MOREOFT:
+		{
+			switch(MonteCarloMult)
+			{
+			case 0:MonteCarloMult=1;break;
+			case 2:MonteCarloMult=1;break;
+			case 10:MonteCarloMult=2;break;
+			case 100:MonteCarloMult=10;break;
+			default:
+			MonteCarloMult/=2;break;
+			}
+			cerr<<endl<<"Visualisation freqency changed into "<<MonteCarloMult<<endl;
+		}
+		return 1;
+	case ID_VIEWOPT_DMPCVNA:      	//Sta³e zrzucanie sieci troficznej w formacie VNA
+		{
+			DumpVNAContinously=!DumpVNAContinously;
+			ssh_menu_handle menu=ssh_main_menu();
+			ssh_menu_mark_item(menu,DumpVNAContinously,ID_VIEWOPT_DMPCVNA);
+			ssh_realize_menu(menu);
 		}
 		return 1;
 	case ID_VIEWOPT_TRACETREE:
 		{
-		trace_fillog_tree=!trace_fillog_tree;
-		ssh_menu_handle menu=ssh_main_menu();
-		ssh_menu_mark_item(menu,trace_fillog_tree,ID_VIEWOPT_TRACETREE);
-		ssh_realize_menu(menu);
-		this->replot();
+			trace_fillog_tree=!trace_fillog_tree;
+			ssh_menu_handle menu=ssh_main_menu();
+			ssh_menu_mark_item(menu,trace_fillog_tree,ID_VIEWOPT_TRACETREE);
+			ssh_realize_menu(menu);
+			this->replot();
 		}
 		return 1;
 	case ID_VIEWOPT_TREESPEC:
@@ -1915,12 +2035,71 @@ int my_area_menager::_pre_process_input(int input_char)
 		return 1;
 	case ID_VIEWOPT_TRNETMORE:
 		{
-
+		  REJESTROWANY_ROZMIAR_WEZLA/=2;
+		  if(REJESTROWANY_ROZMIAR_WEZLA<1)
+				REJESTROWANY_ROZMIAR_WEZLA=0;
+		  cerr<<endl<<"Granica zauwa¿ania wêz³ów sieci troficznej obni¿ona do "<<REJESTROWANY_ROZMIAR_WEZLA<<endl;
+		  MojSwiat->UstalDetalicznoscSieci(REJESTROWANY_ROZMIAR_WEZLA);
 		}
 		return 1;
 	case ID_VIEWOPT_TRNETLESS:
 		{
-
+		  if(REJESTROWANY_ROZMIAR_WEZLA<1)
+			REJESTROWANY_ROZMIAR_WEZLA=1;
+		  else
+			REJESTROWANY_ROZMIAR_WEZLA*=2;
+		  cerr<<endl<<"Granica zauwa¿ania wêz³ów sieci troficznej podwy¿szona do "<<REJESTROWANY_ROZMIAR_WEZLA<<endl;
+		  MojSwiat->UstalDetalicznoscSieci(REJESTROWANY_ROZMIAR_WEZLA);
+		}
+		return 1;
+//	#define ID_VIEWOPT_TRNETFULL            60012
+	   case ID_VIEWOPT_TRNETFULL:
+		{
+		  REJESTROWANY_ROZMIAR_WEZLA=0;
+		  cerr<<endl<<"Zniesiona granica zauwa¿ania wêz³ów sieci troficznej"<<endl;
+		  MojSwiat->UstalDetalicznoscSieci(REJESTROWANY_ROZMIAR_WEZLA);
+		}
+		return 1;
+//	#define ID_VIEWOPT_TRNETDEFA			60013
+		case ID_VIEWOPT_TRNETDEFA:
+		{
+		  REJESTROWANY_ROZMIAR_WEZLA=REJESTROWANY_ROZMIAR_TAKSONU-1;
+		  cerr<<endl<<"Domyœlna granica zauwa¿ania wêz³ów sieci troficznej (taka jak w drzewie fil.="<<REJESTROWANY_ROZMIAR_WEZLA<<")"<<endl;
+		  MojSwiat->UstalDetalicznoscSieci(REJESTROWANY_ROZMIAR_WEZLA);
+		}
+		return 1;
+		//		ID_VIEWOPT_DMPNET               60014
+		case  ID_VIEWOPT_DMPNET:
+		{
+			 //stan sieci troficznej
+			wb_pchar bufor(1024);
+			bufor.prn("%s_st%d.net",this->get_dump_name(),MojSwiat->get_licznik());
+			ofstream netstateout(bufor.get());
+			MojSwiat->ZapiszEkologieNET(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+			netstateout.close();
+			bufor.prn("%s_st%d.vna",this->get_dump_name(),MojSwiat->get_licznik());
+			netstateout.open(bufor.get());
+			MojSwiat->ZapiszEkologieVNA(netstateout);//Bez ograniczeñ, tzn. z domyœlnymi
+			netstateout.close();
+		}
+		return 1;
+//ID_LOWMUTATIONS                 60015
+		case  ID_LOWMUTATIONS:
+		{
+			UZYWAJ_PELNE_PROM=!UZYWAJ_PELNE_PROM;
+			if(UZYWAJ_PELNE_PROM)
+			{
+				PROMIENIOWANIE/=10;
+				cerr<<endl<<"Wsp. mutacji ponownie =1/"<<PROMIENIOWANIE<<endl;
+			}
+			else
+			{
+				PROMIENIOWANIE*=10;
+				cerr<<endl<<"Wsp. mutacji =1/"<<PROMIENIOWANIE<<endl;
+			}
+			ssh_menu_handle menu=ssh_main_menu();
+			ssh_menu_mark_item(menu,!UZYWAJ_PELNE_PROM,ID_LOWMUTATIONS);
+			ssh_realize_menu(menu);
 		}
 		return 1;
 	default:

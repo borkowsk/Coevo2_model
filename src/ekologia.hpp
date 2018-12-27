@@ -57,7 +57,7 @@ class ekologia
     void _swap(node_info& f,node_info& s);
 private:
     unsigned user_tax_tres;  //Treshold uzytkownika - jesli inny niz z informacja_klonalna
-    double conn_treshold;    //Wizualizuje tylko te polaczenia, ktore stanowia "gro" zasilajacej biomasy
+	double conn_treshold;    //Wizualizuje tylko te polaczenia, ktore stanowia "gro" zasilajacej biomasy
     agent::informacja_klonalna* ancestor; //Wskaznik do wspólnego przodka - zeby znajdowac zywe klony
     array_template<node_info>  nodes;//Lista wez³ów sieci ekologicznej
     array_template<connection> lines;//Lista lini rozpinajacych
@@ -65,39 +65,47 @@ private:
     struct_array_source<node_info,unsigned int>* pNodeX;//Wspolrzedne wezlow w aranzacji
     struct_array_source<node_info,unsigned int>* pNodeY;//------------//----------------
     struct_array_source<node_info,unsigned int>* pNodeWeight;//Waga wezlow
-    struct_array_source<connection,size_t>* pConnPrey;//Indeksy pocz¹tków linii laczacych wezly sieci
-    struct_array_source<connection,size_t>* pConnPred;//Indeksy koncow linii laczacych wezly sieci
-    struct_array_source<connection,unsigned long>* pConnWeight;//Przeplyw w danej linii
-   
+	struct_array_source<connection,size_t>* pConnPrey;//Indeksy pocz¹tków linii laczacych wezly sieci
+	struct_array_source<connection,size_t>* pConnPred;//Indeksy koncow linii laczacych wezly sieci
+	struct_array_source<connection,unsigned long>* pConnWeight;//Przeplyw w danej linii
 
-    void _update_source_ptrs();//Poprawia wskazniki do tablic, ktore moga sie dezaktualizowac podczas wypelniania list
-    void _empty_source_ptrs();//Zmienia zrodla na puste (o dlugosci 0)
+	void _update_source_ptrs();//Poprawia wskazniki do tablic, ktore moga sie dezaktualizowac podczas wypelniania list
+	void _empty_source_ptrs();//Zmienia zrodla na puste (o dlugosci 0)
 
-    friend bool _moja_akcja_trawersowania(informacja_klonalna* current,void* user_data);
-    bool _zarejestruj_z_sortowaniem(informacja_troficzna* what,unsigned ident);//madrze rejestruje, jesli jeszcze nie bylo, 'updejtuje" i ewentualnie przesuwa na liscie
-    size_t _lowest_index_for_treshold(size_t node);
+	friend bool _moja_akcja_trawersowania(informacja_klonalna* current,void* user_data);
+	bool _zarejestruj_z_sortowaniem(informacja_troficzna* what,unsigned ident);//madrze rejestruje, jesli jeszcze nie bylo, 'updejtuje" i ewentualnie przesuwa na liscie
+	size_t _lowest_index_for_treshold(size_t node);
 public:
-    //Udostepnianie podstawowych serii danych do budowania sieci
-    linear_source_base* NodeX();//Polozenie wezla - np. maska ataku
-    linear_source_base* NodeY();//Polozenie wezla - np. maska obrony
-    linear_source_base* NodeWeight();//Waga wezla - np. liczba osobników (ewentualnie biomasa)
-    //linear_source_base* NodeScaledWeight();//Pierwiastkowana waga wezla - lepsze dla kó³ek
-    
-    //Informacje o polaczeniach
-    linear_source_base* ConnPrey();//Start polaczenia w ofierze (prey)
-    linear_source_base* ConnPred();//Koniec polaczenia w drapiezniku (predator)
-    linear_source_base* ConnWeight();//Liczba ofiar lub  pozyskana biomasa ofiar
+	size_t HowManyNodes() { return nodes.CurrSize();}
+	double connection_tres(){ return conn_treshold;}  //Jaka granica wizualizacji po³¹czeñ
+	unsigned tax_size_tres();  //Jak istotne dla ekosystemu taksony wizualizuje
+	void set_tax_size_tres(size_t T);//Ustawia granice wizualizacji - od nastêpnego updatu!
 
-    //Interfejs konieczny
-	ekologia(agent::informacja_klonalna* TheAncestor);
+	//Udostepnianie podstawowych serii danych do budowania sieci
+	linear_source_base* NodeX();//Polozenie wezla - np. maska ataku
+	linear_source_base* NodeY();//Polozenie wezla - np. maska obrony
+	linear_source_base* NodeWeight();//Waga wezla - np. liczba osobników (ewentualnie biomasa)
+	//linear_source_base* NodeScaledWeight();//Pierwiastkowana waga wezla - lepsze dla kó³ek
+
+	//Informacje o polaczeniach
+	linear_source_base* ConnPrey();//Start polaczenia w ofierze (prey)
+	linear_source_base* ConnPred();//Koniec polaczenia w drapiezniku (predator)
+	linear_source_base* ConnWeight();//Liczba ofiar lub  pozyskana biomasa ofiar
+
+	//Interfejs konieczny
+	ekologia(agent::informacja_klonalna* TheAncestor,
+			 unsigned int user_node_treshold=-1,
+			 double connection_treshold=0);
 	virtual ~ekologia();
-    void operator = (agent::informacja_klonalna* TheAncestor);
- 
-    virtual void aktualizuj_liste_wezlow(bool leftrec=true); //Aktualizacja listy wezlów
-    virtual void zapomnij_liste(bool zwolnij_pamiec=false); //Zapominanie listy z ewentualnym zwalnianiem pamieci
-    size_t Znajdz(unsigned int Identyfikator);  //Znajduje wezel o podanym identyfikatorze i zwraca jego indeks na liscie
-    size_t HowManyNodes() { return nodes.CurrSize();}
-    unsigned tax_size_tres();  //Wizualizuje tylko istotne dla ekosystemu taksony
+	
+	void operator = (agent::informacja_klonalna* TheAncestor);
+
+	virtual void aktualizuj_liste_wezlow(bool leftrec=true); //Aktualizacja listy wezlów
+	virtual void zapomnij_liste(bool zwolnij_pamiec=false); //Zapominanie listy z ewentualnym zwalnianiem pamieci
+	size_t Znajdz(unsigned int Identyfikator);  //Znajduje wezel o podanym identyfikatorze i zwraca jego indeks na liscie
+
+	void ZapiszWFormacieNET(ostream& out,unsigned size_tres=0,double weight_tres=0);
+	void ZapiszWFormacieVNA(ostream& out,unsigned size_tres=0,double weight_tres=0);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,9 +114,16 @@ inline
 unsigned ekologia::tax_size_tres() //Wizualizuje tylko istotne dla ekosystemu taksony
 { 
     if(user_tax_tres!=-1)
-        return user_tax_tres;
-    else
-        return informacja_klonalna::tresh_taksonow(); 
+		return user_tax_tres;
+	else
+		return informacja_klonalna::tresh_taksonow();
+}
+
+inline
+void ekologia::set_tax_size_tres(size_t Tres)
+//Ustawia granice wizualizacji - od nastêpnego updatu!
+{
+	 user_tax_tres=Tres;
 }
 
 inline 

@@ -158,7 +158,7 @@ unsigned long informacja_klonalna::magnitude()
 {
 	double pom=wszystkich();
 	if(pom==0) return 0;
-	pom=log(pom)/log(2);
+	pom=log(pom)/log(2.0);
 	return (unsigned long)(pom);
 } 	
 

@@ -56,13 +56,22 @@ void klad::ZapiszTxt(ostream& out,unsigned min_time,unsigned max_time,unsigned s
 
 bool klad::_wypisz_poddrzewo(agent::informacja_klonalna* klon,_filogOutPutInfo& Info)
 {
+extern unsigned BIT_RUCHU; //=128 Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu. W pliku z main-em
 if(	Info.min_time<=klon->data_powstania_klonu() && 
 	klon->data_powstania_klonu()<=Info.max_time &&
 	klon->wszystkich()>Info.size_tres)
 	{
-		Info.out<<hex<<klon->feeding_niche()<<klon->defense_niche()
-				<<'_'<<klon->identyfikator()<<dec<<'\t'
-				<<klon->identyfikator()<<'\t'
+		if(klon->feeding_niche()==AUTOTROF)
+			Info.out<<"Au";
+		else
+			Info.out<<hex<<klon->feeding_niche();
+		Info.out<<'_'<<klon->defense_niche();
+		if(klon->defense_niche() &  BIT_RUCHU)
+		  Info.out<<'S';
+		else
+		  Info.out<<'_';
+		Info.out<<dec<<klon->identyfikator()<<'\t'
+				<<dec<<klon->identyfikator()<<'\t'
 				<<Info.Klon->identyfikator()<<'\t'
 				<<klon->data_powstania_klonu()<<'\t';
 				
@@ -89,6 +98,7 @@ agent::informacja_klonalna* Parent=Info.Klon;
 Info.Klon=klon;//Dla dzieci klonu to on jest rodzicem
 klon->for_each_child(_wypisz_takson,&Info);//TU JEST UKRYTA PÊTLA I REKURENCJA!!!
 Info.Klon=Parent;//Przywracanie "dziadka" - dla rodzeñstwa
+return true;
 }
 
 //Akcje wype³niania struktur danych wizualizacyjnych od konkretnego wezla drzewa klonow 
