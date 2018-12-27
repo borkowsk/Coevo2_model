@@ -154,7 +154,7 @@ void ekologia::aktualizuj_liste_wezlow(bool leftrec)
     //Etap VI - usuwanie przeanalizowanych 
     ret=ekologia::ancestor->trawersuj_drzewo_pre(_trawersowanie_kasujace,NULL);    
 
-    _update_source_ptrs();//Mozliwe nowe wskazniki do doanych dla serii
+	_update_source_ptrs();//Mozliwe nowe wskazniki do danych dla serii
 }
 
 size_t ekologia::_lowest_index_for_treshold(size_t i)

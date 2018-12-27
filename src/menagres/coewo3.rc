@@ -7,8 +7,9 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
-#include "amngrcmd.h"
+//#include "afxres.h"
+//#include "SYMSHELL/src/Windows/amngrcmd.h"
+#include "SYMSHELL/src/Windows/menagres/resamngr.h"
 #include "rosymbol.h"
 #include "symshwin.h"
 
@@ -101,6 +102,7 @@ BEGIN
     POPUP "File"
     BEGIN
         MENUITEM "Dump screen",                 SSH_FILE_DUMPSCREEN
+        MENUITEM "Dump continously",            ID_VIEWOPT_DUMPCO
         MENUITEM "Exit",                        SSH_FILE_EXIT
     END
     MENUITEM "Start/Stop",                  SSH_STARTSTOP
@@ -109,8 +111,17 @@ BEGIN
     BEGIN
         MENUITEM "Trace filogenetic tree",      ID_VIEWOPT_TRACETREE
         , CHECKED
+        MENUITEM " by trophic mask"              ID_VIEWOPT_TREETROPHY
+        MENUITEM " by defending mask"            ID_VIEWOPT_TREEDEFEND
+        MENUITEM " by specialisation"            ID_VIEWOPT_TREESPEC
+        , CHECKED
+        MENUITEM " by trophic spec"             ID_VIEWOPT_TREETRSPEC
+        MENUITEM " by defense spec"             ID_VIEWOPT_TREEDESPEC
+        MENUITEM " by clad size"                ID_VIEWOPT_TREESIZE
         MENUITEM "Trace trophic network",       ID_VIEWOPT_TRACETROPHICNET
         , CHECKED
+        MENUITEM " more detailed"        ID_VIEWOPT_TRNETMORE
+        MENUITEM " less detailed"        ID_VIEWOPT_TRNETLESS
     END
     POPUP "Window"
     BEGIN

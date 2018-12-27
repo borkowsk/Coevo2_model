@@ -1,9 +1,21 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by coewo3.rc
+// Used by coewo3.rc  AND program menu of course
 //
-#define ID_VIEWOPT_TRACETREE            60001
-#define ID_VIEWOPT_TRACETROPHICNET      60002
+
+//#define ID_VIEWOPT_                     6000x
+#define ID_VIEWOPT_DUMPCO               60001
+#define ID_VIEWOPT_TRACETREE            60002
+#define ID_VIEWOPT_TRACETROPHICNET      60003
+#define ID_VIEWOPT_TREESPEC             60004
+#define ID_VIEWOPT_TREETROPHY           60005
+#define ID_VIEWOPT_TREEDEFEND           60006
+#define ID_VIEWOPT_TREETRSPEC           60007
+#define ID_VIEWOPT_TREEDESPEC           60008
+#define ID_VIEWOPT_TREESIZE             60009
+#define ID_VIEWOPT_TRNETMORE            60010
+#define ID_VIEWOPT_TRNETLESS            60011
+//symSHELL DEFAULT
 #define SSH_ONESTEP                     50001
 #define SSH_STARTSTOP                   50002
 #define SSH_FILE_DUMPSCREEN             50011   

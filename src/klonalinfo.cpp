@@ -2,8 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#include <assert.h>
+#include <math.h>
 #include "klonalinfo.hpp"
-#include "assert.h"
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -111,7 +113,7 @@ void informacja_klonalna::ustaw_maksimum_kasowania(unsigned long ile)
 bool informacja_klonalna::for_each_child(_akcja_trawersowania what_to_do,void* user_data)
 //Wykonanie akcji dla kazdego dziecka
 {
- for(int i=0;i<childs.CurrSize();i++)
+ for(unsigned i=0;i<childs.CurrSize();i++)
      if(childs[i]!=NULL)
     {
         bool ret=what_to_do(childs[i],user_data); 
@@ -127,7 +129,7 @@ bool informacja_klonalna::trawersuj_drzewo_pre(_akcja_trawersowania what_to_do,v
  
  if(!ret) return false;
  
- for(int i=0;i<childs.CurrSize();i++)
+ for(unsigned i=0;i<childs.CurrSize();i++)
      if(childs[i]!=NULL)
     {
         ret=childs[i]->trawersuj_drzewo_pre(what_to_do,user_data); 
@@ -141,7 +143,7 @@ bool informacja_klonalna::trawersuj_drzewo_pre(_akcja_trawersowania what_to_do,v
 bool informacja_klonalna::trawersuj_drzewo_post(_akcja_trawersowania what_to_do,void* user_data)
 //Trawersowanie z akcja wykonywana po zajrzeniu do galezi
 {
- for(int i=0;i<childs.CurrSize();i++)
+ for(unsigned i=0;i<childs.CurrSize();i++)
    if(childs[i]!=NULL)
     {
         bool ret=childs[i]->trawersuj_drzewo_post(what_to_do,user_data); 
@@ -150,6 +152,15 @@ bool informacja_klonalna::trawersuj_drzewo_post(_akcja_trawersowania what_to_do,
 
  return what_to_do(this,user_data);
 }
+
+
+unsigned long informacja_klonalna::magnitude() 
+{
+	double pom=wszystkich();
+	if(pom==0) return 0;
+	pom=log(pom)/log(2);
+	return (unsigned long)(pom);
+} 	
 
 unsigned long informacja_klonalna::tresh_kasowania=0;
 unsigned long* informacja_klonalna::zrodlo_makerow_czasu=NULL;//Nie zainicjowana sensownie

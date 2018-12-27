@@ -4,7 +4,7 @@
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
 
-#include "datasour.hpp"
+#include "SYMSHELL/datasour.hpp"
 //Klasa udostepniajaca dowolna tablice prostokatna oraz jej wycinki.
 //Jesli zdefiniowany wycinek wykracza poza tablice zrodlowa to funkcja
 //get zwraca wartosc "miss" podawana w konstruktorze.Alternatywnie 
@@ -21,7 +21,9 @@ and_interaction_source( const char* itit):
 
 ~and_interaction_source()
 	{
+#ifndef NDEBUG
 	cerr<<"~and_interaction_source():"<<name()<<'\n';
+#endif
 	}
 
 void  bounds(size_t& num,double& min,double& max)
@@ -80,7 +82,9 @@ and_exploatation_source( const char* itit):
 
 ~and_exploatation_source()
 	{
+#ifndef NDEBUG
 	cerr<<"~and_exploatation_source():"<<name()<<'\n';
+#endif
 	}
 
 void  bounds(size_t& num,double& min,double& max)

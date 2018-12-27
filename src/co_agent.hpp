@@ -2,21 +2,22 @@
 #define _COEWO_AGENT_HPP_
 /* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
 /* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
-#include "bits.h"
+#include "INCLUDE/wb_bits.h"
+
 typedef unsigned char base;   // musi byc bez znaku
 typedef unsigned short base2; // musi miescic 2 zmienne base
 
 const unsigned BITS_PER_GENOM=16;   //!!! TO JEST ZAFIKSOWANE PRZEZ ROZMIAR base i base2
-const base2 MAXBASE2=(base2)0xffffffffffffffffUL;
+const base2 MAXBASE2=(base2)0xffff;//ffffffffffffUL;
 const base  MAXBASE =(base)MAXBASE2;
 const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
 
-
-
+//__declspec(align(8))  //TRZEBA ZAPEWNIÆ ¯EBY GENOM BY£ BITOW¥ CA£OŒCI¥
+#pragma pack(8)
 struct bity_wzoru
 {
-    base geba;	// bitowy wzorzec trybu odzywiania
-    base oslona;	// bitowy wzozec sposobu ochrony
+	base geba;	// bitowy wzorzec trybu odzywiania
+	base oslona;	// bitowy wzozec sposobu ochrony
 };
 
 union wzor
@@ -31,34 +32,42 @@ union wzor
 class agent//:public agent_base
 {    
 public:
-    class informacja_klonalna:public ::informacja_klonalna, public informacja_troficzna
-    {
-        wzor genom; //zeby bylo wiadomo co to za klon
-        int _specjalised;
-//        int _defensespec;
-//        int _feedingspec;
-    public:
-        informacja_klonalna(informacja_klonalna* parent,wzor wgenom):
-          genom(wgenom),::informacja_klonalna(parent)
-          {
-              _specjalised=bits(genom.w.geba)+bits(genom.w.oslona);
-//              _defensespec=bits(genom.w.oslona);
-//              _feedingspec=bits(genom.w.geba);
-          }
-          int   how_specialised() //Poziom specjalizacji mierzony w bitach
-          {     return _specjalised;    }
-/*          
-          int   how_specialised_in_defense() //Poziom specjalizacji mierzony w bitach
-          {     return _defensespec;    }
-          
-          int   how_specialised_in_feeding() //Poziom specjalizacji mierzony w bitach
-          {     return _feedingspec;    }
-          void dolicz_kontakt(unsigned long int marker_z_kim,double waga);
-*/        void dolicz_zezarcie(unsigned long int Identyfikator,double waga)
-          {                                    
-                                    assert(Identyfikator<=informacja_klonalna::ile_klonow());
-              dolicz_kontakt(Identyfikator,waga);
-          }
+	class informacja_klonalna:public ::informacja_klonalna, public informacja_troficzna
+	{
+		wzor genom; //zeby bylo wiadomo co to za klon
+		unsigned  _specjalised;
+		unsigned _defensespec;
+		unsigned _feedingspec;
+	public:
+		informacja_klonalna(informacja_klonalna* parent,wzor wgenom):
+		  genom(wgenom),::informacja_klonalna(parent)
+		  {
+			  _specjalised=bits(genom.w.geba)+bits(genom.w.oslona);
+			  _defensespec=bits(genom.w.oslona);
+			  _feedingspec=bits(genom.w.geba);
+		  }
+
+		  unsigned long how_specialised() //Poziom specjalizacji mierzony w bitach
+		  {     return _specjalised;    }
+
+		  unsigned long how_specialised_in_defense() //Poziom specjalizacji mierzony w bitach
+		  {     return _defensespec;    }
+
+		  unsigned long how_specialised_in_feeding() //Poziom specjalizacji mierzony w bitach
+		  {     return _feedingspec;    }
+
+		  unsigned long feeding_niche()     //Jaka nisza troficzna
+		  {     return genom.w.geba; }
+
+		  unsigned long defense_niche()	//Jaka nisza obronna
+		  {     return genom.w.oslona; }
+
+		  //void dolicz_kontakt(unsigned long int marker_z_kim,double waga);
+		void dolicz_zezarcie(unsigned long int Identyfikator,double waga)
+		  {
+									assert(Identyfikator<=informacja_klonalna::ile_klonow());
+				dolicz_kontakt(Identyfikator,waga);
+		  }
 
           void zapomnij_kontakty_recur(); //Zapomina kontakty ekologiczne u danego klonu i jego potomkow
                     

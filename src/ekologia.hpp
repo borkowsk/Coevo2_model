@@ -2,15 +2,18 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_EKOLOGIA_HPP_H__5ED2EEC1_E452_4836_AAEC_BC300462CFB9__INCLUDED_)
-#define AFX_EKOLOGIA_HPP_H__5ED2EEC1_E452_4836_AAEC_BC300462CFB9__INCLUDED_
+#ifndef _EKOLOGIA_HPP_
+#define _EKOLOGIA_HPP_
 
-#include "arrasour.hpp"
+#include "SYMSHELL/arrasour.hpp"
+using namespace ::wbrtm;
+//using wbrtm::array_template;
+
 #include "klonalinfo.hpp"
 #include "troficinfo.h"
 #include "co_agent.hpp"
 
-class ekologia  
+class ekologia
 {
     struct node_info
     {

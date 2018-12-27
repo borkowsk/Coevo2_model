@@ -9,7 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "arrays.hpp"
+#include "INCLUDE/arrays.hpp"
+using ::wbrtm::array_template;
+
 class informacja_troficzna;
 
 //Klasa sluzaca do sledzenie kontaktow (troficznych) agenta lub calego klonu
@@ -46,8 +48,8 @@ public:
     virtual 
     unsigned Y()=0;//Y domyslnego polozenia wezla - np maska obrony
 private:
-    int max_num_of_contacts; //Maksymalna liczba kontaktow w zyciu klonu
-    array_template<contacts> kontakty;//Tablica na zapis kontaktow
+    unsigned max_num_of_contacts; //Maksymalna liczba kontaktow w zyciu klonu
+	array_template<contacts> kontakty;//Tablica na zapis kontaktow
     void _swap(size_t i,size_t j);//Zamienia elementy w powyzszej tablicy
 };
 
