@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE Wersja 2.3 1997 */
+/* Program symulujacy KOEWOLUCJE */
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.GEBA>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
@@ -14,20 +14,19 @@
 #include <math.h>
 #include <signal.h>
 
-#define USES_RANDG
-#include "random.h"
 #include "wb_ptr.hpp"
-
+#include "textarea.hpp"
 #include "datasour.hpp"
 #include "simpsour.hpp"
 #include "filtsour.hpp"
-#include "fifosour.hpp"
+#include "areamngr.hpp"
+#include "mainmngr.hpp"
+#include "graphs.hpp"
 #include "sourmngr.hpp"
 
-#include "areamngr.hpp"
-#include "gadgets.hpp"
-#include "textarea.hpp"
-#include "graphs.hpp"
+#define USES_RANDG
+#include "Randoms.h"
+
 
 const unsigned SWIDTH=750;
 const unsigned SHEIGHT=550;
@@ -36,15 +35,15 @@ const unsigned TAX_OUT=256;
 
 unsigned IBOKSWIATA=100; // FAKTYCZNIE UZYWANY BOK SWIATA
 unsigned textY=(IBOKSWIATA>TAX_OUT?IBOKSWIATA:TAX_OUT);
-int      WSP_KATASTROF=10;			// Wykladnik rozkladu katastrof
+int      WSP_KATASTROF=10;    // Wykladnik rozkladu katastrof
 const double WYPOSAZENIE_POTOMSTWA=0.1; // jaka czesc sily oddac potomkowi
-double EFEKTYWNOSC_AUTOTROFA=0.99;	// jaka czesc swiatla uzywa autotrof
-const unsigned MINIMALNY_WIEK=155;	// Rodzi sie z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
-const unsigned NIEPLODNOSC=10;		// Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
-const unsigned PROMIENIOWANIE=160;	// Co ile kopiowanych bitow nastepuje mutacja
-const unsigned BIT_RUCHU=128;		//Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu					
+double EFEKTYWNOSC_AUTOTROFA=0.99; // jaka czesc swiatla uzywa autotrof
+const unsigned MINIMALNY_WIEK=155;    // Rodzi sie z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
+const unsigned NIEPLODNOSC=10;       // Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
+const unsigned PROMIENIOWANIE=160; // Co ile kopiowanych bitow nastepuje mutacja
+
 unsigned long MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
-unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
+unsigned LogRatio=1;      // Co ile krokow zapisywac do logu
 char     LogName[128]="coewo.log";
 
 /* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
@@ -104,14 +103,15 @@ static base2 kopioj(base2 r);  // kopiuje genotyp z mozliwa mutacja
 //base agent::* geba_ptr=&agent::w.w.geba;
 //base agent::* oslona_ptr=&agent::w.w.oslona;
 
-//TAK KOMPILUJE ALE WPISUJE 0
-base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
+//TAK KOMPILUJE 4.0 ALE WPISUJE 0, a 
+//base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
 //base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
 
 //RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
 #define RECZNIE_WPISZ_OSLONE_PTR
+base agent::* geba_ptr=NULL;
 base agent::* oslona_ptr=NULL;
-//(base agent::*)sizeof(base);
+
 
 
 class swiat//Caly swiat symulacji
@@ -119,17 +119,15 @@ class swiat//Caly swiat symulacji
 {
 size_t DLUG_WIERSZA;	
 wb_dynarray<agent> ziemia;
-unsigned long licznik;				// licznik krokow symulacji
-FILE* log;							// plik z zapisem histori symulacji
-sources_menager Sources;			//Zarzadca seri przekaznikowych
+unsigned long licznik;			  // licznik krokow symulacji
+FILE* log;
+//sources_menager Sources;//Zarzadca seri przekaznikowych
 matrix_source<unsigned>              *Liczniki;//Udostepnienie licznikow taxonow
 struct_matrix_source<agent,unsigned char >	 *Wiek;
 struct_matrix_source<agent,unsigned  int >	 *Sila;
 struct_matrix_source<agent,base >			 *Geba;
 struct_matrix_source<agent,base >			 *Oslona;
-text_area*				  OutArea;//Obszar do wypisywania statusu symulacji
-unsigned klon_auto;
-unsigned tax_auto;
+text_area*				  OutArea; //Obszar do wypisywania statusu symulacji
 public:
 //KONSTRUKCJA DESTRUKCJA
 swiat(size_t szerokosc,char* logname);
@@ -157,38 +155,25 @@ void swiat::tworz_lufciki(area_menager_base& Menager)
 //Tworzy domyslne lufciki
 {
 graph* pom;
+size_t szer_map=Menager.getwidth()-280;
 size_t wys_map=Menager.getheight()/4;
-size_t szer_map=size_t(wys_map*2.3);
-if(szer_map>Menager.getwidth()-280)
-		szer_map=Menager.getwidth()-280;
 
 #ifdef RECZNIE_WPISZ_OSLONE_PTR
 int *hack=(int*)&oslona_ptr;
 *hack=sizeof(base);
+hack=(int*)&geba_ptr;
+*hack=0;
 #endif
 
-{
-//Zerowa seria w menagerze danych powinna byc pusta - sluzy
-//do kontroli wersji danych. Menager moze tworzyc ja sam,
-//ale zawsze mozna podmienic
-scalar_source<long>* sca=new scalar_source<long>(0,"Step control");
-if(!sca) goto ERROR;
-Sources.replace(unsigned(0),sca);
-
-//Tylko ze wzgledow demonstracyjnych
-array_source<unsigned>* arr=new array_source<unsigned>(MAXBASE2+1,agent::liczniki,"liczniki taksonow - liniowo");
-if(!arr) goto ERROR;
-Sources.insert(arr);
-}
-
 //SILA
-Sila=new struct_matrix_source<agent,unsigned>(
-                                              "sila",
-                                DLUG_WIERSZA,DLUG_WIERSZA/2,
+Sila=new struct_matrix_source<agent,unsigned>("sila", //DOPASOWANE 2012
+                                DLUG_WIERSZA,
+                                DLUG_WIERSZA/2,
 								ziemia.get_ptr_val(),
-								&agent::sila);
+								&agent::sila//,
+                                //"sila"
+                                );
 if(!Sila) goto ERROR;
-Sources.insert(Sila);
 pom=new carpet_graph(0,0,szer_map,wys_map,//domyslne wspolrzedne
 						Sila);//I zrodlo danych
 /*
@@ -196,131 +181,80 @@ pom=new fast_carpet_graph<struct_matrix_source<unsigned> >
 					(0,300,430,530,//domyslne wspolrzedne
 						Sila);//I zrodlo danych
 */
-pom->setdatacolors(0,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
 pom->settitle("SILA AGENTOW");
 Menager.insert(pom);
 
 
 //GEBA
-Geba=new struct_matrix_source<agent,base>(
-								          "geba",
+Geba=new struct_matrix_source<agent,base>("geba",//DOPASOWANE 2012
                                 DLUG_WIERSZA,DLUG_WIERSZA/2,
 								ziemia.get_ptr_val(),
-								geba_ptr);
+								geba_ptr//,
+								//"geba"
+                                );
 if(!Geba) goto ERROR;
-Sources.insert(Geba);
-Geba->setminmax(0,255);
 pom=new carpet_graph(0,wys_map+1,szer_map,2*wys_map+1,//domyslne wspolrzedne
 						Geba);//I zrodlo danych
 
 if(!pom) goto ERROR;
-pom->setdatacolors(0,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
 pom->settitle("TROFIA AGENTOW");
 Menager.insert(pom);
 
 //OSLONA
-Oslona=new struct_matrix_source<agent,base>(
-								"wrazliwosc"
+Oslona=new struct_matrix_source<agent,base>("oslona",//DOPASOWANE 2012
                                 DLUG_WIERSZA,DLUG_WIERSZA/2,
 								ziemia.get_ptr_val(),
-								oslona_ptr);
+								oslona_ptr//,
+								//"oslona"
+                                );
 if(!Oslona) goto ERROR;
-Sources.insert(Oslona);
-Oslona->setminmax(0,255);
 pom=new carpet_graph(0,(wys_map+1)*2,szer_map,(wys_map+1)*3,//domyslne wspolrzedne
 						Oslona);//I zrodlo danych
 
 if(!pom) goto ERROR;
-pom->setdatacolors(0,255);//Pierwsze 25 kolorow bedzie slabo widoczne
-pom->settitle("PODATNOSC AGENTOW NA ATAK");
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settitle("OBRONNOSC AGENTOW");
 Menager.insert(pom);
 
 //Wiek
-Wiek=new struct_matrix_source<agent,unsigned char>(
-								"wiek"
+Wiek=new struct_matrix_source<agent,unsigned char>("wiek",//DOPASOWANE 2012
                                 DLUG_WIERSZA,DLUG_WIERSZA/2,
 								ziemia.get_ptr_val(),
-								&agent::wiek);
+								&agent::wiek//,
+								//"wiek"
+                                );
 if(!Wiek) goto ERROR;
-Sources.insert(Wiek);
 pom=new carpet_graph(0,(wys_map+1)*3,szer_map,(wys_map+1)*4,//domyslne wspolrzedne
 						Wiek);//I zrodlo danych
-pom->setdatacolors(0,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
 pom->settitle("CZAS ZYCIA AGENTOW");
 Menager.insert(pom);
 
-//HISTORIA OSTATNICH 1024 krokow
-{
-generic_scalar_source<unsigned>* spom=new ptr_to_scalar_source<unsigned>(&tax_auto,"taxony autotroficzne");// ile jest autotroficznych taksonow
-if(!spom) goto ERROR;
-int start_index=Sources.insert(spom);
-
-fifo_source<unsigned>* fpom=new fifo_source<unsigned>(spom,2000);
-if(!fpom) goto ERROR;
-Sources.insert(fpom);
-
-spom=new ptr_to_scalar_source<unsigned>(&klon_auto,"klony autotroficzne");// ile taxonow liczniejszych niz 10
-if(!spom) goto ERROR;
-Sources.insert(spom);
-
-fpom=new fifo_source<unsigned>(spom,2000);
-if(!fpom) goto ERROR;
-Sources.insert(fpom);
-
-spom=new ptr_to_scalar_source<unsigned>(&agent::ile_big_tax,"taksony");// ile taxonow liczniejszych niz 10
-if(!spom) goto ERROR;
-Sources.insert(spom);
-
-fpom=new fifo_source<unsigned>(spom,2000);
-if(!fpom) goto ERROR;
-Sources.insert(fpom);
-
-spom=new ptr_to_scalar_source<unsigned>(&agent::ile_tax,"klony");// ile taxonow niezerowych
-if(!spom) goto ERROR;
-Sources.insert(spom);
-
-fpom=new fifo_source<unsigned>(spom,2000);
-if(!fpom) goto ERROR;
-Sources.insert(fpom);
-
-graph* pom1=new sequence_graph(szer_map,401,Menager.getwidth()-1,Menager.getheight()-1,
-							   4,Sources.make_series_info(
-										start_index+1,start_index+3,
-										start_index+5,start_index+7,-1).get_ptr_val(),
-							   1/*Wspolne minimum/maximum*/);
-if(!pom1) goto ERROR;
-pom1->setframe(128);
-pom1->settitle("HISTORIA");
-Menager.insert(pom1);
-}
-
-//SWITCH HISTORY BUTTON
-{
-gadget* pom1=new button(szer_map+301,300,Menager.getwidth()-1,400,
-						"PELNA/OSTATNIA HISTORIA");
-if(!pom1) goto ERROR;
-//settitlecolor(default_transparent);//Domyslnie jest niewidoczny		
-//pom1->settitleback(64/*default_transparent*/);//Ale mozna uwodocznic
-Menager.insert(pom1);
-}
-
 //INFORMACJE
-OutArea=new text_area(szer_map,300,szer_map+300,400,"SYMULACJA STARTUJE",
-					  default_white,default_black,128,40);
+OutArea=new text_area(szer_map+2,300,szer_map+279,501,"SYMULACJA STARTUJE");
 OutArea->settitle("STATYSTYKA:");
+//OutArea->setbackground(0); //DEBUG 2012
+//OutArea->settextcolor(254);
 if(!OutArea) goto ERROR;
 Menager.insert(OutArea);
 
+if(OutArea->add_line("Inicjalizacja...")!=1)
+     cerr<<"Problemy z oknem "<<OutArea->name()<<endl;//DOPISANE 2012
+OutArea->replot();
+delay_ms(250);
 
-//TAXONY - OSTANIE OKNO BO MOZE BYC NAJKOSZTOWNIEJSZE W RYSOWANIU
+//TAXONY - OSTANIE OKNO BO NAJKOSZTOWNIEJSZE W RYSOWANIU
 
-Liczniki=new matrix_source<unsigned>(256,256,
+Liczniki=new matrix_source<unsigned>(
+                                     256,256,
 									 agent::liczniki,
 									 "liczebnosc taksonow",//NAZWA SERI
 									 1//Nie torus
 									 );
 if(!Liczniki) goto ERROR;
-Sources.insert(Liczniki);
+
 {
 log_1_plus_F_filter<matrix_source<unsigned> >* fl=new log_1_plus_F_filter<matrix_source<unsigned> >(Liczniki);
 if(!fl) goto ERROR;
@@ -328,7 +262,7 @@ if(!fl) goto ERROR;
 pom=new fast_carpet_graph<
 		log_1_plus_F_filter<matrix_source<unsigned> >
 					>
-					(szer_map+1,0,Menager.getwidth()-1,299,//domyslne wspolrzedne
+					(szer_map+1,0,szer_map+281,299,//domyslne wspolrzedne
 						fl,1);//I zrodlo danych
 if(!pom) goto ERROR;
 }
@@ -352,12 +286,11 @@ exit(1);
 swiat::swiat(size_t szerokosc,char* logname):	
 	ziemia((szerokosc/2)*szerokosc), //Prostokat np 20x10
 	DLUG_WIERSZA(szerokosc),
-	Sources(32),
+	//Sources(32)
 	OutArea(NULL),
 	Liczniki(NULL),
 	Wiek(NULL),Sila(NULL),
-	Geba(NULL),Oslona(NULL),
-	klon_auto(1),tax_auto(1)
+	Geba(NULL),Oslona(NULL)
 {
 log=fopen(logname,"a");
 if(!log)
@@ -388,7 +321,7 @@ Ziemia(x,y).kill();
 
 void swiat::init()
 {
-assert(ziemia);
+//assert(ziemia);
 Ziemia(DLUG_WIERSZA/2,DLUG_WIERSZA/4).init(255,255,255);
 
 fprintf(log,"%ux%u\tWYP_POT=%f\tEFEKT=%f\tMAX_WIEK=%d\tPLOD=%f\tRTG=%f\tBUM=0.5^%d\n",
@@ -517,79 +450,46 @@ void swiat::krok()
 {
 static vector2 kierunki[]={{1,1},{-1,-1},{1,-1},{-1,1},
 			   {0,1},{ 1, 0},{0,-1},{-1,0} };
-
 long ile= long(DLUG_WIERSZA)*long(DLUG_WIERSZA/2); // ile na krok MonteCarlo
-licznik++;//Licznik krokow
-
-// rob krok MonteCarlo
-for(long i=0;i<ile;i++) 
+licznik++;
+for(long i=0;i<ile;i++) // rob krok MonteCarlo
 	{
 	int x=RANDOM(DLUG_WIERSZA);
 	int y=RANDOM(DLUG_WIERSZA/2);
 	Torus(x,y);
-	if(!Ziemia(x,y).jest_zywy())  //jest martwy
-		continue;		          //obrob nastepnego
-	Ziemia(x,y).uplyw_czasu();    //Koszty czasu zycia
-	if(!Ziemia(x,y).jest_zywy())  //nie moze dalej zyc
+	if(!Ziemia(x,y).jest_zywy()) // jest martwy
+		continue;		// obrob nastepnego
+	Ziemia(x,y).uplyw_czasu();
+	if(!Ziemia(x,y).jest_zywy())  // nie moze dalej zyc
 		{
-		Ziemia(x,y).kill();		  //Usun
-		continue;                 //i idz obrob nastepnego
+		Ziemia(x,y).kill();
+		continue;               // obrob nastepnego
 		}
-
-	//Losowanie sasiedniego miejsca
-	unsigned a=RANDOM(8);	
+	unsigned a=RANDOM(8);
 	assert(a<8);
 	int x1=(x+kierunki[a].x);
 	int y1=(y+kierunki[a].y);
 	Torus(x1,y1);
-
-	
-	if(!Ziemia(x1,y1).jest_zywy()) //Jesli wolne miejsce
-	   {//------------------------------------------------
-	   if(RANDOM(NIEPLODNOSC)==0)  // rozmnazanie
+	if(!Ziemia(x1,y1).jest_zywy()) // wolne miejsce
+	   {
+	   if(RANDOM(NIEPLODNOSC)==0)     // rozmnazanie
 		{
 		Ziemia(x1,y1).init(Ziemia(x,y));
 		}
-		else							//lub przemieszczenie jesli ma zdolnosc ruchu
-		if(!(Ziemia(x,y).w.w.oslona&BIT_RUCHU))//...czyli BIT_RUCHU jest wyzerowany
-			{
-			Ziemia(x1,y1)=Ziemia(x,y);
-			Ziemia(x,y).clear();
-			}
+		else			  // przemieszczenie
+		{
+		Ziemia(x1,y1)=Ziemia(x,y);
+		Ziemia(x,y).clear();
+		}
 	   }
-	   else  // Jesli naprawde jest zywy 
-		//-----------------------------------
-	   if( Ziemia(x,y).w.w.geba!=AUTOTROF &&					  //atakujacy nie jest autotrofem
-	      (Ziemia(x1,y1).w.w.oslona & Ziemia(x,y).w.w.geba) != 0 )//...i moze uszknac sasiada 
+	   else  // Naprawde jest zywy - proba zjedzenia, jesli atakujacy nie jest autotrofem
+	   if( Ziemia(x,y).w.w.geba!=AUTOTROF &&
+	      (Ziemia(x1,y1).w.w.oslona & Ziemia(x,y).w.w.geba) != 0)
 		   {
-		   Ziemia(x1,y1).kill(Ziemia(x,y));	//Zabicie sasiada
+		   Ziemia(x1,y1).kill(Ziemia(x,y));	
 		   }
 	}
-
-
-//Koniec kroku monte-carlo po agentach
-//------------------------------------------
-kataklizm(); // jeden, chocby bardzo maly na krok monte-carlo
-
-{//Uaktualnienie klonow
-klon_auto=0;
-tax_auto=0;
-for(unsigned i=0xffff;i>0xffff-0x100;i--)//Ile niezerowych klonow autotroficznych
-	{
-	if(agent::liczniki[i]>0)
-		klon_auto++;
-	if(agent::liczniki[i]>10)
-		tax_auto++;
-	}
-}
-
-if(Liczniki)
-	{
-	Liczniki->setminmax(0,agent::max);//Oszczedza liczenia max
-	}
-
-Sources.new_data_version(1,1);//Oznajmia seriom ze dane sie uaktualnily
-
+kataklizm(); // jeden, chocby maly na krok monte-carlo
 }
 
 double poison(int n); // generuje rozklad para-poison w zakresie 0..1 o n stopniach
@@ -617,7 +517,6 @@ void  swiat::wskazniki(void)
 //* LOSOWANIE SKAMIENIALOSCI 
 unsigned x=RANDOM(DLUG_WIERSZA);
 unsigned y=RANDOM(DLUG_WIERSZA/2);
-
 if(licznik%LogRatio==0)
   fprintf(log,"%lu\t%lu\t%lu\t%lu\t%u\n",
 	(unsigned long)licznik,
@@ -629,26 +528,25 @@ if(licznik%LogRatio==0)
        );
 //
 wb_dynarray<char> bufor(1024);//ze sporym zapsem
-sprintf(bufor.get_ptr_val(),"%lu KROK SYMULACJI\nILOSC AGENTOW:%lu\n"
-							"ILOSC TAKSONOW:%lu "
-							"(%lu AUTOTROFICZNYCH)\n"
-							"ILOSC KLONOW:%lu "	
-							"(%lu AUTOTROFICZNYCH)\n",
+sprintf(bufor.get_ptr_val(),"%lu KROK SYMULACJI\nILOSC AGENTOW:%lu\nILOSC KLONOW:%lu\nILOSC TAKSONOW:%lu\n",
 	//agent::nazwy[agent::plot_mode],
 	(unsigned long)licznik,
 	(unsigned long)agent::ile_ind,
-	(unsigned long)agent::ile_big_tax,
-	(unsigned long)tax_auto,
 	(unsigned long)agent::ile_tax,
-	(unsigned long)klon_auto);
-
+	(unsigned long)agent::ile_big_tax);
 
 if(OutArea)
+    {
+    //cout<<bufor.get_ptr_val()<<endl;
+    OutArea->clean();
+	if(OutArea->add_text(bufor.get_ptr_val())!=1)
+	         cerr<<"Problemy z oknem "<<OutArea->name()<<endl;                                         
+    }
+if(Liczniki)
 	{
-	OutArea->clean();//Stare linie usuwamy - czyste okno
-	OutArea->add_text(bufor.get_ptr_val());
+	Liczniki->new_data_version();
+	Liczniki->setminmax(0,agent::max);//Oszczedza liczenia max
 	}
-
 }
 
 /*  OGOLNA FUNKCJA MAIN */
@@ -677,8 +575,8 @@ if(&tenSwiat==NULL)
     exit(1);
     }
 
-
 RANDOMIZE(); 
+buffering_setup(1/*Yes*/);//DOPISANE 2012			/* Przelaczanie buforowanie okna - moze nie dzialac po inicjacji*/
 main_area_menager Lufciki(24,SWIDTH,SHEIGHT,28);
 if(!Lufciki.start("CO-EVOLUTION version 2",argc,argv))
 		{
