@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="..\src\Coewo200N.cpp" open="1" top="1" tabpos="0">
+		<Cursor position="9778" topLine="164" />
+	</File>
+	<File name="..\src\ResSrc\coewo3.rc" open="0" top="0" tabpos="0">
+		<Cursor position="4843" topLine="130" />
+	</File>
+</CodeBlocks_layout_file>

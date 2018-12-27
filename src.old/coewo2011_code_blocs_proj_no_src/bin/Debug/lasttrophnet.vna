@@ -1,0 +1,9 @@
+*Node data 
+ID	LABEL	SIZE	ATTACK	DEFENSE	MOVEABLE	CLONE_ID
+*Node properties 
+ID	x	y	color	shape	size	labeltext	labelsize
+*Tie data
+from	to	strength	log_str
+*Tie properties
+from	to	color	size	headcolor
+

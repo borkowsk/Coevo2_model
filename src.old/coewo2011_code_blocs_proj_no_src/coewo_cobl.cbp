@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="coewo_cobl" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\coewo_cobl" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-g" />
+					<Add option="-fpermissive" />
+				</Compiler>
+				<Linker>
+					<Add library="..\biblioteka_wbrtm\libbiblioteka_wbrtm.a" />
+					<Add library="C:\Program Files\CodeBlocks\MinGW\lib\libgdi32.a" />
+					<Add library="C:\Program Files\CodeBlocks\MinGW\lib\libcomdlg32.a" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\coewo_cobl" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fpermissive" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\biblioteka_wbrtm\libbiblioteka_wbrtmR.a" />
+					<Add library="C:\Program Files\CodeBlocks\MinGW\lib\libgdi32.a" />
+					<Add library="C:\Program Files\CodeBlocks\MinGW\lib\libcomdlg32.a" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="S:\WBRTM" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="S:\WBRTM" />
+		</ResourceCompiler>
+		<Unit filename="..\src\Coewo200N.cpp" />
+		<Unit filename="..\src\ResSrc\coewo3.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="..\src\ekologia.cpp" />
+		<Unit filename="..\src\kladystyka.cpp" />
+		<Unit filename="..\src\klonalinfo.cpp" />
+		<Unit filename="..\src\troficinfo.cpp" />
+		<Unit filename="..\..\..\WBRTM\SYMSHELL\src\BGraphix\sshutils.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

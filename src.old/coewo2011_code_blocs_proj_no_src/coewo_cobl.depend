@@ -1,0 +1,412 @@
+# depslib dependency file v1.0
+1308817440 source:s:\symulacje\coewo2\src\ekologia.cpp
+	<math.h>
+	"ekologia.hpp"
+	"SYMSHELL/sshutils.hpp"
+
+1308751796 s:\symulacje\coewo2\src\ekologia.hpp
+	"SYMSHELL/arrasour.hpp"
+	"klonalinfo.hpp"
+	"troficinfo.h"
+	"co_agent.hpp"
+
+1276518754 s:\wbrtm\symshell\arrasour.hpp
+	"datasour.hpp"
+
+1310408000 s:\wbrtm\symshell\datasour.hpp
+	"sourbase.hpp"
+
+1310407930 s:\wbrtm\symshell\sourbase.hpp
+	<assert.h>
+	<limits.h>
+	<float.h>
+	<stdio.h>
+	"INCLUDE/wb_limits.hpp"
+	"INCLUDE/wb_ptr.hpp"
+	"INCLUDE/wb_clone.hpp"
+	"titleuti.hpp"
+	"rectgeom.hpp"
+
+1284472564 s:\wbrtm\include\wb_limits.hpp
+	<float.h>
+	<limits.h>
+
+1310405495 s:\wbrtm\include\wb_ptr.hpp
+	"platform.hpp"
+	<stdarg.h>
+	<assert.h>
+	<iostream>
+	<iostream.h>
+	"wb_clone.hpp"
+
+1274609348 s:\wbrtm\include\platform.hpp
+	"platform.h"
+
+1274606980 s:\wbrtm\include\platform.h
+	"kill_huge_etc.h"
+	<typeinfo.h>
+	<unistd.h>
+	<limits.h>
+	<values.h>
+
+1156972868 s:\wbrtm\include\kill_huge_etc.h
+
+1274607368 s:\wbrtm\include\wb_clone.hpp
+	<string.h>
+	"platform.hpp"
+
+1207432408 s:\wbrtm\symshell\titleuti.hpp
+	<stddef.h>
+	"INCLUDE/wb_clone.hpp"
+
+1226516492 s:\wbrtm\symshell\rectgeom.hpp
+	"geombase.hpp"
+	"INCLUDE/wb_ptr.hpp"
+	"INCLUDE/wbminmax.hpp"
+	"INCLUDE/wb_rand.hpp"
+
+1207437666 s:\wbrtm\symshell\geombase.hpp
+	<stddef.h>
+	<assert.h>
+	<limits.h>
+	<float.h>
+	<string.h>
+	"INCLUDE/platform.hpp"
+	<iostream>
+	<iostream.h>
+
+1310418759 s:\wbrtm\include\wbminmax.hpp
+	<math.h>
+	<limits.h>
+	<assert.h>
+
+1157523522 s:\wbrtm\include\wb_rand.hpp
+	<assert.h>
+	<limits.h>
+	<stdlib.h>
+	<time.h>
+	<sys/timeb.h>
+	<math.h>
+
+1308751956 s:\symulacje\coewo2\src\klonalinfo.hpp
+	"INCLUDE/arrays.hpp"
+
+1310406154 s:\wbrtm\include\arrays.hpp
+	<string.h>
+	"arr_base.hpp"
+	"arrays.imp"
+
+1207432678 s:\wbrtm\include\arr_base.hpp
+	<assert.h>
+	"wb_ptr.hpp"
+	"excpmem.hpp"
+	"excpothr.hpp"
+	"_ikeycon.hpp"
+	"containe.hpp"
+
+1156874692 s:\wbrtm\include\excpmem.hpp
+	"excpbase.hpp"
+
+1310487258 s:\wbrtm\include\excpbase.hpp
+	"tnames.h"
+	<iostream>
+	<iostream.h>
+
+1156883414 s:\wbrtm\include\tnames.h
+	<stddef.h>
+	<limits.h>
+	"platform.hpp"
+	<dos.h>
+	<stddef.h>
+	<stddef.h>
+
+1156874652 s:\wbrtm\include\excpothr.hpp
+	"excpbase.hpp"
+
+1310487117 s:\wbrtm\include\_ikeycon.hpp
+	"pix.hpp"
+	"tnames.h"
+
+1156867536 s:\wbrtm\include\pix.hpp
+
+1244469752 s:\wbrtm\include\containe.hpp
+	"pix.hpp"
+	"vobject.hpp"
+
+1284591186 s:\wbrtm\include\vobject.hpp
+	"tnames.h"
+	"excpbase.hpp"
+	"errorhan.hpp"
+	<iostream>
+	<iostream.h>
+
+1156874794 s:\wbrtm\include\errorhan.hpp
+
+1310414218 s:\wbrtm\include\arrays.imp
+	<iostream>
+	<iostream.h>
+	"excpothr.hpp"
+	"ioexcep.hpp"
+	"_voidnew.hpp"
+	"iosuppor.hpp"
+
+1310487882 s:\wbrtm\include\ioexcep.hpp
+	<errno.h>
+	"wb_ptr.hpp"
+	"excpbase.hpp"
+
+1156867536 s:\wbrtm\include\_voidnew.hpp
+
+1310417240 s:\wbrtm\include\iosuppor.hpp
+	<errno.h>
+	"platform.hpp"
+	<iostream>
+	<iostream.h>
+	"vobject.hpp"
+	"iocharp.hpp"
+	"ioexcep.hpp"
+	"excpmem.hpp"
+	"wb_ptr.hpp"
+
+1156874520 s:\wbrtm\include\iocharp.hpp
+	<iostream>
+	<iostream.h>
+	"vobject.hpp"
+
+1207432084 s:\symulacje\coewo2\src\troficinfo.h
+	"INCLUDE/arrays.hpp"
+
+1308751748 s:\symulacje\coewo2\src\co_agent.hpp
+	"INCLUDE/wb_bits.h"
+
+1275057960 s:\wbrtm\include\wb_bits.h
+	<limits.h>
+
+1308744986 s:\wbrtm\symshell\sshutils.hpp
+	<math.h>
+	"symshell.h"
+
+1283684118 s:\wbrtm\symshell\symshell.h
+
+1309356302 source:s:\symulacje\coewo2\src\kladystyka.cpp
+	<assert.h>
+	"SYMSHELL/sshutils.hpp"
+	"SYMSHELL/simpsour.hpp"
+	"SYMSHELL/arrasour.hpp"
+	"kladystyka.hpp"
+
+1087036062 s:\wbrtm\symshell\simpsour.hpp
+	"datasour.hpp"
+	"scalsour.hpp"
+	"arrasour.hpp"
+	"mattsour.hpp"
+
+1310408160 s:\wbrtm\symshell\scalsour.hpp
+	"datasour.hpp"
+
+1310408232 s:\wbrtm\symshell\mattsour.hpp
+	"datasour.hpp"
+
+1308751926 s:\symulacje\coewo2\src\kladystyka.hpp
+	"klonalinfo.hpp"
+	"troficinfo.h"
+	"co_agent.hpp"
+
+1242229766 source:s:\symulacje\coewo2\src\klonalinfo.cpp
+	<assert.h>
+	<math.h>
+	"klonalinfo.hpp"
+
+1308751980 source:s:\symulacje\coewo2\src\troficinfo.cpp
+	"troficinfo.h"
+
+1310507438 source:s:\symulacje\coewo2\src\coewo200n.cpp
+	<limits.h>
+	<assert.h>
+	<stdio.h>
+	<process.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<signal.h>
+	<time.h>
+	"INCLUDE/platform.hpp"
+	"INCLUDE/random.h"
+	"INCLUDE/wb_ptr.hpp"
+	"INCLUDE/wb_ptrio.h"
+	"INCLUDE/wb_cpucl.hpp"
+	"SYMSHELL/datasour.hpp"
+	"SYMSHELL/simpsour.hpp"
+	"SYMSHELL/filtsour.hpp"
+	"SYMSHELL/bifiltso.hpp"
+	"SYMSHELL/statsour.hpp"
+	"SYMSHELL/dhistosou.hpp"
+	"SYMSHELL/fifosour.hpp"
+	"SYMSHELL/funcsour.hpp"
+	"SYMSHELL/sourmngr.hpp"
+	"SYMSHELL/logfile.hpp"
+	"SYMSHELL/layer.hpp"
+	"SYMSHELL/areamngr.hpp"
+	"SYMSHELL/gadgets.hpp"
+	"SYMSHELL/textarea.hpp"
+	"SYMSHELL/graphs.hpp"
+	"SYMSHELL/mainmngr.hpp"
+	"SYMSHELL/sshutils.hpp"
+	"SYMSHELL/sshmenuf.h"
+	"ResSrc/coewo3rc.h"
+	"intersourc.hpp"
+	"klonalinfo.hpp"
+	"troficinfo.h"
+	"kladystyka.hpp"
+	"ekologia.hpp"
+	"co_agent.hpp"
+
+1275119812 s:\wbrtm\include\random.h
+	<time.h>
+	<math.h>
+	<stdlib.h>
+
+1225836918 s:\wbrtm\include\wb_ptrio.h
+	"INCLUDE/platform.hpp"
+	"INCLUDE/wb_ptr.hpp"
+	<iostream>
+	<iostream.h>
+
+1157060516 s:\wbrtm\include\wb_cpucl.hpp
+	<time.h>
+	"platform.hpp"
+	<iostream>
+	<iostream.h>
+	"platform.hpp"
+	"Wbminmax.hpp"
+
+1310485055 s:\wbrtm\symshell\filtsour.hpp
+	"math.h"
+	"datasour.hpp"
+
+1060248190 s:\wbrtm\symshell\bifiltso.hpp
+	"bifilter.hpp"
+
+1060248860 s:\wbrtm\symshell\bifilter.hpp
+	"datasour.hpp"
+
+1310409703 s:\wbrtm\symshell\statsour.hpp
+	"math.h"
+	"simpsour.hpp"
+	"sourmngr.hpp"
+	"multfils.hpp"
+
+1276863864 s:\wbrtm\symshell\sourmngr.hpp
+	"datasour.hpp"
+	"graphs.hpp"
+
+1290513332 s:\wbrtm\symshell\graphs.hpp
+	<assert.h>
+	<string.h>
+	"INCLUDE/platform.hpp"
+	<iostream>
+	<iostream.h>
+	"INCLUDE/wb_clone.hpp"
+	"sshutils.hpp"
+	"datasour.hpp"
+	"drawable.hpp"
+
+1290513332 s:\wbrtm\symshell\drawable.hpp
+	<assert.h>
+	"INCLUDE/wb_ptr.hpp"
+	"sshutils.hpp"
+	"titleuti.hpp"
+
+1310409148 s:\wbrtm\symshell\multfils.hpp
+	"math.h"
+	"datasour.hpp"
+	"simpsour.hpp"
+	"sourmngr.hpp"
+
+1310420845 s:\wbrtm\symshell\dhistosou.hpp
+	"statsour.hpp"
+
+1309361484 s:\wbrtm\symshell\fifosour.hpp
+	"datasour.hpp"
+
+1207429064 s:\wbrtm\symshell\funcsour.hpp
+	"datasour.hpp"
+
+1209761982 s:\wbrtm\symshell\logfile.hpp
+	<time.h>
+	"INCLUDE/platform.hpp"
+	<fstream>
+	<fstream.h>
+	"datasour.hpp"
+
+1310410396 s:\wbrtm\symshell\layer.hpp
+	"rectgeom.hpp"
+	"datasour.hpp"
+	"simpsour.hpp"
+	"filtsour.hpp"
+	"statsour.hpp"
+	"fifosour.hpp"
+
+1307561926 s:\wbrtm\symshell\areamngr.hpp
+	"drawable.hpp"
+
+1290513332 s:\wbrtm\symshell\gadgets.hpp
+	"drawable.hpp"
+	"datasour.hpp"
+
+957393414 s:\wbrtm\symshell\textarea.hpp
+	"drawable.hpp"
+
+1297139302 s:\wbrtm\symshell\mainmngr.hpp
+	"areamngr.hpp"
+
+1297139746 s:\wbrtm\symshell\sshmenuf.h
+
+1244239508 s:\symulacje\coewo2\src\ressrc\coewo3rc.h
+
+1310410627 s:\symulacje\coewo2\src\intersourc.hpp
+	"SYMSHELL/datasour.hpp"
+
+1310483090 source:s:\symulacje\coewo2\src\ressrc\coewo3.rc
+	"coewo3rc.h"
+	"rosymbol.h"
+	"symshwin.h"
+	"resamngr.h"
+	"AFXRES.H"
+	"rosymbol.h"
+	"SYMSHELL/src/Windows/symshwin.h"
+	"SYMSHELL/src/Windows/menagres/resamngr.h"
+	"SYMSHELL/MFC5_include/AFXRES.H"
+
+1091482012 s:\symulacje\coewo2\src\ressrc\rosymbol.h
+
+1310420788 s:\wbrtm\symshell\src\windows\symshwin.h
+	<winver.h>
+	<ver.h>
+
+1055421128 s:\wbrtm\symshell\src\windows\menagres\resamngr.h
+
+897861600 s:\wbrtm\symshell\mfc5_include\afxres.h
+	"winres.h"
+
+897861600 s:\wbrtm\symshell\mfc5_include\winres.h
+	<winresrc.h>
+
+1310502766 source:s:\wbrtm\symshell\src\bgraphix\sshutils.cpp
+	<errno.h>
+	<ctype.h>
+	"INCLUDE/platform.hpp"
+	<cstdlib>
+	<cstdio>
+	<cmath>
+	<cstring>
+	<cstdarg>
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	<string.h>
+	<stdarg.h>
+	"INCLUDE/wbminmax.hpp"
+	"../../symshell.h"
+	"../../sshutils.hpp"
+
