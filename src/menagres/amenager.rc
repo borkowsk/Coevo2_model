@@ -1,0 +1,190 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resamngr.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+#include "amngrcmd.h"
+#include "symshwin.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,9,0,0
+ PRODUCTVERSION 0,9,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x2bL
+#else
+ FILEFLAGS 0x2aL
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Warsaw University\0"
+            VALUE "FileDescription", "Symshell Application\0"
+            VALUE "FileVersion", "1, 5, 0, 1\0"
+            VALUE "InternalName", "SymShellAMngrApp\0"
+            VALUE "LegalCopyright", "Copyright © 2003\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "symshell.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Warsaw University Symshell Application\0"
+            VALUE "ProductVersion", "1, 5, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_APPICON             ICON    DISCARDABLE     "symshwin.ico"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+SSH_AREAMNGR MENU DISCARDABLE 
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Dump screen",                 SSH_FILE_DUMPSCREEN
+        MENUITEM "Exit",                        SSH_FILE_EXIT
+    END
+    MENUITEM "Start/Stop",                  SSH_STARTSTOP
+    MENUITEM "One step",                    SSH_ONESTEP
+    POPUP "Window"
+    BEGIN
+        MENUITEM "Tile all",                    SSH_WINDOWS_TILE_ALL
+        MENUITEM "Tile marked areas",           SSH_WINDOWS_TILEMARKEDAREAS
+        MENUITEM "Restore to orginal position", SSH_WINDOWS_RESTORETOORGINALPOSITION
+
+        MENUITEM "Hide marked areas",           SSH_WINDOWS_HIDEMARKEDAREAS
+        MENUITEM "Uncover hidden areas",        SSH_WINDOWS_UNCOVERHIDDENAREAS
+
+        MENUITEM "Mark all areas",              SSH_WINDOWS_MARKALLAREAS
+        MENUITEM "Unmark all areas",            SSH_WINDOWS_UNMARKALLAREAS
+        MENUITEM SEPARATOR
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "Author's WWW page",           SSH_HELP_AUTHORSWWWPAGE
+        MENUITEM "Shortcut help",               SSH_HELP_SHORTCUTHELP
+    END
+END
+
+SSH_SIMPLE_MENU MENU DISCARDABLE 
+BEGIN
+    POPUP "FILE"
+    BEGIN
+        MENUITEM "QUIT",                        SSH_FILE_EXIT
+    END
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resamngr.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "#include ""amngrcmd.h""\r\n"
+    "#include ""resamngr.h""\r\n"
+    "#include ""symshwin.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APPNAME             "SSH_AREAMNGR"
+    IDS_DESCRIPTION         "Symshell library by Wojciech Borkowski (http://www.iss.uw.edu.pl/~borkowsk)"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

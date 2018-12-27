@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE (Wersja 2004 czerwiec) */
+/* Program symulujacy KOEWOLUCJE */
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.Trofia>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
@@ -24,6 +24,9 @@ char     MappName[128]=""/*coewo2001ini.gif"*/;
 //Ma ono zapobiegac formowaniu sie frontow - czyli blokowaniu rozprzestrzeniania sie skutecznych taksonow przez "gestosc zaludnienia"
 //3. Wprowadzenie maksymalnego dystansu skoku pozwala zbadac zaleznosc od "globalnosci ekologii"
 //4. Dodano tez wyswietlanie wieku taksonow
+//5. Dodano modu³ "kladystyka" oparty o dane z klonalinfo i s³uz¹cy preparowaniu prymitywnego (na razie) drzewa filogenetycznego
+//   kolorowanego specjalizacj¹
+//6. Nieco uelastyczniono sposob ustalania co jest klonem a co taksonem - treshold jest teraz zmienna
 
 #include <limits.h>
 #include <assert.h>
@@ -39,7 +42,6 @@ char     MappName[128]=""/*coewo2001ini.gif"*/;
 #define HIDE_WB_PTR_IO	0 //MUsi byc IO dla wb_dynarray
 #include "wb_ptr.hpp"
 //#include "wb_ptrio.h"
-#include "bits.h"
 #include "datasour.hpp"
 #include "simpsour.hpp" 
 #include "filtsour.hpp"
@@ -58,6 +60,7 @@ char     MappName[128]=""/*coewo2001ini.gif"*/;
 
 #include "klonalinfo.hpp"
 #include "kladystyka.hpp"
+#include "co_agent.hpp"
 #include "intersourc.hpp"//Zrodla specjalne "and" i ...
 and_interaction_source	AndDemo("Trofia AND Oslona");       //Zrodla specjalne do celow demonstracyjnych
 and_exploatation_source ExpDemo("(G AND O)/O * (G AND O)/G");//... tzn ladne dywaniki oddzialywan
@@ -69,18 +72,10 @@ unsigned SWIDTH=750;
 unsigned SHEIGHT=550;
 unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
 
-/* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
-/* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
-unsigned BITS_PER_GENOM=16;   //!!! TO JEST ZAFIKSOWANE PRZEZ ROZMIAR base i base2
-typedef unsigned char base;   // musi byc bez znaku
-typedef unsigned short base2; // musi miescic 2 zmienne base
 
-const base2 MAXBASE2=(base2)0xffffffffffffffffUL;
-const base  MAXBASE =(base)MAXBASE2;
-const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
-
-//PODSTAWOWE PAREAMETRY MODELU
-unsigned IBOKSWIATA=100; // FAKTYCZNIE UZYWANY BOK SWIATA
+//PODSTAWOWE PARAMETRY MODELU
+unsigned IBOKSWIATA=100;                // FAKTYCZNIE UZYWANY BOK SWIATA
+unsigned MINIMALNY_ROZMIAR_TAKSONU=100;  //Arbitralny rozmiar klonu zeby go uznac za zarejestrowany takson
 int      WSP_KATASTROF=0;//10-100		// Wykladnik rozkladu katastrof - 0 -wylaczone
 unsigned	PROMIENIOWANIE=BITS_PER_GENOM*10;	// Co ile kopiowanych bitow nastepuje mutacja
 double EFEKTYWNOSC_AUTOTROFA=0.33;	// jaka czesc swiatla uzywa autotrof
@@ -90,14 +85,14 @@ const unsigned	MINIMALNY_WIEK=205;	// Rodzi sie z tym wiekiem. Do smierci ma 255
 const unsigned	NIEPLODNOSC=5;		// Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
 
 //const unsigned BIT_RUCHU=128;		//Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu
-unsigned        DYS_RUCHU=2;      //Dystans ruchu w jednym kierunku					
+unsigned        DYS_RUCHU=20;      //Dystans ruchu w jednym kierunku					
 const unsigned	BIT_RUCHU=1024;		//Poza maske - bez mozliwosci utraty ruchliwosci
 const unsigned  ZAMIANY=255;        //Czy moze przeciskac sie na zajete pola
 
 unsigned int	PIRACTWO=1;				//Czy eksploatacja piracka czy pasozytnicza
 
 unsigned int	ODWROCONY_KOSZT_OSLONY=0;//1 - czy koszty oslony sa odwrocone
-unsigned int	ODWROCONY_KOSZT_ATAKU=0;//1 - czy koszty oslony sa odwrocone
+unsigned int	ODWROCONY_KOSZT_ATAKU=0;//1 - czy koszty ataku sa odwrocone
 
 unsigned long	MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
 double          MonteCarloMult=10; //Ewentualna modyfikacja dlugosci kroku MonteCarlo
@@ -107,183 +102,6 @@ unsigned        textY=(IBOKSWIATA>TAX_OUT?IBOKSWIATA:TAX_OUT);
 
 /* Czesc niezalezna od platformy */
 /*********************************/
-
-struct bity_wzoru
-{
-    base geba;	// bitowy wzorzec trybu odzywiania
-    base oslona;	// bitowy wzozec sposobu ochrony
-};
-
-union wzor
-{
-    base2 	_full; // pelny wzor bitowy "taxonu"
-    bity_wzoru w;  // i z podzialem na pola
-    //void clear(){_full=0;}
-};
-
-class agent//:public agent_base
-{    
-public:
-    class informacja_klonalna:public ::informacja_klonalna
-    {
-        wzor genom; //zeby bylo wiadomo co to za klon
-        int _specjalised;
-//        int _defensespec;
-//        int _feedingspec;
-    public:
-        informacja_klonalna(informacja_klonalna* parent,wzor wgenom):
-          genom(wgenom),::informacja_klonalna(parent)
-          {
-              _specjalised=bits(genom.w.geba)+bits(genom.w.oslona);
-//              _defensespec=bits(genom.w.oslona);
-//              _feedingspec=bits(genom.w.geba);
-          }
-          int   how_specialised() //Poziom specjalizacji mierzony w bitach
-          {     return _specjalised;    }
-/*          
-          int   how_specialised_in_defense() //Poziom specjalizacji mierzony w bitach
-          {     return _defensespec;    }
-          
-          int   how_specialised_in_feeding() //Poziom specjalizacji mierzony w bitach
-          {     return _feedingspec;    }
-*/
-    };
-
-    wzor			 w; // wzor bitowy taxonu
-    
-    unsigned char wiek; // ile razy byl u sterowania, po przerolowaniu - smierc
-    unsigned	  sila; // zgromadzona energia
-    informacja_klonalna* klon;//Przynaleznosc klonalna i zwiazane z tym informacje
-  
-    /* Informacje statystyczne dotyczace indywiduow i klonów */
-    static unsigned max;//jaki jest najwiekszy taxon
-    static unsigned max_change;//i czy ostatnio max sie zmienil
-    static unsigned ile_ind;// ile jest zywych indywiduow
-    static unsigned ile_tax;// ile taxonow niezerowych
-    static unsigned ile_big_tax;// ile taxonow liczniejszych niz 10
-    static unsigned liczniki[/*(size_t)MAXBASE2+1*/];// Liczniki liczebnosci aktualnie istniejacych 'taxonow ekologicznych" wg bitów wzoru
-     
-    //Wejscie/wyjscie
-    friend
-        ostream& operator << (ostream& o,const agent& a);
-    
-    friend
-        istream& operator >> (istream& i,agent& a);
-    
-    // rejestracja zmiany wartosci taxonu 
-    inline static   void tax(base2);  
-    
-    //Nie wirtualna metoda czyszczaca
-    void _clean()
-    {
-        if(klon!=NULL)
-        {
-            if(klon->odlicz_indywiduum())//Jesli nieistotny klon to trzeba usunac
-                delete klon;
-            klon=NULL;
-        }
-        w.w.geba=0; //Lepiej by bylo gdyby mozna ustawic -1
-        w.w.oslona=0;
-        wiek=sila=0;
-    }
-    
-    // TO CO MUSI byc zdefiniowane
-    ///////////////////////////////////
-    agent(const agent& ini):klon(NULL)
-    {
-        assert(&ini!=NULL);
-        
-        w._full=ini.w._full;wiek=ini.wiek;sila=ini.sila;
-        assert(ini.klon!=NULL);
-        klon->dolicz_indywiduum();
-    }
-    
-    agent():klon(NULL)
-    {
-        _clean();
-    }
-    
-    ~agent()
-    {
-        _clean();
-    }
-    
-    void clean()
-    {
-        if(jest_zywy())
-            kill();//Uzywa kill zeby wewnetrzne struktury statystyczne sie zgadzaly
-    }
-    
-    void assign_rgb(unsigned char Red,unsigned char Green,unsigned char Blue)
-    {assert("agent::assign_rgb(...) not implemented"==NULL);}
-    
-    //Sprawdzanie czy jest zywy
-    bool  jest_zywy()
-    { 
-        if(sila!=0 && wiek!=0) 
-        {
-            assert(klon!=NULL);
-            return true;
-        }
-        else
-            return false;
-    }
-  
-    bool  is_alive() { return jest_zywy();} //Bo wymaga tego klasa layer i pochodne
-    
-    unsigned long  how_old_taxon()
-    {
-       if(!jest_zywy()) return 0xffffffff;
-       else return klon->data_powstania_klonu();
-    }
-
-    int   how_specialised() //Poziom specjalizacji mierzony w bitach
-    {
-        if(!jest_zywy()) return -1;
-        else return klon->how_specialised();
-    }
-    
-    int   how_specialised_autotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
-    {
-        if(!jest_zywy() || !(w.w.geba==0xff)) return -1;
-        else return klon->how_specialised();
-    }
-    
-    int   how_specialised_heterotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
-    {
-        if(!jest_zywy() || (w.w.geba==0xff)) return -1;
-        else return klon->how_specialised();
-    }
-/*
-    int   how_specialised_in_defense() //Poziom specjalizacji maski obrony mierzony w bitach
-    {
-        if(!jest_zywy()) return -1;
-        else return klon->how_specialised_in_defense();
-    }
-
-    int   how_specialised_in_feeding() //Poziom specjalizacji maski ataku mierzony w bitach
-    {
-        if(!jest_zywy()) return -1;
-        else return klon->how_specialised_in_feeding();
-    }
-*/
-    //Podstawowa inicjacja i kasacja operujaca na licznikach taksonow
-    int init(base trof,base osl,unsigned isila); // inicjacja nowego agent
-    int kill();		     // smierc agenta - marker czasu dla statystyk
-    static base2 duplikuj(base2 r);  // kopiuje genotyp z mozliwa mutacja
-    
-    //Inicjacja i kasacja w interakcjach
-    int init(agent& rodzic); // inicjacja nowego jako potomka starego. Zwraca 0 jesli wadliwy genom
-    int kill(agent& zabojca,unsigned& energy_flow);// usmiercenie agenta przez drugiego
-    int parasit(agent& zabojca,unsigned& energy_flow);//zubazanie agenta przez drugiego. Zwraca 1 jesli zginal
-    
-    // oddzialywanie czasu
-    int uplyw_czasu();//Zwraca 1 jesli zginal. Marker czasu dla statystyk
-    
-    //Dla wygody implementacji:
-    friend class swiat;  
-};
-
 //TAK POWINNO BYC - ALE MSVC NIE KOMPILUJE
 //base agent::* geba_ptr=&agent::w.w.geba;
 //base agent::* oslona_ptr=&agent::w.w.oslona;
@@ -559,7 +377,7 @@ flpom=new fifo_source<unsigned long>(alltax,dlugosc_logow);
 if(!flpom)goto ERROR;
 int inAlltax=Sources.insert(flpom);
 
-template_scalar_source_base<unsigned>* staxa=new ptr_to_scalar_source<unsigned>(&tax_auto,"taksony autotroficzne");// ile jest autotroficznych taksonow
+template_scalar_source_base<unsigned>* staxa=new ptr_to_scalar_source<unsigned>(&tax_auto,"taksony autotroficzne");// ile jest autotroficznych taksonow (liczniejszych niz treshold)
 if(!staxa) goto ERROR;
 Sources.insert(staxa);
 
@@ -567,7 +385,7 @@ fifo_source<unsigned>* fpom=new fifo_source<unsigned>(staxa,dlugosc_logow);
 if(!fpom) goto ERROR;
 int fiftaxa=Sources.insert(fpom);
 
-template_scalar_source_base<unsigned>* sklona=new ptr_to_scalar_source<unsigned>(&klon_auto,"klony autotroficzne");// ile taxonow liczniejszych niz 10
+template_scalar_source_base<unsigned>* sklona=new ptr_to_scalar_source<unsigned>(&klon_auto,"klony autotroficzne");// ile klonow autotroficznych
 if(!sklona) goto ERROR;
 Sources.insert(sklona);
 
@@ -575,7 +393,7 @@ fpom=new fifo_source<unsigned>(sklona,dlugosc_logow);
 if(!fpom) goto ERROR;
 int fifklona=Sources.insert(fpom);
 
-template_scalar_source_base<unsigned>* stax=new ptr_to_scalar_source<unsigned>(&agent::ile_big_tax,"taksony");// ile taxonow liczniejszych niz 10
+template_scalar_source_base<unsigned>* stax=new ptr_to_scalar_source<unsigned>(&agent::ile_big_tax,"taksony");// ile taxonow liczniejszych niz niz treshold
 if(!stax) goto ERROR;
 Sources.insert(stax);
 
@@ -583,7 +401,7 @@ fpom=new fifo_source<unsigned>(stax,dlugosc_logow);
 if(!fpom) goto ERROR;
 int fiftax=Sources.insert(fpom); 
 
-template_scalar_source_base<unsigned>* sklon=new ptr_to_scalar_source<unsigned>(&agent::ile_tax,"klony");// ile taxonow niezerowych
+template_scalar_source_base<unsigned>* sklon=new ptr_to_scalar_source<unsigned>(&agent::ile_tax,"klony");// ile w ogóle istniejacych klonow
 if(!sklon) goto ERROR;
 Sources.insert(sklon);
 
@@ -766,10 +584,25 @@ pom->settitle("SPECJALIZACJA HETEROTROFÓW");
 Menager.insert(pom);
 
 //TAXONY -  MOZE BYC KOSZTOWNE W RYSOWANIU
-linear_source_base* T=filogeneza
-Sources.insert(T);
+linear_source_base* Tm=filogeneza.NodeTime();
+Sources.insert(Tm);
+linear_source_base* Sp=filogeneza.NodeSpread();
+Sources.insert(Sp);
+linear_source_base* Ls=filogeneza.LineStarts();
+Sources.insert(Ls);
+linear_source_base* Le=filogeneza.LineEnds();
+Sources.insert(Le);
+linear_source_base* Lw=filogeneza.LineWeights();
+Sources.insert(Lw);
 pom=new net_graph(szer_map+120,130,Menager.getwidth()-81,299,//domyslne wspolrzedne
-                  
+                  Tm,0,
+                  Sp,0,
+                  Ls,0,
+                  Le,0,
+                  Lw,0,//Kolory linii jako punktow - powoduje narysowanie skali barwnej, ale dziala tylko dlatego ze domyslna figura jest NULL!
+                  NULL,0,//Rozmiary punktow faktycznie nie sa potrzebne
+                  NULL,0,//I rozmiary grotow tez nie
+                  Lw,0
                   );
 pom->setframe(128);
 pom->settitle("FILOGENEZA");
@@ -815,7 +648,7 @@ pom1=new carpet_graph(0,0,szer_map-1,wys_map-1,//domyslne wspolrzedne
 pom1->setdatacolors(0,254);//Pierwsze 25 kolorow bedzie slabo widoczne
 //pom1->setframe(32);
 pom1->settextcolors(32);
-pom1->settitle("CZAS POWSTANIA KLONÓW/TAKSONÓW");
+pom1->settitle("FILOGENETYCZNY WIEK AGENTÓW");
 Menager.insert(pom1);
 
 //Okno historii liczby taksonow od poczatku
@@ -905,7 +738,7 @@ swiat::swiat(size_t szerokosc,char* logname,char* mappname):
 if(mappname)
     zdatnosc.init_from_bitmap(mappname);
 informacja_klonalna::podlacz_marker_czasu(&licznik);
-informacja_klonalna::ustaw_maksimum_kasowania(10);
+informacja_klonalna::ustaw_maksimum_kasowania(MINIMALNY_ROZMIAR_TAKSONU-1);
 }
 
 void swiat::init()
@@ -989,9 +822,9 @@ if(liczniki[iwfull]>max)
 		}
 
 if( liczniki[iwfull]==1 ) // pierwszy przedstawiciel taxonu
-		ile_tax++;   // wiec liczba taxonow wzrasta
+		ile_tax++;   // wiec liczba klonów wzrasta
 
-if( liczniki[iwfull]==11 ) // osiagnal wartosc >10 duzy taxon - rozwojowy
+if( liczniki[iwfull]==informacja_klonalna::tresh_taksonow()+1 ) // osiagnal w góre wartosc == duzy taxon - rozwojowy
 		ile_big_tax++;
 
 return 1;
@@ -1008,7 +841,7 @@ base2 wfull=w.w.geba*256+w.w.oslona;//Zeby bylo niezalezne od "endian"
 liczniki[wfull]--;
 if( liczniki[wfull]==0 )	//ostatni przedstawiciel tego taxonu
 	ile_tax--;
-if( liczniki[wfull]==10 ) // osiagnal wartosc <=10 maly taxon - nie rozwojowy
+if( liczniki[wfull]==informacja_klonalna::tresh_taksonow()) // osiagnal w dól wartosc == tresh_kasowania --> maly taxon 
 	ile_big_tax--;
 assert(w._full>0 );
 
@@ -1215,7 +1048,7 @@ for(unsigned i=0xffff;i>0xffff-0x100;i--)//Ile niezerowych klonow autotroficznyc
 	autotrofy+=pom;
 	if(pom>0)
 		klon_auto++;
-	if(pom>10)
+	if(pom>informacja_klonalna::tresh_taksonow())
 		tax_auto++;
 	}
 }
@@ -1372,7 +1205,7 @@ unsigned agent::max=0;//jaki jest najwiekszy taxon
 unsigned agent::max_change=0;//i czy ostatnio max sie zmienil
 unsigned agent::ile_ind=0;// ile jest zywych indywiduow
 unsigned agent::ile_tax=0;// ile taxonow niezerowych
-unsigned agent::ile_big_tax=0;// ile taxonow liczniejszych niz 10
+unsigned agent::ile_big_tax=0;// ile taxonow liczniejszych niz informacja_klonalna::tresh_taksonow()
 const /*unsigned long*/size_t TAXNUMBER=(unsigned long)MAXBASE2+1;
 unsigned agent::liczniki[ /*TAXNUMBER*/MAXBASE2+1 ];// Liczniki liczebnosci taxonow
 								//Musi miec mozliwosc posiadania 0xffff+1 elementow
@@ -1447,6 +1280,17 @@ for(int i=1;i<argc;i++)
     printf("Liczba iteracji ustawiona na %lu\n",MAX_ITERATIONS);
     }
     else
+    if((pom=strstr(argv[i],"DIST="))!=NULL) //Nie NULL czyli jest
+    {
+    DYS_RUCHU=atol(pom+5);
+    if(DYS_RUCHU<=0)
+		{
+		fprintf(stderr,"Minimalny krok ruchu nie moze byc <=0\n");
+		return 0;
+        }
+    printf("Maksymalny ruch agenta ustawiony na %lu\n",DYS_RUCHU);
+    }   
+    else
     if((pom=strstr(argv[i],"LOGC="))!=NULL) //Nie NULL czyli jest
     {
     LogRatio=atol(pom+5);
@@ -1484,7 +1328,7 @@ for(int i=1;i<argc;i++)
 	else
 	if((pom=strstr(argv[i],"HEIGHTWIN="))!=NULL) //Nie NULL czyli jest
 	{
-	SHEIGHT=atol(pom+10);
+	SHEIGHT=atol(pom+11);
     if(SHEIGHT<50)
 		{
 		cerr<<"Bad HEIGHTWIN = "<<SHEIGHT<<" (must be >50)"<<endl;
@@ -1496,6 +1340,7 @@ for(int i=1;i<argc;i++)
 	fprintf(stderr,"Bledna opcja %s\n",argv[i]);
 	fprintf(stderr,"MOZLIWE TO:\n");
     fprintf(stderr,"BOK=NN - bok obszaru symulacji\n"
+                   "DIST=NN - maksymalny krok ruchu agenta\n" 
                    "RTG=NNN - co ile kopiowanych bitów trafia sie mutacja\n" 
 					"AUTO=0.XX -efektywnosc autotrofa\n"
 					"PIRA=0/1 - gospodarka pasozytnicza versus drapieznicza\n"
