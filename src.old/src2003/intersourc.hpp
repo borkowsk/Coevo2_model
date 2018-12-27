@@ -1,5 +1,5 @@
+//
 //Zrodla do demonstracji interakcji drapieznik/ofiara za pomoca masek bitowych 
-//(Wersja 2003)
 /////////////////////////////////////////////////////////////////////////////////
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
