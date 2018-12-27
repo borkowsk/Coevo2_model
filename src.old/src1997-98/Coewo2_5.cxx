@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE (kod z wersji 2_5.cxx, rok 1998) */
+/* Program symulujacy KOEWOLUCJE */
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.GEBA>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
