@@ -1,5 +1,5 @@
+//
 //Zrodla do demonstracji interakcji drapieznik/ofiara za pomoca masek bitowych 
-///* Wersja 2004 */
 /////////////////////////////////////////////////////////////////////////////////
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
@@ -94,8 +94,7 @@ void  bounds(size_t& num,double& min,double& max)
 		return;
 		}
 
-	//Nie sa dane wiec probkujemy - co troche kosztuje	
-	min=0;
+	min=0;           //Brak dopasowania
 	max=and(255,255);//Pelne dopasowanie maski ataku do maski ochrony. 100% trawienia.
 	}
 
@@ -125,7 +124,10 @@ double and(unsigned A,unsigned B)
 	{
 	//double(w.w.oslona & zabojca.w.w.geba)/(zabojca.w.w.geba)*
 	//		double(w.w.oslona & zabojca.w.w.geba)/(w.w.oslona)
-	return double(A & B)/double(B) * double(A & B)/double(A);
+    if(A!=0 && B!=0)
+	    return double(A & B)/double(B) * double(A & B)/double(A);
+    else
+        return miss;
 	}
 
 };

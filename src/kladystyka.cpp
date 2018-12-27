@@ -1,5 +1,5 @@
 // kladystyka.cpp: implementation of the klad class.
-///* Wersja 2004 */
+//
 //////////////////////////////////////////////////////////////////////
 #include <assert.h>
 #include "simpsour.hpp"
@@ -52,6 +52,22 @@ bool klad::_dodaj_do_listy(informacja_klonalna* klon,void* user_data)
 }
 
 
+void klad::zapomnij_liste(bool zwolnij_pamiec)
+{
+    descendants.Truncate(0);
+    nodes.Truncate(0);
+    lines.Truncate(0);
+    _for_simple_dispersing=0;
+    
+    if(zwolnij_pamiec)
+    {
+        descendants.Deallocate();
+        nodes.Deallocate();
+        lines.Deallocate();
+        _empty_source_ptrs();
+    }
+}
+
 //Uruchomienie trawersowania drzewa klonow
 void klad::aktualizuj_liste_zstepnych(bool leftrec)
 {
@@ -60,6 +76,7 @@ void klad::aktualizuj_liste_zstepnych(bool leftrec)
     nodes.Truncate(0);
     lines.Truncate(0);
     _for_simple_dispersing=0;
+
 
     if(ancestor)//Tworzy nowe listy, jesli jest z czego
     {
@@ -97,6 +114,7 @@ void klad::_disperse_nodes1()//Algorytm rozstawiania drzewa - minimalny sensowny
 
 void klad::_disperse_nodes2()//Algorytm rozstawiania drzewa - bardziej estetyczny
 {
+
 }
 
 void klad::_update_source_ptrs()
@@ -112,6 +130,21 @@ void klad::_update_source_ptrs()
         pLineEnds->set_source(lines.CurrSize(),lines.GetTabPtr());//Indeksy koncow linii laczacych wezly drzewa (po 2 na klon)
     if(pLineWeights!=NULL)
         pLineWeights->set_source(lines.CurrSize(),lines.GetTabPtr());//Wagi lini najlepiej jako kolory
+}
+
+
+void klad::_empty_source_ptrs()
+{    
+    if(pNodeTime!=NULL) 
+        pNodeTime->set_source(0,NULL);//Punkty czasowe wezlow drzewa: specjacji, poczatku i konca istnienia klonu (po 3 na klon)
+    if(pNodeSpread!=NULL) 
+        pNodeSpread->set_source(0,NULL);//Sztuczny rozrzut wezlów  dla czytelnosci drzewa
+    if(pLineStarts!=NULL) 
+        pLineStarts->set_source(0,NULL);//Indeksy poczatków linii laczacych wezly drzewa (po 2 na klon)
+    if(pLineEnds!=NULL) 
+        pLineEnds->set_source(0,NULL);//Indeksy koncow linii laczacych wezly drzewa (po 2 na klon)
+    if(pLineWeights!=NULL)
+        pLineWeights->set_source(0,NULL);//Wagi lini najlepiej jako kolory
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -182,7 +215,7 @@ linear_source_base* klad::LineWeights()
     else
     {
         pLineWeights  =  new struct_array_source<connection,unsigned long>
-            (lines.CurrSize(),lines.GetTabPtr(),&connection::weight,"Weight");
+            (lines.CurrSize(),lines.GetTabPtr(),&connection::weight,"Specialisation");
         pLineWeights->setminmax(0,16);//Specjalizacja: Od 0 do 16 wyzerowanych bitow
         return pLineWeights;
     }
@@ -203,7 +236,7 @@ klad::klad(agent::informacja_klonalna* TheAncestor)://Konstruktor
 
 klad::~klad()//Destruktor - na wszelki wypadek
 {
-    descendants.Truncate(0);//Zapominamy stara liste
+    zapomnij_liste(true/*zwolnij_pamiec*/);//Zapominamy liste
     ancestor=NULL;
 }
 
