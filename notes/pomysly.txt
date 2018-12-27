@@ -1,0 +1,14 @@
+Wyrozniki modelu
+1. Istnienie struktury przestrzennej
+2. 
+
+Nowe statystyki z sieci ekologicznej policzonej w danym kroku:
+1. Maciez polaczen eksploatacyjnych z 2^16x2^16 z wycietymi zerowymi kolumnami i wierszami.
+2. Histogram sily polaczen
+3. Histogram dlugosci lancuchów
+4. 
+
+Niebanalne wnioski
+1. Potencjalna mozliwosc pojawiania sie kryzysu wywolanego przejsciem do specjalizacji
+2. Co jest w zwiazku z teoria "punctated equilibrium" Goulda
+3. 

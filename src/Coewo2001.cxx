@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE (kod wersji 2_7 z 1998 roku)*/
+/* Program symulujacy KOEWOLUCJE */
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.GEBA>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
@@ -13,10 +13,12 @@
 #include <string.h>
 #include <math.h>
 #include <signal.h>
-
+  
 #define USES_RANDG
-#include "wb_rand.h"
+#include "randoms.h" //WB random generators for "C"
+#define HIDE_WB_PTR_IO	0 //MUsi byc IO dla wb_dynarray
 #include "wb_ptr.hpp"
+#include "wb_ptrio.h"
 
 #include "datasour.hpp"
 #include "simpsour.hpp"
@@ -28,30 +30,39 @@
 #include "logfile.hpp"
 #include "layer.hpp"
 #include "areamngr.hpp"
+#include "mainmngr.hpp"
 #include "gadgets.hpp"
 #include "textarea.hpp"
 #include "graphs.hpp"
 
+#include "intersourc.hpp"//Zrodla specjalne "and" i ...
+
+and_interaction_source	AndDemo("Geba AND Oslona");
+and_exploatation_source ExpDemo("(G AND O)/O * (G AND O)/G");
+
+const char*	   ProgramName="CO-EVOLUTION wersja 2.74 (2001-2003) programowanie: Wojciech Borkowski";
 const unsigned SWIDTH=750;
 const unsigned SHEIGHT=550;
 const unsigned TAX_OUT=256;
-const unsigned dlugosc_logow=15000;
+const unsigned dlugosc_logow=25000;
+unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
+
+char     LogName[128]="coewo2001.out";
+char     MappName[128]=""/*coewo2001ini.gif"*/;
 
 unsigned IBOKSWIATA=100; // FAKTYCZNIE UZYWANY BOK SWIATA
 unsigned textY=(IBOKSWIATA>TAX_OUT?IBOKSWIATA:TAX_OUT);
 int      WSP_KATASTROF=10;			// Wykladnik rozkladu katastrof
-const double WYPOSAZENIE_POTOMSTWA=0.1; // jaka czesc sily oddac potomkowi
+const double	WYPOSAZENIE_POTOMSTWA=0.1; // jaka czesc sily oddac potomkowi
 double EFEKTYWNOSC_AUTOTROFA=0.99;	// jaka czesc swiatla uzywa autotrof
-const unsigned MINIMALNY_WIEK=205;	// Rodzi sie z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
-const unsigned NIEPLODNOSC=5;		// Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
-const unsigned PROMIENIOWANIE=160;	// Co ile kopiowanych bitow nastepuje mutacja
+const unsigned	MINIMALNY_WIEK=205;	// Rodzi sie z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
+const unsigned	NIEPLODNOSC=5;		// Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
+const unsigned	PROMIENIOWANIE=160;	// Co ile kopiowanych bitow nastepuje mutacja
 //const unsigned BIT_RUCHU=128;		//Wyzerowanie ktorych bitow oslony odpowiada za zdolnosc ruchu					
-const unsigned BIT_RUCHU=1024;		//Poza maske - bez mozliwosci utraty ruchliwosci
-unsigned PIRACTWO=1;				//Czy eksploatacja piracka czy pasozytnicza
-unsigned long MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
-unsigned LogRatio=1;				// Co ile krokow zapisywac do logu
-char     LogName[128]="coewo2_7.log";
-char     MappName[128]="coewo2_7ini.gif";
+const unsigned	BIT_RUCHU=1024;		//Poza maske - bez mozliwosci utraty ruchliwosci
+unsigned int	PIRACTWO=1;				//Czy eksploatacja piracka czy pasozytnicza
+unsigned long	MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
+
 
 /* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
 /* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
@@ -94,6 +105,25 @@ static unsigned ile_big_tax;// ile taxonow liczniejszych niz 10
 static unsigned liczniki[/*(size_t)MAXBASE2+1*/];// Liczniki liczebnosci taxonow
 
 public:
+
+friend
+ostream& operator << (ostream& o,const agent& a)
+{
+	o<<a.w.w.geba<<' '<<a.w.w.oslona<<' '<<a.wiek<<' '<<a.sila<<'\t';
+	return o;
+}
+
+friend
+istream& operator >> (istream& i,agent& a)
+{
+	i>>a.w.w.geba;
+	i>>a.w.w.oslona;
+	i>>a.wiek;
+	i>>a.sila;
+	return i;
+}
+
+
 // rejestracja zmiany wartosci taxonu 
 inline static   void tax(base2);  
 
@@ -129,7 +159,9 @@ void assign_rgb(unsigned char Red,unsigned char Green,unsigned char Blue)
 int  jest_zywy(){ return (sila!=0 && wiek!=0); }
 //double zywy(){return jest_zywy();}
 
-//POdstawowa inicjacja i kasacja operujaca na licznikach taksonow
+int  is_alive() { return jest_zywy();} //Bo wymaga tego klasa layer i pochodne
+
+//Podstawowa inicjacja i kasacja operujaca na licznikach taksonow
 int init(base trof,base osl,unsigned isila); // inicjacja nowego agent
 int kill();		       // smierc agenta
 static base2 kopioj(base2 r);  // kopiuje genotyp z mozliwa mutacja
@@ -152,10 +184,16 @@ int uplyw_czasu();//Zwraca 1 jesli zginal
 //base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
 
 //RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
-#define RECZNIE_WPISZ_PTR
+#define RECZNIE_WPISZ_PTR 
+
+#ifdef  RECZNIE_WPISZ_PTR 
 base agent::* geba_ptr=NULL;
 base agent::* oslona_ptr=NULL;
+#else
+//base agent::* geba_ptr=NULL;
+//base agent::* oslona_ptr=NULL;
 //(base agent::*)sizeof(base);
+#endif
 
 
 class swiat//Caly swiat symulacji
@@ -292,7 +330,7 @@ Sources.insert(Wiek);
 pom=new carpet_graph(0,(wys_map+1)*3,szer_map,(wys_map+1)*4,//domyslne wspolrzedne
 						Wiek);//I zrodlo danych
 pom->setdatacolors(0,255);//Pierwsze 25 kolorow bedzie slabo widoczne
-pom->settitle("CZAS ZYCIA AGENTOW");
+pom->settitle("WIEK AGENTOW");
 Menager.insert(pom);
 
 //HISTORIA OSTATNICH <dlugosc_logow> KROKOW
@@ -329,18 +367,6 @@ if(!fpom) goto ERROR;
 int fifklon=Sources.insert(fpom);
 
 
-graph* pom1=new sequence_graph(szer_map,401,Menager.getwidth()-1,Menager.getheight()-1,
-							   5,Sources.make_series_info(
-										fiftaxa,fifklona,
-										fiftax,fifklon,
-													-1
-										).get_ptr_val(),
-							   1/*Wspolne minimum/maximum*/);
-if(!pom1) goto ERROR;
-pom1->setframe(128);
-pom1->settitle("HISTORIA LICZBY TAKSONOW");
-Menager.insert(pom1);
-
 //HISTORIA LICZEBNOSCI AGENTOW
 template_scalar_source_base<unsigned>* sind=new ptr_to_scalar_source<unsigned>(&agent::ile_ind,"ilosc agentow");// ile agentow niezerowych
 if(!sind) goto ERROR;
@@ -360,7 +386,7 @@ int fifautoagents=Sources.insert(fpom);
 
 
 //WYSWIETLACZ HISTORI LICZEBNOSCI
-pom1=new sequence_graph(Menager.getwidth()-80,43,Menager.getwidth()-1,200,//domyslne wspolrzedne						
+graph* pom1=new sequence_graph(Menager.getwidth()-80,90,Menager.getwidth()-1,299,//domyslne wspolrzedne						
 							   3,Sources.make_series_info(
 										fifagents,fifautoagents,
 										-1
@@ -371,6 +397,41 @@ pom1->setframe(128);
 pom1->settitle("AGENCI - HISTORIA LICZEBNOSCI");
 Menager.insert(pom1);
 
+//Historia sily
+//szer_map+301,300,Menager.getwidth()-1,400,
+
+//Historia liczby taksonow
+pom1=new sequence_graph(szer_map,401,Menager.getwidth()-1,Menager.getheight()-1,
+							   5,Sources.make_series_info(
+										fiftaxa,fifklona,
+										fiftax,fifklon,
+													-1
+										).get_ptr_val(),
+							   1/*Wspolne minimum/maximum*/);
+if(!pom1) goto ERROR;
+pom1->setframe(128);
+pom1->settitle("HISTORIA LICZBY TAKSONOW");
+Menager.insert(pom1);
+
+
+//ZRODLO METODOWE FILTRUJACE ZYWE
+method_matrix_source<agent,int>* Zycie=ziemia.make_source("martwe/zywe",&agent::jest_zywy);
+if(!Zycie) goto ERROR;
+Zycie->setminmax(0,1);
+int inZycie=Sources.insert(Zycie);
+
+GT_filter<method_matrix_source<agent,int> >* filtrZycia=//Filtr na "Tylko Zywe"
+	new GT_filter<method_matrix_source<agent,int> >(0.5,Zycie,default_missing<double>(),"Zywe");//Poprawionko!
+if(!filtrZycia)goto ERROR;
+int inFiltrZycia=Sources.insert(filtrZycia);
+
+pom=new carpet_graph(Menager.getwidth()-80,0,Menager.getwidth()-1,20,//domyslne wspolrzedne
+						filtrZycia);//I zrodlo danych
+if(!pom) goto ERROR;
+pom->setdatacolors(50,254);//Potrzebne tylko dwa kolory naprawde
+pom->setframe(128);
+pom->settitle("ZYWE");
+Menager.insert(pom);
 
 //UDOSTEPNIANIE I WYSWIETLANIE BACKGROUNDU SYMULACJI
 rectangle_source_base* Background=zdatnosc.make_source("Mapa zdatnych obszarów");
@@ -386,26 +447,25 @@ pom->setframe(128);
 pom->settitle("SIEDLISKO");
 Menager.insert(pom);
 
-
-//ZRODLO METODOWE FILTRUJACE ZYWE
-method_matrix_source<agent,int>* Zycie=ziemia.make_source("martwe/zywe",&agent::jest_zywy);
-if(!Zycie) goto ERROR;
-Zycie->setminmax(0,1);
-int inZycie=Sources.insert(Zycie);
-
-GT_filter<method_matrix_source<agent,int> >* filtrZycia=//Filtr na "Tylko Zywe"
-	new GT_filter<method_matrix_source<agent,int> >(0.5,Zycie,DEFAULT_MISSING,"Zywe");//
-if(!filtrZycia)goto ERROR;
-int inFiltrZycia=Sources.insert(filtrZycia);
-
-pom=new carpet_graph(Menager.getwidth()-80,0,Menager.getwidth()-1,20,//domyslne wspolrzedne
-						filtrZycia);//I zrodlo danych
+//Demo interakcji AND
+pom=new carpet_graph(Menager.getwidth()-80,43,Menager.getwidth()-1,64,//domyslne wspolrzedne
+						&AndDemo);//I zrodlo danych
 if(!pom) goto ERROR;
-pom->setdatacolors(50,254);//Potrzebne tylko dwa kolory naprawde
+//pom->setdatacolors(0,255);//Potrzebne tylko dwa kolory naprawde
 pom->setframe(128);
-pom->settitle("ZYWE");
+pom->settitle("AND(Geba,Oslona)");
 Menager.insert(pom);
 
+//Demo exploatacji potenclalnej (AND*K)
+pom=new carpet_graph(Menager.getwidth()-80,65,Menager.getwidth()-1,86,//domyslne wspolrzedne
+						&ExpDemo);//I zrodlo danych
+if(!pom) goto ERROR;
+//pom->setdatacolors(0,255);//Potrzebne tylko dwa kolory naprawde
+pom->setframe(128);
+pom->settitle("Eksploatacja potencjalna");
+Menager.insert(pom);
+
+//LOG???
 if_then_source* GebaZywych=new if_then_source(filtrZycia,Geba,"GebaZ");
 if(!GebaZywych) goto ERROR;
 Sources.insert(GebaZywych);
@@ -422,7 +482,6 @@ if_then_source* SilaZywych=new if_then_source(filtrZycia,Sila,"SilaZ");
 if(!SilaZywych) goto ERROR;
 Sources.insert(SilaZywych);
 
-
 generic_basic_statistics_source*	OslonaStat=new generic_basic_statistics_source(OslonaZywych);
 if(!OslonaStat) goto ERROR;
 Sources.insert(OslonaStat);
@@ -435,6 +494,9 @@ generic_basic_statistics_source*	SilaStat=new generic_basic_statistics_source(Si
 if(!SilaStat) goto ERROR;
 Sources.insert(SilaStat);
 
+generic_basic_statistics_source*	GebaStat=new generic_basic_statistics_source(GebaZywych);
+if(!GebaStat) goto ERROR;
+Sources.insert(GebaStat);
 
 //OKNO HISTORI SILY
 //dalej zakladamy ze SilaStat nie umieszcza sam podzrodel w menagerze danych
@@ -443,9 +505,11 @@ Sources.insert(SilaStat);
 fifo_source<double>* dpom=new fifo_source<double>(SilaStat->Mean(),dlugosc_logow);//Fifo ze sredniej sily
 if(!dpom) goto ERROR;
 int MeanSilaFifoIndex=Sources.insert(dpom);
+
 dpom=new fifo_source<double>(SilaStat->Max(),dlugosc_logow);//Fifo ze sredniej sily
 if(!dpom) goto ERROR;
 int MaxSilaFifoIndex=Sources.insert(dpom);
+
 dpom=new fifo_source<double>(SilaStat->SD(),dlugosc_logow);//Fifo ze sredniej sily
 if(!dpom) goto ERROR;
 int SdSilaFifoIndex=Sources.insert(dpom);
@@ -472,9 +536,10 @@ int out_area=Menager.insert(OutArea);
 
 
 //TAXONY - OSTANIE OKNO BO MOZE BYC NAJKOSZTOWNIEJSZE W RYSOWANIU
-Liczniki=new matrix_source<unsigned>(256,256,
+Liczniki=new matrix_source<unsigned>("liczebnosc taksonow",
+                                     256,256,
 									 agent::liczniki,
-									 "liczebnosc taksonow",//NAZWA SERI
+									 //NAZWA SERI
 									 1//Nie torus
 									 );
 if(!Liczniki) goto ERROR;
@@ -515,12 +580,13 @@ log.insert(OslonaStat->SD());
 log.insert(OslonaStat->Max());
 log.insert(GebaStat->Mean());
 log.insert(GebaStat->SD());
-//log.insert(GebaStat->Max());
+log.insert(GebaStat->Max());
 
 Menager.maximize(out_area);
 
 return;
 }//KONIEC WLASCIWEGO BLOKU
+
 ERROR://BLOK OBSLUGI BLEDOW
 perror("Nie mozna utworzyc obiektow wizualizujacych");
 exit(1);																					
@@ -543,9 +609,9 @@ swiat::swiat(size_t szerokosc,char* logname,char* mappname):
 	klon_auto(1),tax_auto(1),autotrofy(1),
 	log(100,logname)
 {//!!!Nie mozna tu jeszcze polegac na wirtualnych metodach klasy swiat
-zdatnosc.init_from_bitmap(mappname);
+if(mappname)
+    zdatnosc.init_from_bitmap(mappname);
 }
-
 
 void swiat::init()
 {
@@ -884,12 +950,14 @@ if(&tenSwiat==NULL)
 
 RANDOMIZE(); 
 main_area_menager Lufciki(24,SWIDTH,SHEIGHT,28);
-if(!Lufciki.start("CO-EVOLUTION version 2.7",argc,argv))
+
+if(!Lufciki.start(ProgramName,argc,argv,1/*Buffered*/))
 		{
 		 printf("%s\n","Can't initialize graphics");
 		 exit(1);
 		}
-Lufciki.process_input();//Pierwsze zdazenia
+
+//Lufciki.process_input();//Pierwsze zdazenia
 
 tenSwiat.init();
 tenSwiat.tworz_lufciki(Lufciki);

@@ -1,0 +1,63 @@
+Por¢wnywanie plik¢w COEWO2_3.CXX i coewo3_4.cxx
+****** COEWO2_3.CXX
+#define USES_RANDG
+#include "random.h"
+#include "wb_ptr.hpp"
+****** coewo3_4.cxx
+#define USES_RANDG
+#include "wb_rand.h"
+#include "wb_ptr.hpp"
+******
+
+****** COEWO2_3.CXX
+typedef unsigned short base2; // musi miescic 2 zmienne base
+const base2 MAXBASE2=(base2)0xffffffffffffffffL;
+const base  MAXBASE =(base)MAXBASE2;
+****** coewo3_4.cxx
+typedef unsigned short base2; // musi miescic 2 zmienne base
+const base2 MAXBASE2=(base2)0xffffffffffffffffUL;
+const base  MAXBASE =(base)MAXBASE2;
+******
+
+****** COEWO2_3.CXX
+
+//TAK KOMPILUJE ALE WPISUJE 0
+base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
+//base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
+****** coewo3_4.cxx
+
+//TAK MSVC KOMPILUJE ALE WPISUJE 0
+//base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
+//base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
+******
+
+****** COEWO2_3.CXX
+//RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
+#define RECZNIE_WPISZ_OSLONE_PTR
+base agent::* oslona_ptr=NULL;
+****** coewo3_4.cxx
+//RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
+#define RECZNIE_WPISZ_PTR
+base agent::* geba_ptr=NULL;
+base agent::* oslona_ptr=NULL;
+******
+
+****** COEWO2_3.CXX
+
+#ifdef RECZNIE_WPISZ_OSLONE_PTR
+int *hack=(int*)&oslona_ptr;
+*hack=sizeof(base);
+#endif
+****** coewo3_4.cxx
+
+#ifdef RECZNIE_WPISZ_PTR
+{
+int *hack1=(int*)&oslona_ptr;
+*hack1=sizeof(base);
+int *hack2=(int*)&geba_ptr;
+*hack2=0;
+}
+#endif
+******
+
+
