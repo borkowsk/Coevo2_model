@@ -1,4 +1,4 @@
-/* Program symulujacy KOEWOLUCJE (Wersja 2011) */
+/* Program symulujacy KOEWOLUCJE (Wersja z lipca 2011)*/
 /* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
 /* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.Trofia>0 to  */
 /* znaczy ze atak zakonczyl sie powodzeniem.			    */
