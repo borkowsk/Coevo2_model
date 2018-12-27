@@ -1,4 +1,3 @@
-/* Wersja 2004 */
 #ifndef _COEWO_AGENT_HPP_
 #define _COEWO_AGENT_HPP_
 /* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
@@ -32,7 +31,7 @@ union wzor
 class agent//:public agent_base
 {    
 public:
-    class informacja_klonalna:public ::informacja_klonalna
+    class informacja_klonalna:public ::informacja_klonalna, public informacja_troficzna
     {
         wzor genom; //zeby bylo wiadomo co to za klon
         int _specjalised;
@@ -54,7 +53,32 @@ public:
           
           int   how_specialised_in_feeding() //Poziom specjalizacji mierzony w bitach
           {     return _feedingspec;    }
-*/
+          void dolicz_kontakt(unsigned long int marker_z_kim,double waga);
+*/        void dolicz_zezarcie(unsigned long int Identyfikator,double waga)
+          {                                    
+                                    assert(Identyfikator<=informacja_klonalna::ile_klonow());
+              dolicz_kontakt(Identyfikator,waga);
+          }
+
+          void zapomnij_kontakty_recur(); //Zapomina kontakty ekologiczne u danego klonu i jego potomkow
+                    
+          //Konieczna reiplementacja metod klasy informacja_troficzna::
+          virtual
+              unsigned Waga()//Domyslna waga dla wezla (liczba osobnikow lub biomasa)
+          {
+              return this->ile_zywych();
+          }
+          virtual  
+              unsigned X()//X domyslnego polozenia wezla - np maska ataku
+          {
+              return genom.w.geba;
+          }
+          
+          virtual 
+              unsigned Y()//Y domyslnego polozenia wezla - np maska obrony
+          {
+              return genom.w.oslona;
+          }
     };
 
     wzor			 w; // wzor bitowy taxonu
@@ -141,25 +165,29 @@ public:
     
     unsigned long  how_old_taxon()
     {
-       if(!jest_zywy()) return 0xffffffff;
+       if(!jest_zywy()) 
+           return 0xffffffff;
        else return klon->data_powstania_klonu();
     }
 
     int   how_specialised() //Poziom specjalizacji mierzony w bitach
     {
-        if(!jest_zywy()) return -1;
+        if(!jest_zywy()) 
+            return -1;
         else return klon->how_specialised();
     }
     
     int   how_specialised_autotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
     {
-        if(!jest_zywy() || !(w.w.geba==0xff)) return -1;
+        if(!jest_zywy() || !(w.w.geba==0xff)) 
+            return -1;
         else return klon->how_specialised();
     }
     
     int   how_specialised_heterotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
     {
-        if(!jest_zywy() || (w.w.geba==0xff)) return -1;
+        if(!jest_zywy() || (w.w.geba==0xff)) 
+            return -1;
         else return klon->how_specialised();
     }
 /*

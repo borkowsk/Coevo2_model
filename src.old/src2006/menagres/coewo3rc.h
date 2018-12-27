@@ -1,10 +1,12 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by amenager.rc
-///* Wersja 2004 */
+// Used by coewo3.rc
+//
+#define ID_VIEWOPT_TRACETREE            60001
+#define ID_VIEWOPT_TRACETROPHICNET      60002
 #define SSH_ONESTEP                     50001
 #define SSH_STARTSTOP                   50002
-#define SSH_FILE_DUMPSCREEN             50011
+#define SSH_FILE_DUMPSCREEN             50011   
 #define SSH_FILE_EXIT                   50012
 #define SSH_WINDOWS_TILE_ALL            50020
 #define SSH_WINDOWS_HIDEMARKEDAREAS     50021
@@ -22,7 +24,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_COMMAND_VALUE         40003
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

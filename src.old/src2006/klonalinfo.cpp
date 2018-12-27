@@ -1,5 +1,5 @@
 // klonalinfo.cpp: implementation of the klonalinfo class.
-///* Wersja 2004 */
+//
 //////////////////////////////////////////////////////////////////////
 
 #include "klonalinfo.hpp"
@@ -10,11 +10,12 @@
 //////////////////////////////////////////////////////////////////////
 
 informacja_klonalna::informacja_klonalna(informacja_klonalna* iparent):
-    parent(NULL),wlasna_wartosc(0),
+    parent(NULL),
     data_powstania(*zrodlo_makerow_czasu),
     ostatnia_smierc(0),
     zywych(0),
-    martwych(0)
+    martwych(0),
+    wlasna_wartosc(0xFADEC0DE)
 {
     assert(zrodlo_makerow_czasu!=NULL);
     wlasna_wartosc=++licznik;//Zwiekszenie i zapamientanie aktualnej wartosci licznika klonow
@@ -25,11 +26,23 @@ informacja_klonalna::informacja_klonalna(informacja_klonalna* iparent):
         parent->childs(parent->childs.CurrSize())=this;//I rejestracja nowego klonu jako dziecka klonu macierzystego
 }
 
-informacja_klonalna::~informacja_klonalna() //Destruktor chyba niepotrzebny, ale jest na wszelki wypadek
+informacja_klonalna::~informacja_klonalna() //Destruktor uzywany glownie dla zbyt malych
 {
     usunieto++;
+    wlasna_wartosc=0xFADEC0DE;
 }
       
+bool informacja_klonalna::OK(informacja_klonalna* who)
+//Sprawdza wartosc wlasna klonu - czy jest wlasciwa 
+{
+    if(who==NULL) 
+            return false;
+    if(who->wlasna_wartosc==0xFADEC0DE) 
+            return false;
+    if(who->wlasna_wartosc>licznik)
+            return false;
+    return true;
+}
 
 void informacja_klonalna::dolicz_indywiduum()
                        //Zliczanie urodzin

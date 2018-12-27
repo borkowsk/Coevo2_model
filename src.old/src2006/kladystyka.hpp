@@ -1,5 +1,5 @@
 // klonalinfo.hpp: interface for the klonalinfo class.
-///* Wersja 2004 */
+//
 //////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_KLADYSTYKA_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_)
@@ -7,6 +7,7 @@
 
 #include "arrasour.hpp"
 #include "klonalinfo.hpp"
+#include "troficinfo.h"
 #include "co_agent.hpp"
 
 //Obiekt zbierajacy statystyki z dowolnego (pod)drzewa filogenetycznego
@@ -19,12 +20,22 @@ public:
         size_t          parent_index;//Indeks rodzica na liscie
         agent::informacja_klonalna*    klon;//Wskaznik do oryginalnej informacji
         size_t          number_of_childs;//Liczba dzieci
-        unsigned long   disperse;//Polozenie tego klonu szerokosci drzewa
+        unsigned long   disperse;//Polozenie tego klonu na szerokosci drzewa
+        
         void set(size_t pind,
                  agent::informacja_klonalna* k,
                  unsigned long  d=0)
-            {parent_index=pind;klon=k;disperse=d;}
-        line_info():parent_index(0),klon(NULL),number_of_childs(0),disperse(0){}
+            {
+                parent_index=pind;
+                klon=k;
+                disperse=d;
+            }
+        
+        line_info():
+            parent_index(0),
+            klon(NULL),
+            number_of_childs(0),
+            disperse(0){}
     };
     //Informacja o wezlach ukladajacych galezie drzewa
     struct node_info
@@ -55,13 +66,16 @@ public:
 private:
     agent::informacja_klonalna* ancestor; //Wskaznik do wspólnego przodka
     size_t _for_simple_dispersing;
+    
     struct_array_source<node_info,unsigned long>* pNodeTime;//Punkty czasowe wezlow drzewa: specjacji, poczatku i konca istnienia klonu (po 3 na klon)
     struct_array_source<node_info,unsigned long>* pNodeSpread;//Sztuczny rozrzut wezlów  dla czytelnosci drzewa
 //  method_array_source<node_info,unsigned long>* pNodeWeights;//Kolorystyczne markery punktów - takie jak linii (np zeby byla narysowana skala)
     struct_array_source<connection,size_t>* pLineStarts;//Indeksy pocz¹tków linii laczacych wezly drzewa (po 2 na klon)
     struct_array_source<connection,size_t>* pLineEnds;//Indeksy koncow linii laczacych wezly drzewa (po 2 na klon)
     struct_array_source<connection,unsigned long>* pLineWeights;//Kolorystyczne markery lini
+   
     void _update_source_ptrs();//Poprawia wskazniki do tablic, ktore moga sie dezaktualizowac podczas wypelniania list
+    void _empty_source_ptrs();//Zmienia zrodla na puste (o dlugosci 0)
     void _disperse_nodes1();//Algorytm rozstawiania drzewa - minimalny sensowny
     void _disperse_nodes2();//Algorytm rozstawiania drzewa - bardziej estetyczny
 protected:
@@ -109,7 +123,7 @@ public:
     void operator = (agent::informacja_klonalna* TheAncestor);
     
     virtual void aktualizuj_liste_zstepnych(bool leftrec=true); //Aktualizacja listy
-
+    virtual void zapomnij_liste(bool zwolnij_pamiec=false); //Zapommina listy i ewentualnie zwalnia pamiec
     size_t HowManyClones() { return descendants.CurrSize();}
 };
 
@@ -120,7 +134,7 @@ inline
 void klad::operator = (agent::informacja_klonalna* TheAncestor)
     {
         if(ancestor!=TheAncestor)
-            descendants.Truncate(0);//Zapominamy stara liste
+            zapomnij_liste();//Zapominamy stare dane
         ancestor=TheAncestor;
     }
 

@@ -1,6 +1,6 @@
 //Microsoft Developer Studio generated resource script.
-///* Wersja 2004 */
-#include "resamngr.h"
+//
+#include "coewo3rc.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -9,6 +9,7 @@
 //
 #include "afxres.h"
 #include "amngrcmd.h"
+#include "rosymbol.h"
 #include "symshwin.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "\0"
+            VALUE "Comments", "COEWO - simulation by Wojciech Borkowski\0"
             VALUE "CompanyName", "Warsaw University\0"
             VALUE "FileDescription", "Symshell Application\0"
             VALUE "FileVersion", "1, 5, 0, 1\0"
@@ -76,7 +77,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APPICON             ICON    DISCARDABLE     "symshwin.ico"
+IDI_APPICON             ICON    DISCARDABLE     "coewo3.ico"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +105,13 @@ BEGIN
     END
     MENUITEM "Start/Stop",                  SSH_STARTSTOP
     MENUITEM "One step",                    SSH_ONESTEP
+    POPUP "View options"
+    BEGIN
+        MENUITEM "Trace filogenetic tree",      ID_VIEWOPT_TRACETREE
+        , CHECKED
+        MENUITEM "Trace trophic network",       ID_VIEWOPT_TRACETROPHICNET
+        , CHECKED
+    END
     POPUP "Window"
     BEGIN
         MENUITEM "Tile all",                    SSH_WINDOWS_TILE_ALL
@@ -141,14 +149,14 @@ END
 
 1 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "resamngr.h\0"
+    "coewo3rc.h\0"
 END
 
 2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "#include ""amngrcmd.h""\r\n"
-    "#include ""resamngr.h""\r\n"
+    "#include ""rosymbol.h""\r\n"
     "#include ""symshwin.h""\r\n"
     "\0"
 END
@@ -170,7 +178,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_APPNAME             "SSH_AREAMNGR"
-    IDS_DESCRIPTION         "Symshell library by Wojciech Borkowski (http://www.iss.uw.edu.pl/~borkowsk)"
+    IDS_DESCRIPTION         "COEWO - simulation utilising symshell library. By Wojciech Borkowski (http://www.iss.uw.edu.pl/~borkowsk)"
 END
 
 #endif    // English (U.S.) resources
