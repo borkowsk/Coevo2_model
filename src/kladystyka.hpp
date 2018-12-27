@@ -168,3 +168,4 @@ void klad::operator = (agent::informacja_klonalna* TheAncestor)
     }
 
 #endif // !defined(AFX_KLONALINFO_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_)
+

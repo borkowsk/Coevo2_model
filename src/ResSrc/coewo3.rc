@@ -17,9 +17,9 @@
 #include "AFXRES.H"     //SYMSHELL/MFC5_include/
 #else
 #include "rosymbol.h"
-#include "src/Windows/symshwin.h"   //SYMSHELL/src/Windows
-#include "src/Windows/menagres/resamngr.h"   //SYMSHELL/src/Windows/menagres/
-#include "MFC5_include/AFXRES.H"     //SYMSHELL/MFC5_include/
+#include "SYMSHELL/src/Windows/symshwin.h"   //SYMSHELL/src/Windows
+#include "SYMSHELL/src/Windows/menagres/resamngr.h"   //SYMSHELL/src/Windows/menagres/
+#include "SYMSHELL/MFC5_include/AFXRES.H"     //SYMSHELL/MFC5_include/
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -118,28 +118,9 @@ BEGIN
         MENUITEM "Exit",                        SSH_FILE_EXIT
     END
     MENUITEM "Start/Stop",                  SSH_STARTSTOP
+    MENUITEM ">>",                  SSH_STARTSTOP
     MENUITEM "One step",                    SSH_ONESTEP
-    POPUP "View options"
-    BEGIN
-        MENUITEM "More frequent"                 ID_VIEWOPT_MOREOFT
-        MENUITEM "Less frequent"                 ID_VIEWOPT_LESSOFT
-        MENUITEM "Trace filogenetic tree",      ID_VIEWOPT_TRACETREE
-        , CHECKED
-        MENUITEM "  by trophic mask"              ID_VIEWOPT_TREETROPHY
-        MENUITEM "  by defending mask"            ID_VIEWOPT_TREEDEFEND
-        MENUITEM "  by specialisation"            ID_VIEWOPT_TREESPEC
-        , CHECKED
-        MENUITEM "  by trophic spec"             ID_VIEWOPT_TREETRSPEC
-        MENUITEM "  by defense spec"             ID_VIEWOPT_TREEDESPEC
-        MENUITEM "  by clad size"                ID_VIEWOPT_TREESIZE
-        MENUITEM "Trace trophic network",       ID_VIEWOPT_TRACETROPHICNET
-        , CHECKED
-        MENUITEM "  full detailed"        ID_VIEWOPT_TRNETFULL
-        MENUITEM "  more detailed"        ID_VIEWOPT_TRNETMORE
-        MENUITEM "  less detailed"        ID_VIEWOPT_TRNETLESS
-        MENUITEM "  default det."         ID_VIEWOPT_TRNETDEFA
-        MENUITEM "Low speciations!"       ID_LOWMUTATIONS
-    END
+    MENUITEM ">",                    SSH_ONESTEP
     POPUP "Window"
     BEGIN
         MENUITEM "Tile all",                    SSH_WINDOWS_TILE_ALL
@@ -153,6 +134,24 @@ BEGIN
         MENUITEM "Unmark all areas",            SSH_WINDOWS_UNMARKALLAREAS
         MENUITEM SEPARATOR
     END
+    POPUP "View options"
+    BEGIN
+        MENUITEM "Less frequent",               ID_VIEWOPT_LESSOFT
+        MENUITEM "More frequent",               ID_VIEWOPT_MOREOFT
+        MENUITEM "Trace filogenetic tree",      ID_VIEWOPT_TRACETREE,   CHECKED
+        MENUITEM "  by trophic mask",           ID_VIEWOPT_TREETROPHY
+        MENUITEM "  by defending mask",         ID_VIEWOPT_TREEDEFEND
+        MENUITEM "  by specialisation",         ID_VIEWOPT_TREESPEC,    CHECKED
+        MENUITEM "  by trophic spec",           ID_VIEWOPT_TREETRSPEC
+        MENUITEM "  by defense spec",           ID_VIEWOPT_TREEDESPEC
+        MENUITEM "  by clad size",              ID_VIEWOPT_TREESIZE
+        MENUITEM "Trace trophic network",       ID_VIEWOPT_TRACETROPHICNET, CHECKED
+        MENUITEM "  full detailed",        ID_VIEWOPT_TRNETFULL
+        MENUITEM "  more detailed",        ID_VIEWOPT_TRNETMORE
+        MENUITEM "  less detailed",        ID_VIEWOPT_TRNETLESS
+        MENUITEM "  default det." ,        ID_VIEWOPT_TRNETDEFA
+        MENUITEM "Low speciations!",       ID_LOWMUTATIONS
+    END
     POPUP "Help"
     BEGIN
         MENUITEM "Author's WWW page",           SSH_HELP_AUTHORSWWWPAGE
@@ -160,7 +159,7 @@ BEGIN
     END
 END
 
-SSH_SIMPLE_MENU MENU DISCARDABLE 
+SSH_SIMPLE_MENU MENU DISCARDABLE
 BEGIN
     POPUP "FILE"
     BEGIN
@@ -175,12 +174,12 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE DISCARDABLE
 BEGIN
     "coewo3rc.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE DISCARDABLE
 BEGIN
     "#include ""afxres.h""\r\n"
     "#include ""amngrcmd.h""\r\n"
@@ -189,7 +188,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE DISCARDABLE
 BEGIN
     "\r\n"
     "\0"
@@ -203,7 +202,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
     IDS_APPNAME             "SSH_AREAMNGR"
     IDS_DESCRIPTION         "COEWO - simulation utilising symshell library. By Wojciech Borkowski (http://www.iss.uw.edu.pl/~borkowsk)"

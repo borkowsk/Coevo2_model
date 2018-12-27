@@ -1,5 +1,5 @@
 //
-//Zrodla do demonstracji interakcji drapieznik/ofiara za pomoca masek bitowych 
+//Zrodla do demonstracji interakcji drapieznik/ofiara za pomoca masek bitowych
 /////////////////////////////////////////////////////////////////////////////////
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
@@ -14,8 +14,11 @@
 class and_interaction_source:public rectangle_source_base
 //--------------------------------------------------------------
 {
+unsigned bit_and(unsigned A,unsigned B) //Po co? Takie sobie æwiczenie?
+	{  return A&B;  }
+
 public:
-// Constructor 
+// Constructor
 and_interaction_source( const char* itit):
 	rectangle_source_base(itit,256,256,1/*,subs,imiss*/){}
 
@@ -30,22 +33,21 @@ void  bounds(size_t& num,double& min,double& max)
 //Ile elementow,wartosc minimalna i maksymalna
 	{
 	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
-	
+
 	if(ymin<ymax)//Sa dane
 		{
 		min=ymin;max=ymax;
 		return;
 		}
 
-	//Nie sa dane wiec probkujemy - co troche kosztuje	
+	//Nie sa dane wiec probkujemy - co troche kosztuje
 	min=0;
 	max=255;
 	}
 
 double get(iteratorh& p)
-//Daje nastepna z la*lb liczb!!! 
-	{
-	assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
+//Daje nastepna z la*lb liczb!!!
+	{   assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
 	if(p==NULL) return miss;
 	/*
@@ -57,26 +59,30 @@ double get(iteratorh& p)
 	}
 
 double get(size_t index)//Przetwarza index uzyskany z geometri
-	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe	
+	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe
 	assert(index<getrectgeometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
-	return and(A,B);
-	}	
-
-unsigned and(unsigned A,unsigned B)
-	{
-	return A&B;
+	return bit_and(A,B);
 	}
-
 };
 
 
 class and_exploatation_source:public rectangle_source_base
 //--------------------------------------------------------------
 {
+double comp_and(unsigned A,unsigned B)
+	{
+	//double(w.w.oslona & zabojca.w.w.geba)/(zabojca.w.w.geba)*
+	//		double(w.w.oslona & zabojca.w.w.geba)/(w.w.oslona)
+    if(A!=0 && B!=0)
+	    return double(A & B)/double(B) * double(A & B)/double(A);
+    else
+        return miss;
+	}
+
 public:
-// Constructor 
+// Constructor
 and_exploatation_source( const char* itit):
 	rectangle_source_base(itit,256,256,1/*,subs,imiss*/){}
 
@@ -91,7 +97,7 @@ void  bounds(size_t& num,double& min,double& max)
 //Ile elementow,wartosc minimalna i maksymalna
 	{
 	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
-	
+
 	if(ymin<ymax)//Sa dane
 		{
 		min=ymin;max=ymax;
@@ -99,11 +105,11 @@ void  bounds(size_t& num,double& min,double& max)
 		}
 
 	min=0;           //Brak dopasowania
-	max=and(255,255);//Pelne dopasowanie maski ataku do maski ochrony. 100% trawienia.
+	max=comp_and(255,255);//Pelne dopasowanie maski ataku do maski ochrony. 100% trawienia.
 	}
 
 double get(iteratorh& p)
-//Daje nastepna z la*lb liczb!!! 
+//Daje nastepna z la*lb liczb!!!
 	{
 	assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
@@ -117,23 +123,12 @@ double get(iteratorh& p)
 	}
 
 double get(size_t index)//Przetwarza index uzyskany z geometri
-	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe	
+	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe
 	assert(index<getrectgeometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
-	return and(A,B);
-	}	
-
-double and(unsigned A,unsigned B)
-	{
-	//double(w.w.oslona & zabojca.w.w.geba)/(zabojca.w.w.geba)*
-	//		double(w.w.oslona & zabojca.w.w.geba)/(w.w.oslona)
-    if(A!=0 && B!=0)
-	    return double(A & B)/double(B) * double(A & B)/double(A);
-    else
-        return miss;
+	return comp_and(A,B);
 	}
-
 };
 
 

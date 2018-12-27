@@ -13,7 +13,7 @@ const base  MAXBASE =(base)MAXBASE2;
 const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
 
 //__declspec(align(8))  //TRZEBA ZAPEWNIÆ ¯EBY GENOM BY£ BITOW¥ CA£OŒCI¥
-#pragma pack(8)
+//#pragma pack(8)      ???
 struct bity_wzoru
 {
 	base geba;	// bitowy wzorzec trybu odzywiania

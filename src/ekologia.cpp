@@ -24,7 +24,7 @@ bool _moja_akcja_trawersowania(informacja_klonalna* current,
           
 static
 bool _trawersowanie_kasujace(informacja_klonalna* current,
-                              void* user_data)
+							  void* /*user_data*/)
 //Akcja do wykonania na wezle drzewa taksonow
 //-- usuwa kontakty z poprzedniego kroku
 {
@@ -36,7 +36,7 @@ bool _trawersowanie_kasujace(informacja_klonalna* current,
 
     return true;//Nie ma powodu przerywac
 }
-         
+
 inline
 void ekologia::_swap(ekologia::node_info& f,ekologia::node_info& s)
 {
@@ -295,10 +295,8 @@ void ekologia::ZapiszWFormacieVNA(ostream& out,unsigned size_tres,double weight_
 		for(size_t j=0;j<lines.CurrSize();j++)//lines(kolejny).set( indeks_zrodla, i, Waga)
 			if(lines[j].weight>=weight_tres && lines[j].start_node!=lines[j].end_node)
 			{
-				unsigned colw=0;
-				unsigned colorek=0;
-				colw=255-(255*(lines[j].weight/MaxWeight));
-				colorek=(colw<<16)+(colw<<8)+colw;
+				unsigned colw=255-(255*(lines[j].weight/MaxWeight));
+				unsigned colorek=(colw<<16)+(colw<<8)+colw;
 
 			   //	cerr<<"Max="<<MaxWeight<<" W="<<dec<<lines[j].weight<<"-->"
 			   //		<<(lines[j].weight/MaxWeight)<<" c="<<dec<<colw<<" ccc="
