@@ -1,0 +1,708 @@
+/* Program symulujacy KOEWOLUCJE */
+/* Kazdy osobnik ma swoj bitowy wzorzec odzywiania i bitowy wzorzec */
+/* strategi oslony. Jesli ATAKOWANY.OSLONA AND ATAKUJACY.GEBA>0 to  */
+/* znaczy ze atak zakonczyl sie powodzeniem.			    */
+/* Osobniki rozmnazaja sie kosztem wolnego miejsca i zgromadzonej energi */
+/* Ruchy wlasne, ofiara ataku, jak i moment rozmnazania wybierane sa */
+/* losowo, aby nie zaciemniac modelu dodatkowymi parametrami. 	     */
+
+#include <limits.h>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <signal.h>
+
+#include "wb_ptr.hpp"
+#include "textarea.hpp"
+#include "datasour.hpp"
+#include "simpsour.hpp"
+#include "filtsour.hpp"
+#include "areamngr.hpp"
+#include "mainmngr.hpp"
+#include "graphs.hpp"
+#include "sourmngr.hpp"
+
+#define USES_RANDG
+#include "Randoms.h"
+
+
+const unsigned SWIDTH=750;
+const unsigned SHEIGHT=550;
+const unsigned TAX_OUT=256;
+
+
+unsigned IBOKSWIATA=100; // FAKTYCZNIE UZYWANY BOK SWIATA
+unsigned textY=(IBOKSWIATA>TAX_OUT?IBOKSWIATA:TAX_OUT);
+int      WSP_KATASTROF=10;    // Wykladnik rozkladu katastrof
+const double WYPOSAZENIE_POTOMSTWA=0.1; // jaka czesc sily oddac potomkowi
+double EFEKTYWNOSC_AUTOTROFA=0.99; // jaka czesc swiatla uzywa autotrof
+const unsigned MINIMALNY_WIEK=155;    // Rodzi sie z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
+const unsigned NIEPLODNOSC=10;       // Prawdopodobienstwo rozmnazania jest 1/NIEPLODNOSC
+const unsigned PROMIENIOWANIE=160; // Co ile kopiowanych bitow nastepuje mutacja
+
+unsigned long MAX_ITERATIONS=0xffffffff; // najwieksza liczba iteracji
+unsigned LogRatio=1;      // Co ile krokow zapisywac do logu
+char     LogName[128]="coewo.log";
+
+/* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
+/* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
+typedef unsigned char base;   // musi byc bez znaku
+typedef unsigned short base2; // musi miescic 2 zmienne base
+const base2 MAXBASE2=(base2)0xffffffffL;
+const base  MAXBASE =(base)MAXBASE2;
+const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
+
+
+/* Czesc niezalezna od platformy */
+/*********************************/
+struct bity_wzoru
+{
+base geba;	// bitowy wzorzec trybu odzywiania
+base oslona;	// bitowy wzozec sposobu ochrony
+};
+
+union wzor
+{
+base2 	_full; // pelny wzor bitowy "taxonu"
+bity_wzoru w;  // i z podzilaem na pola
+//void clear(){_full=0;}
+};
+
+class agent
+{
+public:
+friend class swiat;
+wzor			 w; // wzor bitowy taxonu
+unsigned char wiek; // ile razy byl u sterowania, po przerolowaniu - smierc
+unsigned int  sila; // zgromadzona energia
+
+/* STATIC */
+static unsigned max;//jaki jest najwiekszy taxon
+static unsigned max_change;//i czy ostatnio max sie zmienil
+static unsigned ile_ind;// ile jest zywych indywiduow
+static unsigned ile_tax;// ile taxonow niezerowych
+static unsigned ile_big_tax;// ile taxonow liczniejszych niz 10
+static unsigned liczniki[/*(size_t)MAXBASE2+1*/];// Liczniki liczebnosci taxonow
+
+public:
+inline static   void tax(base2);  // rejestracja zmiany wartosci taxonu na ekranie
+agent(){w._full=wiek=sila=0;}
+void clear(){w._full=wiek=sila=0;}
+int  jest_zywy(){ return (sila!=0 && wiek!=0); }
+void init(base trof,base osl,unsigned isila); // inicjacja nowego agent
+void init(agent& rodzic); // inicjacja nowego jako potomka starego
+void kill();		       // smierc agent
+void kill(agent& zabojca);// usmiercenie agent przez drugie
+void uplyw_czasu();	       // oddzialywanie czasu
+static base2 kopioj(base2 r);  // kopiuje genotyp z mozliwa mutacja
+};
+
+//TAK POWINNO BYC - ALE MSVC NIE KOMPILUJE
+//base agent::* geba_ptr=&agent::w.w.geba;
+//base agent::* oslona_ptr=&agent::w.w.oslona;
+
+//TAK KOMPILUJE 4.0 ALE WPISUJE 0, a 
+//base agent::* geba_ptr=&agent::w.wzor::w.bity_wzoru::geba;
+//base agent::* oslona_ptr=&agent::w.wzor::w.bity_wzoru::oslona;
+
+//RECZNE WPISYWANIE - ZALEZNE OD "ENDIAN"
+#define RECZNIE_WPISZ_OSLONE_PTR
+base agent::* geba_ptr=NULL;
+base agent::* oslona_ptr=NULL;
+
+
+
+class swiat//Caly swiat symulacji
+//-------------------------------
+{
+size_t DLUG_WIERSZA;	
+wb_dynarray<agent> ziemia;
+unsigned long licznik;			  // licznik krokow symulacji
+FILE* log;
+//sources_menager Sources;//Zarzadca seri przekaznikowych
+matrix_source<unsigned>              *Liczniki;//Udostepnienie licznikow taxonow
+struct_matrix_source<agent,unsigned char >	 *Wiek;
+struct_matrix_source<agent,unsigned  int >	 *Sila;
+struct_matrix_source<agent,base >			 *Geba;
+struct_matrix_source<agent,base >			 *Oslona;
+text_area*				  OutArea; //Obszar do wypisywania statusu symulacji
+public:
+//KONSTRUKCJA DESTRUKCJA
+swiat(size_t szerokosc,char* logname);
+~swiat(){ fclose(log);}
+//AKCJE
+void init();	  // stan startowy symulacji
+void krok();	  // kolejny krok symulacji
+void kataklizm(); // wygenerowanie katastrofy - reczne lub losowe
+//Zapis calosci stara modle
+void dump();	  // zrzucenie stanu do logu
+//Wspolpraca z menagerem wyswietlania
+//---------------------------------------------
+void wskazniki(); // aktualizacja nowych wartosci wskaznikow
+void tworz_lufciki(area_menager_base&);//Tworzy domyslne lufciki
+//METODY POMOCNICZA
+void Torus(int& x,int& y);
+void ClearPosition(int x,int y);
+void ClearLine(int xxp,int yyp,int n);
+void Krater(int x,int y,int r); // Robi dziure z obszarze symulacji
+agent& Ziemia(size_t Kolumna,size_t Wiersz)
+{return ziemia[Wiersz*DLUG_WIERSZA+Kolumna];}
+};
+
+void swiat::tworz_lufciki(area_menager_base& Menager)
+//Tworzy domyslne lufciki
+{
+graph* pom;
+size_t szer_map=Menager.getwidth()-280;
+size_t wys_map=Menager.getheight()/4;
+
+#ifdef RECZNIE_WPISZ_OSLONE_PTR
+int *hack=(int*)&oslona_ptr;
+*hack=sizeof(base);
+hack=(int*)&geba_ptr;
+*hack=0;
+#endif
+
+//SILA
+Sila=new struct_matrix_source<agent,unsigned>("sila", //DOPASOWANE 2012
+                                DLUG_WIERSZA,
+                                DLUG_WIERSZA/2,
+								ziemia.get_ptr_val(),
+								&agent::sila//,
+                                //"sila"
+                                );
+if(!Sila) goto ERROR;
+pom=new carpet_graph(0,0,szer_map,wys_map,//domyslne wspolrzedne
+						Sila);//I zrodlo danych
+/*
+pom=new fast_carpet_graph<struct_matrix_source<unsigned> >
+					(0,300,430,530,//domyslne wspolrzedne
+						Sila);//I zrodlo danych
+*/
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settitle("SILA AGENTOW");
+Menager.insert(pom);
+
+
+//GEBA
+Geba=new struct_matrix_source<agent,base>("geba",//DOPASOWANE 2012
+                                DLUG_WIERSZA,DLUG_WIERSZA/2,
+								ziemia.get_ptr_val(),
+								geba_ptr//,
+								//"geba"
+                                );
+if(!Geba) goto ERROR;
+pom=new carpet_graph(0,wys_map+1,szer_map,2*wys_map+1,//domyslne wspolrzedne
+						Geba);//I zrodlo danych
+
+if(!pom) goto ERROR;
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settitle("TROFIA AGENTOW");
+Menager.insert(pom);
+
+//OSLONA
+Oslona=new struct_matrix_source<agent,base>("oslona",//DOPASOWANE 2012
+                                DLUG_WIERSZA,DLUG_WIERSZA/2,
+								ziemia.get_ptr_val(),
+								oslona_ptr//,
+								//"oslona"
+                                );
+if(!Oslona) goto ERROR;
+pom=new carpet_graph(0,(wys_map+1)*2,szer_map,(wys_map+1)*3,//domyslne wspolrzedne
+						Oslona);//I zrodlo danych
+
+if(!pom) goto ERROR;
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settitle("OBRONNOSC AGENTOW");
+Menager.insert(pom);
+
+//Wiek
+Wiek=new struct_matrix_source<agent,unsigned char>("wiek",//DOPASOWANE 2012
+                                DLUG_WIERSZA,DLUG_WIERSZA/2,
+								ziemia.get_ptr_val(),
+								&agent::wiek//,
+								//"wiek"
+                                );
+if(!Wiek) goto ERROR;
+pom=new carpet_graph(0,(wys_map+1)*3,szer_map,(wys_map+1)*4,//domyslne wspolrzedne
+						Wiek);//I zrodlo danych
+pom->setdatacolors(1,255);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settitle("CZAS ZYCIA AGENTOW");
+Menager.insert(pom);
+
+//INFORMACJE
+OutArea=new text_area(szer_map+2,300,szer_map+279,501,"SYMULACJA STARTUJE");
+OutArea->settitle("STATYSTYKA:");
+//OutArea->setbackground(0); //DEBUG 2012
+//OutArea->settextcolor(254);
+if(!OutArea) goto ERROR;
+Menager.insert(OutArea);
+
+if(OutArea->add_line("Inicjalizacja...")!=1)
+     cerr<<"Problemy z oknem "<<OutArea->name()<<endl;//DOPISANE 2012
+OutArea->replot();
+delay_ms(250);
+
+//TAXONY - OSTANIE OKNO BO NAJKOSZTOWNIEJSZE W RYSOWANIU
+
+Liczniki=new matrix_source<unsigned>(
+                                     256,256,
+									 agent::liczniki,
+									 "liczebnosc taksonow",//NAZWA SERI
+									 1//Nie torus
+									 );
+if(!Liczniki) goto ERROR;
+
+{
+log_1_plus_F_filter<matrix_source<unsigned> >* fl=new log_1_plus_F_filter<matrix_source<unsigned> >(Liczniki);
+if(!fl) goto ERROR;
+
+pom=new fast_carpet_graph<
+		log_1_plus_F_filter<matrix_source<unsigned> >
+					>
+					(szer_map+1,0,szer_map+281,299,//domyslne wspolrzedne
+						fl,1);//I zrodlo danych
+if(!pom) goto ERROR;
+}
+
+pom->setbackground(0);
+pom->setdatacolors(14,254);//Pierwsze 25 kolorow bedzie slabo widoczne
+pom->settextcolors(255,255);
+pom->settitle("MAPA ISTNIEJACYCH TAKSONOW");
+Menager.insert(pom);
+
+return;
+ERROR:
+perror("Nie mozna utworzyc obiektow wizualizujacych");
+exit(1);																					
+}
+
+/* IMPLEMENTACJA CZESCI NIEZALEZNEJ OD PLATFORMY */
+/*************************************************/
+
+//DEFINICJA KONSTRUKTORA
+swiat::swiat(size_t szerokosc,char* logname):	
+	ziemia((szerokosc/2)*szerokosc), //Prostokat np 20x10
+	DLUG_WIERSZA(szerokosc),
+	//Sources(32)
+	OutArea(NULL),
+	Liczniki(NULL),
+	Wiek(NULL),Sila(NULL),
+	Geba(NULL),Oslona(NULL)
+{
+log=fopen(logname,"a");
+if(!log)
+	{
+	perror(logname);
+	exit(2);
+	}
+licznik=0;
+}
+
+
+//METODY POMOCNICZA
+inline
+void swiat::Torus(int& x,int& y)
+{
+if(x<0) x=(DLUG_WIERSZA)-x;
+if(y<0) y=DLUG_WIERSZA/2-y;
+x%=DLUG_WIERSZA;y%=DLUG_WIERSZA/2;
+}
+
+inline
+void swiat::ClearPosition(int x,int y)
+{
+Torus(x,y);
+if(!Ziemia(x,y).jest_zywy()) return;
+Ziemia(x,y).kill();
+}
+
+void swiat::init()
+{
+//assert(ziemia);
+Ziemia(DLUG_WIERSZA/2,DLUG_WIERSZA/4).init(255,255,255);
+
+fprintf(log,"%ux%u\tWYP_POT=%f\tEFEKT=%f\tMAX_WIEK=%d\tPLOD=%f\tRTG=%f\tBUM=0.5^%d\n",
+DLUG_WIERSZA,DLUG_WIERSZA/2,
+WYPOSAZENIE_POTOMSTWA,EFEKTYWNOSC_AUTOTROFA,
+(int)(255-MINIMALNY_WIEK),1./NIEPLODNOSC,1./PROMIENIOWANIE,WSP_KATASTROF);
+fprintf(log,"N#\tIND\tTAX\tBIG\tFOS\n");
+}
+
+
+/* NAJWAZNIEJSZE FUNKCJE - GLOWNA IDEA SYMULACJI */
+
+void agent::init(base trof,base osl, unsigned isila)
+ // inicjacja nowego indywiduum
+{
+w.w.oslona=osl;
+w.w.geba=trof;
+sila=isila;
+wiek=MINIMALNY_WIEK;
+assert(w._full>0);
+// Sprawdzenie czy oslona nie jest za dobra i czy inne parametry sa OK
+if(w.w.oslona==0 || !jest_zywy())
+      {
+      clear();
+      return;
+      }
+
+ile_ind++;
+base2 iwfull=w.w.geba*256+w.w.oslona;
+liczniki[iwfull]++;
+assert(*(liczniki+iwfull));
+
+if(liczniki[iwfull]>max)
+		{
+		max=liczniki[iwfull];
+		max_change=1;
+		}
+
+if( liczniki[iwfull]==1 ) // pierwszy przedstawiciel taxonu
+		ile_tax++;   // wiec liczba taxonow wzrasta
+if( liczniki[iwfull]==11 ) // osiagnal wartosc >10 duzy taxon - rozwojowy
+		ile_big_tax++;
+}
+
+void agent::kill()
+// -----//---- przez swiat
+{
+assert(w.w.oslona>0);
+assert( w._full>0 );
+ile_ind--;
+base2 wfull=w.w.geba*256+w.w.oslona;
+liczniki[wfull]--;
+if( liczniki[wfull]==0 )	//ostatni przedstawiciel tego taxonu
+	ile_tax--;
+if( liczniki[wfull]==10 ) // osiagnal wartosc <=10 maly taxon - nie rozwojowy
+	ile_big_tax--;
+assert(w._full>0 );
+w._full=sila=wiek=0;
+}
+
+void agent::init(agent& rodzic)
+ // inicjacja nowego jako potomka starego
+{
+w._full=kopioj(rodzic.w._full);
+unsigned uposazenie=unsigned(rodzic.sila*WYPOSAZENIE_POTOMSTWA);
+unsigned cena=w.w.geba + (base)(~w.w.oslona) + uposazenie; // Oslona 0 jest najdrozsza
+if( rodzic.sila<=cena )  // Nie ma sily na potomka
+	{ w._full=0; return; }
+rodzic.sila-=cena; 	 // Placi za wyprodukowanie i wyposazenie
+assert(rodzic.sila!=0);
+init(w.w.geba,w.w.oslona,uposazenie);   // prawdziwa inicjacja
+}
+
+void agent::kill(agent& zabojca)
+// usmiercenie indywiduum przez drugie
+{
+if(zabojca.sila==0) return; //niezdolny zabijac
+assert(w.w.oslona>0);
+assert(w._full>0);
+/* Zabojca dostaje pewna czesc sily */
+/* proporcjonalna do tego ile bitow oslony pasuje do jego geby */
+if(w.w.oslona!=0)
+   if(zabojca.w.w.geba!=0)
+       zabojca.sila+=unsigned(sila *
+    double(w.w.oslona & zabojca.w.w.geba)/(zabojca.w.w.geba)*
+    double(w.w.oslona & zabojca.w.w.geba)/(w.w.oslona)
+    );
+assert(zabojca.sila!=0);
+assert(w._full>0);
+/* Potem ofiara ginie */
+kill();
+}
+
+void agent::uplyw_czasu()
+// prawo czasu - wszystko sie starzeje
+{
+assert(w.w.oslona>0);
+assert(w._full>0);
+wiek++;	       // Normalne starzenie sie
+if(w.w.geba==AUTOTROF) //JEST  A U T O T R O F E M
+	{
+    sila+=unsigned(100*EFEKTYWNOSC_AUTOTROFA-1);// bez zutu gnu sie czepia a tak ma byc!
+	assert(sila!=0);
+	}
+	else
+	sila--;// Metaboliczne zurzycie energii
+assert(w._full>0);
+}
+
+base2 agent::kopioj(base2 r)
+// kopiuje genotyp z mozliwa mutacja
+{
+base2 mask=RANDOM(PROMIENIOWANIE);
+if(mask<=16) // Prowizorka - nieprzenosne jesli base >16bitowe
+	{
+	mask=0x1<<mask;
+	r^=mask;
+	}
+return r;
+}
+
+struct vector2
+{ signed char x,y; };
+
+void swiat::krok()
+{
+static vector2 kierunki[]={{1,1},{-1,-1},{1,-1},{-1,1},
+			   {0,1},{ 1, 0},{0,-1},{-1,0} };
+long ile= long(DLUG_WIERSZA)*long(DLUG_WIERSZA/2); // ile na krok MonteCarlo
+licznik++;
+for(long i=0;i<ile;i++) // rob krok MonteCarlo
+	{
+	int x=RANDOM(DLUG_WIERSZA);
+	int y=RANDOM(DLUG_WIERSZA/2);
+	Torus(x,y);
+	if(!Ziemia(x,y).jest_zywy()) // jest martwy
+		continue;		// obrob nastepnego
+	Ziemia(x,y).uplyw_czasu();
+	if(!Ziemia(x,y).jest_zywy())  // nie moze dalej zyc
+		{
+		Ziemia(x,y).kill();
+		continue;               // obrob nastepnego
+		}
+	unsigned a=RANDOM(8);
+	assert(a<8);
+	int x1=(x+kierunki[a].x);
+	int y1=(y+kierunki[a].y);
+	Torus(x1,y1);
+	if(!Ziemia(x1,y1).jest_zywy()) // wolne miejsce
+	   {
+	   if(RANDOM(NIEPLODNOSC)==0)     // rozmnazanie
+		{
+		Ziemia(x1,y1).init(Ziemia(x,y));
+		}
+		else			  // przemieszczenie
+		{
+		Ziemia(x1,y1)=Ziemia(x,y);
+		Ziemia(x,y).clear();
+		}
+	   }
+	   else  // Naprawde jest zywy - proba zjedzenia, jesli atakujacy nie jest autotrofem
+	   if( Ziemia(x,y).w.w.geba!=AUTOTROF &&
+	      (Ziemia(x1,y1).w.w.oslona & Ziemia(x,y).w.w.geba) != 0)
+		   {
+		   Ziemia(x1,y1).kill(Ziemia(x,y));	
+		   }
+	}
+kataklizm(); // jeden, chocby maly na krok monte-carlo
+}
+
+double poison(int n); // generuje rozklad para-poison w zakresie 0..1 o n stopniach
+
+void  swiat::kataklizm(void)
+{
+double power;
+int x,y;
+if(WSP_KATASTROF<0)
+   return; //spontaniczne katastrofy wylaczone
+x=RANDOM(DLUG_WIERSZA);
+y=RANDOM(DLUG_WIERSZA/2);
+power=poison(WSP_KATASTROF);
+assert(power>=0 && power<=1);
+Krater(x,y,int(power*DLUG_WIERSZA/2));
+}
+
+
+
+//IMPLEMENTGACJA WIZUALIZACJI Z UZYCIEM MENAGERA
+//--------------------------------------------------
+
+void  swiat::wskazniki(void)
+{
+//* LOSOWANIE SKAMIENIALOSCI 
+unsigned x=RANDOM(DLUG_WIERSZA);
+unsigned y=RANDOM(DLUG_WIERSZA/2);
+if(licznik%LogRatio==0)
+  fprintf(log,"%lu\t%lu\t%lu\t%lu\t%u\n",
+	(unsigned long)licznik,
+	(unsigned long)agent::ile_ind,
+	(unsigned long)agent::ile_tax,
+	(unsigned long)agent::ile_big_tax,
+//* Wazna jest zeby specjalizacja pokarmowa byla na starszycg bitach
+       (unsigned)(( (unsigned)Ziemia(x,y).w.w.geba*((unsigned)MAXBASE+1) )+Ziemia(x,y).w.w.oslona)
+       );
+//
+wb_dynarray<char> bufor(1024);//ze sporym zapsem
+sprintf(bufor.get_ptr_val(),"%lu KROK SYMULACJI\nILOSC AGENTOW:%lu\nILOSC KLONOW:%lu\nILOSC TAKSONOW:%lu\n",
+	//agent::nazwy[agent::plot_mode],
+	(unsigned long)licznik,
+	(unsigned long)agent::ile_ind,
+	(unsigned long)agent::ile_tax,
+	(unsigned long)agent::ile_big_tax);
+
+if(OutArea)
+    {
+    //cout<<bufor.get_ptr_val()<<endl;
+    OutArea->clean();
+	if(OutArea->add_text(bufor.get_ptr_val())!=1)
+	         cerr<<"Problemy z oknem "<<OutArea->name()<<endl;                                         
+    }
+if(Liczniki)
+	{
+	Liczniki->new_data_version();
+	Liczniki->setminmax(0,agent::max);//Oszczedza liczenia max
+	}
+}
+
+/*  OGOLNA FUNKCJA MAIN */
+/************************/
+int parse_options(const int argc,const char* argv[]);
+int main(const int argc,const char* argv[])
+{
+printf("CO-EWOLUCJA: program symulujacy kooewolucje wielu gatunkow\n");
+printf("POLECENIA: 'g': GEBA 'o':OSLONA 's':SILA 'w':WIEK 'q':QUIT\n");
+printf("LICZBA MOZLIWYCH KLONOW=%lu MAXINT=%d\n",(unsigned long)MAXBASE2,INT_MAX);
+
+if(sizeof(base)*2!=sizeof(base2))
+	{
+	fprintf(stderr,"Niewlasciwe rozmiary dla typow bazowych:2*%u!=%u\n",
+		sizeof(base),sizeof(base2));
+	exit(1);
+	}
+
+if(!parse_options(argc,argv))
+        exit(1);
+
+swiat& tenSwiat=*new swiat(IBOKSWIATA,LogName);
+if(&tenSwiat==NULL)
+    {
+    fprintf(stderr,"Brak pamieci!\n");
+    exit(1);
+    }
+
+RANDOMIZE(); 
+buffering_setup(1/*Yes*/);//DOPISANE 2012			/* Przelaczanie buforowanie okna - moze nie dzialac po inicjacji*/
+main_area_menager Lufciki(24,SWIDTH,SHEIGHT,28);
+if(!Lufciki.start("CO-EVOLUTION version 2",argc,argv))
+		{
+		 printf("%s\n","Can't initialize graphics");
+		 exit(1);
+		}
+Lufciki.process_input();//Pierwsze zdazenia
+
+tenSwiat.init();
+tenSwiat.tworz_lufciki(Lufciki);
+
+//zamiast Lufciki.run_input_loop();
+while(1)
+	{
+	tenSwiat.wskazniki();//Aktualizacja informacji
+	Lufciki._replot();//Odrysowanie
+	Lufciki.flush();
+	Lufciki.process_input();//Obsluga zdarzen zewnetrznych
+	if(!Lufciki.should_continue())
+				break;//Koniec zabawy
+	tenSwiat.krok();  //Kolejny krok symulacji
+	}
+
+printf("Do widzenia!!!\n");
+return 0;
+}
+
+double poison(int n)
+// generuje rozklad para-poison w zakresie 0..1 o n stopniach
+{
+double pom=1;
+for(int i=1;i<=n;i++)
+	pom*= DRAND() ; // Mnozenie przez wartosc od 0..1
+assert(pom>=0 && pom<=1);
+return pom;
+}
+
+
+/* STATIC ALLOCATION */
+unsigned agent::max=0;//jaki jest najwiekszy taxon
+unsigned agent::max_change=0;//i czy ostatnio max sie zmienil
+unsigned agent::ile_ind=0;// ile jest zywych indywiduow
+unsigned agent::ile_tax=0;// ile taxonow niezerowych
+unsigned agent::ile_big_tax=0;// ile taxonow liczniejszych niz 10
+const /*unsigned long*/size_t TAXNUMBER=(unsigned long)MAXBASE2+1;
+unsigned agent::liczniki[ /*TAXNUMBER*/MAXBASE2+1 ];// Liczniki liczebnosci taxonow
+								//Musi miec mozliwosc posiadania 0xffff+1 elementow
+
+void swiat::ClearLine(int xxp,int yyp,int n)
+{
+for(int i=xxp;i<xxp+n;i++)
+	ClearPosition(i,yyp);
+}
+
+#include "krater2.imp"
+
+int parse_options(const int argc,const char* argv[])
+{
+char* pom;
+for(int i=1;i<argc;i++)
+    {
+    if( *argv[i]=='-' ) /* Opcja X lub symshella */
+		continue;
+    if((pom=strstr(argv[i],"BOK="))!=NULL) //Nie NULL czyli jest
+	{
+	IBOKSWIATA=atol(pom+4);
+    if(IBOKSWIATA<3 || IBOKSWIATA>=SWIDTH)
+		{
+		fprintf(stderr,"Niewlasciwy BOK ==  %u\n",IBOKSWIATA);
+		return 0;
+		}
+	}
+    else
+    if((pom=strstr(argv[i],"BUM="))!=NULL) //Nie NULL czyli jest
+    {
+    WSP_KATASTROF=atol(pom+4);
+    if(WSP_KATASTROF<=0)
+	{
+	fprintf(stderr,"Ujemny wykladnik katastrof. Katastrofy wylaczone\n");
+	}
+    }
+    else
+    if((pom=strstr(argv[i],"AUTO="))!=NULL) //Nie NULL czyli jest
+    {
+    EFEKTYWNOSC_AUTOTROFA=atof(pom+5);
+    if(EFEKTYWNOSC_AUTOTROFA<=0)
+		{
+        fprintf(stderr,"Efektywnosc autotrofa musi byc w zakresie 0..0.99\n");
+		return 0;
+        }
+    printf("Ilosc iteracji ustawiona na %lu\n",MAX_ITERATIONS);
+    }
+    else
+    if((pom=strstr(argv[i],"MAX="))!=NULL) //Nie NULL czyli jest
+    {
+    MAX_ITERATIONS=atol(pom+4);
+    if(MAX_ITERATIONS<=0)
+		{
+	fprintf(stderr,"Ilosc iteracji nie moze byc <=0\n");
+		return 0;
+        }
+    printf("Ilosc iteracji ustawiona na %lu\n",MAX_ITERATIONS);
+    }
+    else
+    if((pom=strstr(argv[i],"LOG="))!=NULL) //Nie NULL czyli jest
+    {
+    LogRatio=atol(pom+4);
+    if(LogRatio<=0)
+		{
+	fprintf(stderr,"Czestosc zapisu nie moze byc <=0\n");
+		return 0;
+        }
+    }
+    else
+    if((pom=strstr(argv[i],"PLIK="))!=NULL) //Nie NULL czyli jest
+    {
+    strcpy(LogName,pom+5);
+    }
+	else /* Ostatecznie wychodzi ze nie ma takiej opcji */
+	{
+	fprintf(stderr,"Bledna opcja %s\n",argv[i]);
+	fprintf(stderr,"MOZLIWE TO:\n");
+    fprintf(stderr,"BOK=NN BUM=NN LOG=N \n");
+	return 0;
+	}
+    }
+return 1;
+}
+

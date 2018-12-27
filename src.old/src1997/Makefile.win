@@ -1,0 +1,77 @@
+# Project: coevo97
+# Makefile created by Dev-C++ 4.9.9.1
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = COEWO2.o ../../WBRTM/SYMSHELL/src/Windows/symshwin.o ../../WBRTM/SYMSHELL/src/DataSources/sourbase.o ../../WBRTM/SYMSHELL/src/DataSources/sourmngr.o ../../WBRTM/SYMSHELL/src/GAreas/areamngr.o ../../WBRTM/SYMSHELL/src/GAreas/graphs.o ../../WBRTM/SYMSHELL/src/GAreas/mainmngr.o ../../WBRTM/SYMSHELL/src/BGraphix/sshutils.o ../../WBRTM/BASE/wb_rand.o ../../WBRTM/BASE/wb_randg.o ../../WBRTM/SYMSHELL/src/Simul/geombase.o ../../WBRTM/SYMSHELL/src/errorent.o ../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.o ../../WBRTM/SYMSHELL/src/GAreas/gadgets.o ../../WBRTM/BASE/ViewHtmlPchar.o ../../WBRTM/PTRS/wb_pchar.o ../../WBRTM/PTRS/wb_pchar_verboten.o $(RES)
+LINKOBJ  = COEWO2.o ../../WBRTM/SYMSHELL/src/Windows/symshwin.o ../../WBRTM/SYMSHELL/src/DataSources/sourbase.o ../../WBRTM/SYMSHELL/src/DataSources/sourmngr.o ../../WBRTM/SYMSHELL/src/GAreas/areamngr.o ../../WBRTM/SYMSHELL/src/GAreas/graphs.o ../../WBRTM/SYMSHELL/src/GAreas/mainmngr.o ../../WBRTM/SYMSHELL/src/BGraphix/sshutils.o ../../WBRTM/BASE/wb_rand.o ../../WBRTM/BASE/wb_randg.o ../../WBRTM/SYMSHELL/src/Simul/geombase.o ../../WBRTM/SYMSHELL/src/errorent.o ../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.o ../../WBRTM/SYMSHELL/src/GAreas/gadgets.o ../../WBRTM/BASE/ViewHtmlPchar.o ../../WBRTM/PTRS/wb_pchar.o ../../WBRTM/PTRS/wb_pchar_verboten.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" libcomdlg32.a libgdi32.a  -g3 
+INCS =  -I"C:/Dev-Cpp/include"  -I"S:/WBRTM"  -I"S:/WBRTM/SYMSHELL"  -I"S:/WBRTM/INCLUDE" 
+CXXINCS =  -I"C:/Dev-Cpp/include/c++/3.3.1"  -I"C:/Dev-Cpp/include/c++/3.3.1/mingw32"  -I"C:/Dev-Cpp/include/c++/3.3.1/backward"  -I"C:/Dev-Cpp/lib/gcc-lib/mingw32/3.3.1/include"  -I"C:/Dev-Cpp/include"  -I"S:/WBRTM"  -I"S:/WBRTM/SYMSHELL"  -I"S:/WBRTM/INCLUDE" 
+BIN  = coevo97.exe
+CXXFLAGS = $(CXXINCS)   -w -fexpensive-optimizations -O1 -g3
+CFLAGS = $(INCS)   -w -fexpensive-optimizations -O1 -g3
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before coevo97.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "coevo97.exe" $(LIBS)
+
+COEWO2.o: COEWO2.CPP
+	$(CPP) -c COEWO2.CPP -o COEWO2.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/Windows/symshwin.o: ../../WBRTM/SYMSHELL/src/Windows/symshwin.c
+	$(CC) -c ../../WBRTM/SYMSHELL/src/Windows/symshwin.c -o ../../WBRTM/SYMSHELL/src/Windows/symshwin.o $(CFLAGS)
+
+../../WBRTM/SYMSHELL/src/DataSources/sourbase.o: ../../WBRTM/SYMSHELL/src/DataSources/sourbase.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/DataSources/sourbase.cpp -o ../../WBRTM/SYMSHELL/src/DataSources/sourbase.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/DataSources/sourmngr.o: ../../WBRTM/SYMSHELL/src/DataSources/sourmngr.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/DataSources/sourmngr.cpp -o ../../WBRTM/SYMSHELL/src/DataSources/sourmngr.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/GAreas/areamngr.o: ../../WBRTM/SYMSHELL/src/GAreas/areamngr.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/GAreas/areamngr.cpp -o ../../WBRTM/SYMSHELL/src/GAreas/areamngr.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/GAreas/graphs.o: ../../WBRTM/SYMSHELL/src/GAreas/graphs.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/GAreas/graphs.cpp -o ../../WBRTM/SYMSHELL/src/GAreas/graphs.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/GAreas/mainmngr.o: ../../WBRTM/SYMSHELL/src/GAreas/mainmngr.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/GAreas/mainmngr.cpp -o ../../WBRTM/SYMSHELL/src/GAreas/mainmngr.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/BGraphix/sshutils.o: ../../WBRTM/SYMSHELL/src/BGraphix/sshutils.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/BGraphix/sshutils.cpp -o ../../WBRTM/SYMSHELL/src/BGraphix/sshutils.o $(CXXFLAGS)
+
+../../WBRTM/BASE/wb_rand.o: ../../WBRTM/BASE/wb_rand.cpp
+	$(CPP) -c ../../WBRTM/BASE/wb_rand.cpp -o ../../WBRTM/BASE/wb_rand.o $(CXXFLAGS)
+
+../../WBRTM/BASE/wb_randg.o: ../../WBRTM/BASE/wb_randg.c
+	$(CPP) -c ../../WBRTM/BASE/wb_randg.c -o ../../WBRTM/BASE/wb_randg.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/Simul/geombase.o: ../../WBRTM/SYMSHELL/src/Simul/geombase.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/Simul/geombase.cpp -o ../../WBRTM/SYMSHELL/src/Simul/geombase.o $(CXXFLAGS)
+
+../../WBRTM/SYMSHELL/src/errorent.o: ../../WBRTM/SYMSHELL/src/errorent.c
+	$(CC) -c ../../WBRTM/SYMSHELL/src/errorent.c -o ../../WBRTM/SYMSHELL/src/errorent.o $(CFLAGS)
+
+../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.o: ../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.c
+	$(CC) -c ../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.c -o ../../WBRTM/SYMSHELL/src/Windows/sshmenufwin.o $(CFLAGS)
+
+../../WBRTM/SYMSHELL/src/GAreas/gadgets.o: ../../WBRTM/SYMSHELL/src/GAreas/gadgets.cpp
+	$(CPP) -c ../../WBRTM/SYMSHELL/src/GAreas/gadgets.cpp -o ../../WBRTM/SYMSHELL/src/GAreas/gadgets.o $(CXXFLAGS)
+
+../../WBRTM/BASE/ViewHtmlPchar.o: ../../WBRTM/BASE/ViewHtmlPchar.cpp
+	$(CPP) -c ../../WBRTM/BASE/ViewHtmlPchar.cpp -o ../../WBRTM/BASE/ViewHtmlPchar.o $(CXXFLAGS)
+
+../../WBRTM/PTRS/wb_pchar.o: ../../WBRTM/PTRS/wb_pchar.cpp
+	$(CPP) -c ../../WBRTM/PTRS/wb_pchar.cpp -o ../../WBRTM/PTRS/wb_pchar.o $(CXXFLAGS)
+
+../../WBRTM/PTRS/wb_pchar_verboten.o: ../../WBRTM/PTRS/wb_pchar_verboten.cpp
+	$(CPP) -c ../../WBRTM/PTRS/wb_pchar_verboten.cpp -o ../../WBRTM/PTRS/wb_pchar_verboten.o $(CXXFLAGS)

@@ -1,0 +1,96 @@
+// KRATER - TRANSLATED FROM BASIC CODE IMPLEMENTED ELLIPSE DRAWING
+// BASED ON BRESENHAM ALGORITM                                      
+
+void swiat::Krater(int x,int y,int r)
+{
+// Robi dziure z obszarze symulacji
+if(r<=1)
+	{ ClearPosition(x,y); return; }
+//ClearEllipse(x,y,r,r);// expanded below
+//if(r>5)
+//    putchar(7);
+int xxs=x;
+int yys=y;
+int bb=r;
+int aa=r;
+{
+register int xxp,yyp;
+register int xs=xxs;
+register int ys=yys;
+register int yi=0;
+register int xi=0;
+register int n=0;
+
+long int a2=aa*aa;
+long int b2=bb*bb;
+long int a2s=a2;
+long int b2s=b2*(2*aa+1);
+long int DELTAi=2*(1-bb);
+
+if(aa==0 || bb==0)
+		return ;
+if(aa<(long)-INT_MAX) yi=-INT_MAX;
+   else if(aa>(long)INT_MAX) yi=INT_MAX;
+	    else   yi=aa;
+yyp=INT_MAX;
+while( yi>=0 )
+{
+xxp=xs-xi;
+if(yyp!=yi) // Nowa linia
+	{
+	n=2*xi+1;
+	yyp= ys-yi;
+	ClearLine(xxp,yyp,n);
+	yyp= ys+yi;
+	ClearLine(xxp,yyp,n);
+	}
+	else // Uzupelnienie lini o punkty brzezne
+	{
+	xxp=xs+xi;  yyp= ys+yi;
+		ClearPosition(xxp , yyp );
+	xxp=xs-xi;  yyp= ys-yi;
+		ClearPosition(xxp , yyp );
+	xxp=xs+xi;  yyp= ys-yi;
+		ClearPosition(xxp , yyp );
+	xxp=xs-xi;  yyp= ys+yi;
+		ClearPosition(xxp , yyp );
+	}
+yyp=yi; // zapamietaj do porownania
+//BEZRYSOWANIA:
+if(DELTAi<0L) goto _1300;
+   else {if(DELTAi==0L)
+		goto _1240;
+	  else
+		goto _1180; }
+
+_1180:			 /* decyzja */
+if( (DELTAi+DELTAi-a2s)<=0L )
+		goto _1240;
+	else
+		goto _1380;
+//continue;
+
+_1240: 			/* krok ukosny */
+xi++;
+yi--;
+a2s+=a2+a2;
+b2s-=(b2+b2);
+DELTAi+=(a2s-b2s);
+continue;
+
+_1300:			/* krok poziomy */
+if((DELTAi+DELTAi+b2s)>0L) goto _1240;
+xi++;
+a2s+=a2+a2;
+DELTAi+=a2s;
+continue;
+//goto BEZRYSOWANIA;
+
+_1380:			/* krok pionowy */
+yi--;
+b2s-=(b2+b2);
+DELTAi-=b2s;
+}
+
+}
+}

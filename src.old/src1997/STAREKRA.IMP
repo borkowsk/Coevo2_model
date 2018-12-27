@@ -1,0 +1,141 @@
+/*
+inline void indywiduum::plot(int x,int y)
+// wyswietlanie zgodnie z trybem
+{
+int pom;
+switch(plot_mode){
+ case 0:pom=w.w.geba; break;
+ case 1:pom=w.w.oslona;	break;
+ case 2:if(sila)pom=sila/16+1;
+	   else pom=0;
+	break;
+ case 3:pom=wiek;	break;
+ case 4:// hidden 
+		return;
+ default:
+	fprintf(stderr,"INTERNAL: plot_mode=%d >3\n",plot_mode);
+	abort();
+ };
+::plot(x,y,pom);
+}
+*/
+
+/*
+void indywiduum::tax(base2 f)
+{
+unsigned x=(f&0xff00)>>8;
+unsigned y=f&0x00ff;
+assert( y>0 && y<=MAXBASE);
+assert( x>0 && x<=MAXBASE);
+
+unsigned char c=indywiduum::tax_val(f);// geby na x-ach
+if(TAX_OUT==128)
+     {  y/=2; }
+
+}
+*/
+/*
+void swiat::mapa_taxonow()
+{
+unsigned x,y,c;
+for(unsigned i=0;i<256U;i++)
+   for(unsigned j=0;j<256U;j++)
+     {
+     x=j;
+     y=i;
+     c=indywiduum::tax_val(x*256+y);// geby na x-ach
+     if(TAX_OUT==128)
+	  { y/=2; }
+     plot(x,y,c);
+     }
+indywiduum::max_change=0;// Obraz juz aktulny
+}
+*/
+/*
+void swiat::caly_ekran()
+{
+int a,b;
+if(indywiduum::plot_mode==4)
+  mapa_taxonow();
+  else
+  {
+  indywiduum::ile_ind=0;
+  for(a=0;a<BOKSWIATA;a++) // po kolejnych wierszach czyli y
+	for(b=0;b<BOKSWIATA*2;b++)// po kolumnach w wierszu czyli x
+		{
+		ziemia[a][b].plot(b,a);
+		if(ziemia[a][b].jest_zywy())
+			indywiduum::ile_ind++;
+		}
+  }
+}
+*/
+/*
+void swiat::wskazniki()
+{
+// LOSOWANIE SKAMIENIALOSCI 
+unsigned x=RANDOM(BOKSWIATA*2);
+unsigned y=RANDOM(BOKSWIATA);
+printc(0,textY,0,128,"%c [%lu] IND:%lu TAX:%lu BIG:%lu ",
+	//indywiduum::nazwy[indywiduum::plot_mode],
+	char('A'+indywiduum::plot_mode),
+	(unsigned long)licznik,
+	(unsigned long)indywiduum::ile_ind,
+	(unsigned long)indywiduum::ile_tax,
+	(unsigned long)indywiduum::ile_big_tax);
+if(licznik%LogRatio==0)
+  fprintf(log,"%lu\t%lu\t%lu\t%lu\t%u\n",
+	(unsigned long)licznik,
+	(unsigned long)indywiduum::ile_ind,
+	(unsigned long)indywiduum::ile_tax,
+	(unsigned long)indywiduum::ile_big_tax,
+// Wazna jest zeby specjalizacja pokarmowa byla wazniejsza od oslony 
+       (unsigned)(( (unsigned)ziemia[y][x].w.w.geba*((unsigned)MAXBASE+1) )+ziemia[y][x].w.w.oslona)
+       );
+if(indywiduum::plot_mode==4 && indywiduum::max_change)
+	mapa_taxonow();
+}
+*/
+/*
+int swiat::sterowanie()
+{
+int zmieniony=0;
+if(licznik>=MAX_ITERATIONS) return 0;
+while(input_ready())
+	{
+	zmieniony=1;
+    // putchar(7);
+	switch(get_char()){
+	case 'g'://* GEBA *
+		indywiduum::set_mode(0);break;
+	case 'o'://*OSLONA *
+		indywiduum::set_mode(1);break;
+	case 's'://*SILA  * 
+		indywiduum::set_mode(2);break;
+	case 'w'://*WIEK  * 
+		indywiduum::set_mode(3);break;
+	case 't'://*TAXONY* 
+		indywiduum::set_mode(4);break;
+	case '+':VisRand=1;break;
+	case '-':VisRand=0;break;
+	case 'b':{
+		int x=RANDOM(BOKSWIATA*2);
+		assert(x>=0 && x<BOKSWIATA*2);
+		int y=RANDOM(BOKSWIATA);
+		assert(y>=0 && y<BOKSWIATA);
+		double power=DRAND();
+		assert(power>=0 && power<=1);
+		Krater(x,y,int(power*BOKSWIATA));
+		}break;
+    case 'f':fflush(log);break;
+	case EOF:
+	case 'q'://QUIT 
+			 return 0;
+	}
+	}
+if(zmieniony)
+	caly_ekran(); // Po zmianie trybu trzeba odnowic calosc
+return 1;
+}
+*/
+
