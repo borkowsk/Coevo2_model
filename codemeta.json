@@ -1,0 +1,56 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/AFL-3.0",
+    "codeRepository": "https://github.com/borkowsk/Coevo1_model",
+    "dateCreated": "1997-07-01",
+    "datePublished": "2008-09-17",
+    "dateModified": "2018-12-27",
+    "downloadUrl": "https://github.com/borkowsk/Coevo2_model/archive/refs/heads/master.zip",
+    "name": "coevo",
+    "version": "2.0",
+    "description": "CO-EVO-lution / macroevolution model developed from 1997-2012 (paper published)\n\nPlease contact me if you want use this for your purpose!\n\nwborkowski@uw.edu.pl\n\nThe whole history of this research is available in a project at Research Gate.\n\n\"Macroevolution & coevolution in CA & network like models\"",
+    "applicationCategory": "Paleontology",
+    "releaseNotes": "Windows binaries available:\nhttps://github.com/borkowsk/Coevo2_model/tree/master/bin",
+    "developmentStatus": "inactive",
+    "isPartOf": "https://www.researchgate.net/project/Macroevolution-coevolution-in-CA-network-like-models",
+    "referencePublication": "DOI: 10.1016/j.pss.2008.10.001",
+    "funder": {
+        "@type": "Organization",
+        "name": "University of Warsaw"
+    },
+    "keywords": [
+        "macroevolution"
+    ],
+    "programmingLanguage": [
+        "C++"
+    ],
+    "runtimePlatform": [
+        "native"
+    ],
+    "operatingSystem": [
+        "Windows",
+        "Linux"
+    ],
+    "softwareRequirements": [
+        "C++ compiler, cmake, make",
+        "SymShell library from GitHub"
+    ],
+    "relatedLink": [
+        "https://www.researchgate.net/project/Macroevolution-coevolution-in-CA-network-like-models",
+        "https://www.researchgate.net/publication/295955459https://www.researchgate.net/publication/24014499_Cellular_Automata_Model_of_Macroevolution"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0002-5793-688",
+            "givenName": "Wojciech",
+            "familyName": "Borkowski",
+            "email": "wborkowsk@gmail.com",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "University of Warsaw"
+            }
+        }
+    ]
+}
