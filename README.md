@@ -12,6 +12,6 @@ PUBLICATIONS:
 
 LICENCE:
 
-* AFL-3.0
+* AFL-3.0 (https://spdx.org/licenses/AFL-3.0.html)
 
 
