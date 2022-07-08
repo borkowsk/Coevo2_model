@@ -1,26 +1,25 @@
-//
-//Zrodla do demonstracji interakcji drapieznik/ofiara za pomoca masek bitowych
-/////////////////////////////////////////////////////////////////////////////////
+// Żródła do demonstracji interakcji drapieżnik/ofiara za pomocą masek bitowych
+//*///////////////////////////////////////////////////////////////////////////////
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
 
 #include "SYMSHELL/datasour.hpp"
-//Klasa udostepniajaca dowolna tablice prostokatna oraz jej wycinki.
-//Jesli zdefiniowany wycinek wykracza poza tablice zrodlowa to funkcja
-//get zwraca wartosc 'miss' podawana w konstruktorze.Alternatywnie
-//wycinek moze realizowac geometrie torusa i wtedy miss nie jest
-//potrzebne.
 
+//Klasa udostępniająca dowolna tablice prostokątna oraz jej wycinki.
+//Jeśli zdefiniowany wycinek wykracza poza tablice źródłowa to funkcja
+//'get' zwraca wartość 'miss' podawaną w konstruktorze. Alternatywnie
+//wycinek może realizować geometrie torusa i wtedy miss nie jest
+//potrzebne.
 class and_interaction_source:public rectangle_source_base
 //--------------------------------------------------------------
 {
-unsigned bit_and(unsigned A,unsigned B) //Po co? Takie sobie �wiczenie?
+unsigned bit_and(unsigned A,unsigned B) //Po co? Takie sobie ćwiczenie?
 	{  return A&B;  }
 
 public:
 // Constructor
 and_interaction_source( const char* itit):
-	rectangle_source_base(itit,256,256,1/*,subs,imiss*/){}
+	rectangle_source_base(itit,256,256,1 /*,subs,imiss*/ ){}
 
 ~and_interaction_source()
 	{
@@ -29,25 +28,25 @@ and_interaction_source( const char* itit):
 #endif
 	}
 
-void  bounds(size_t& num,double& min,double& max)
-//Ile elementow,wartosc minimalna i maksymalna
+    //Ile elementów, wartość minimalna i maksymalna
+    void  bounds(size_t& num,double& min,double& max)
 	{
 	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
 
-	if(ymin<ymax)//Sa dane
+	if(ymin<ymax) //Sa dane
 		{
 		min=ymin;max=ymax;
 		return;
 		}
 
-	//Nie sa dane wiec probkujemy - co troche kosztuje
+	// Nie są dane, wiec próbkujemy. Co trochę niestety kosztuje!
 	min=0;
 	max=255;
 	}
 
+//Daje następna z la*lb liczb!!!
 double get(iteratorh& p)
-//Daje nastepna z la*lb liczb!!!
-	{   assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
+	{                                                              assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
 	if(p==NULL) return miss;
 	/*
@@ -58,8 +57,9 @@ double get(iteratorh& p)
 		return miss;
 	}
 
-double get(size_t index)//Przetwarza index uzyskany z geometri
-	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe
+//Przetwarza index uzyskany z geometrii
+double get(size_t index)
+	{ //na wartość z serii, o ile jest możliwe czytanie losowe
 	assert(index<getrectgeometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
@@ -69,7 +69,6 @@ double get(size_t index)//Przetwarza index uzyskany z geometri
 
 
 class and_exploatation_source:public rectangle_source_base
-//--------------------------------------------------------------
 {
 double comp_and(unsigned A,unsigned B)
 	{
@@ -93,8 +92,8 @@ and_exploatation_source( const char* itit):
 #endif
 	}
 
-void  bounds(size_t& num,double& min,double& max)
-//Ile elementow,wartosc minimalna i maksymalna
+    //Ile elementów, wartość minimalna i maksymalna
+    void  bounds(size_t& num,double& min,double& max)
 	{
 	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
 
@@ -105,13 +104,13 @@ void  bounds(size_t& num,double& min,double& max)
 		}
 
 	min=0;           //Brak dopasowania
-	max=comp_and(255,255);//Pelne dopasowanie maski ataku do maski ochrony. 100% trawienia.
+	max=comp_and(255,255); //Pełne dopasowanie maski ataku do maski ochrony. 100% trawienia.
 	}
 
-double get(iteratorh& p)
-//Daje nastepna z la*lb liczb!!!
+    //Daje następną z la*lb liczb!!!
+    double get(iteratorh& p)
 	{
-	assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
+	                                                               assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
 	if(p==NULL) return miss;
 	/*
@@ -122,8 +121,10 @@ double get(iteratorh& p)
 		return miss;
 	}
 
-double get(size_t index)//Przetwarza index uzyskany z geometri
-	{ //na wartosc z serii, o ile jest mozliwe czytanie losowe
+    //Przetwarza index uzyskany z geometrii
+    //na wartość z serii, o ile jest możliwe czytanie losowe.
+    double get(size_t index)
+	{
 	assert(index<getrectgeometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
@@ -133,3 +134,9 @@ double get(size_t index)//Przetwarza index uzyskany z geometri
 
 
 #endif
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Reactivated source code from Windows (2022.07)
+/// @author Wojciech Borkowski
+/// FOR @LICENCE SEE HERE: https://github.com/borkowsk/Coevo2_model
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

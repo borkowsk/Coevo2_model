@@ -9,14 +9,15 @@
 
 #include "kladystyka.hpp"
 
-//Powinno być zadeklarowane w klasie klad, ale wtedy nie chce się kompilować!!! TODO
-unsigned long (agent::informacja_klonalna::*how_weighted)(); //Wskaźnik do funkcji zwracaj�cej jaki� atrybut klonu jako wagę połączenia
+// Powinno być zadeklarowane w klasie klad, ale wtedy nie chce się kompilować!!! TODO
+unsigned long (agent::informacja_klonalna::*how_weighted)(); //Wskaźnik do funkcji zwracającej jakiś atrybut klonu jako wagę połączenia
 
 //*////////////////////////////////////////////////////////////////////
-/// Construction/Destruction
+// Construction/Destruction
 //*////////////////////////////////////////////////////////////////////
 
-klad::klad(agent::informacja_klonalna* TheAncestor): ///< Konstruktor
+// Konstruktor
+klad::klad(agent::informacja_klonalna* TheAncestor):
 	ancestor(TheAncestor),
 //	how_weighted(NULL), //Funkcja kolorowania
 	pNodeTime(NULL),   //Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
@@ -28,14 +29,14 @@ klad::klad(agent::informacja_klonalna* TheAncestor): ///< Konstruktor
 	how_weighted=&agent::informacja_klonalna::how_specialised; //Musi być globalnie, bo w klasie nie wiem jak wywołać :-D TODO
 }
 
-klad::~klad() //< Destruktor - na wszelki wypadek
+// Destruktor. Na wszelki wypadek.
+klad::~klad()
 {
 	zapomnij_liste(true ); //Zapominamy listę
 	ancestor=NULL;
 }
 
-
-// Akcje tekstowego wypisywania klon�w od konkretnego węzla ich drzewa
+// Akcje tekstowego wypisywania klonów od konkretnego węzła ich drzewa
 void klad::ZapiszTxt(ostream& out,unsigned min_time,unsigned max_time,unsigned size_tres)
 {    
 	_filogOutPutInfo Info(*this,out,min_time,max_time,size_tres,ancestor); //Przodkiem wspólnego przodka jest on sam :-)
@@ -95,8 +96,8 @@ if(	Info.min_time<=klon->data_powstania_klonu() &&
 				<<hex<<klon->feeding_niche()<<klon->defense_niche()<<'\t'<<dec;
 	 Info.out<<endl;
 	 }
-//I rekurencyjne wywołanie akcji dla dzieci, i to nawet jak samego nie wypisano!
-//*//////////////////////////////////////////////////////////////////////////////
+// I rekurencyjne wywołanie akcji dla dzieci, i to nawet jak samego nie wypisano!
+// //////////////////////////////////////////////////////////////////////////////
 //_filogOutPutInfo MyInfo(...);   NIEPOTRZEBNE???
 agent::informacja_klonalna* Parent=Info.Klon;
 Info.Klon=klon; //Dla dzieci klonu to on jest rodzicem
@@ -115,11 +116,14 @@ size_t LineIndex=Info.This.lines.CurrSize();
 
 // Tworzenie informacji o aktualnym klonie
 Info.This.descendants(MyIndex).set(Info.Index,klon);//klon->identyfikator()
+
 if(Info.Klon!=NULL) //Dopięcie do macierzystego
 {
-	Info.This.nodes(PointIndex).set(0,Info.Index,klon->data_powstania_klonu(),Info.Klon->identyfikator()); //Węzeł utworzenia na obiekcie macierzystym
+    // Węzeł utworzenia na obiekcie macierzystym
+	Info.This.nodes(PointIndex).set(0,Info.Index,klon->data_powstania_klonu(),Info.Klon->identyfikator());
 	PointIndex++;
-	Info.This.lines(LineIndex).set_attr( PointIndex-1,PointIndex,(klon->*how_weighted)()); //Węzeł końcowy powstanie za chwile
+    // Węzeł końcowy powstanie za chwile
+	Info.This.lines(LineIndex).set_attr( PointIndex-1,PointIndex,(klon->*how_weighted)());
 	LineIndex++;
 }
 
@@ -129,8 +133,8 @@ Info.This.nodes(PointIndex).set(2,MyIndex,klon->data_powstania_klonu()+klon->cza
 
 Info.This.lines(LineIndex).set_attr(PointIndex-1,PointIndex,(klon->*how_weighted)());
 
-//I rekurencyjne wywołanie akcji dla dzieci
-//*////////////////////////////////////////
+//  I rekurencyjne wywołanie akcji dla dzieci
+//*/////////////////////////////////////////////
 _trawersal_info MyInfo(Info,MyIndex,klon);
 klon->for_each_child(_dodaj_do_listy,&MyInfo); //TU JEST UKRYTA PĘTLA I REKURENCJA!!!
 
@@ -223,7 +227,7 @@ void klad::_disperse_nodes1()
 // NIGDY NIE ZAIMPLEMENTOWANY W TYM MODELU.
 void klad::_disperse_nodes2()
 {
-
+    //...TODO
 }
 
 // Poprawia wskaźniki do tablic, które mogą się dezaktualizować podczas wypełniania list
@@ -257,7 +261,7 @@ void klad::_empty_source_ptrs()
 }
 
 //*////////////////////////////////////////////////////////////////////
-/// Udostępnianie danych
+//  Udostępnianie danych
 //*////////////////////////////////////////////////////////////////////
 
 // Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
@@ -339,7 +343,7 @@ if(pLineWeights !=NULL) //Tylko jeśli już zostało zaalokowane       		//pLine
 	switch(co){
 	case K_ILUBYLOIJEST:
 		how_weighted=&agent::informacja_klonalna::magnitude;
-		pLineWeights->settitle(lang("jako log2 z D.orA agent�w","in log2 of D.orA. agents."));
+		pLineWeights->settitle(lang("jako log2 z D.orA agentów","in log2 of D.orA. agents."));
 		pLineWeights->setminmax(0,0); //Czytanie aktualnego min i max
 		aktualizuj_liste_zstepnych();
 		break;
@@ -376,6 +380,13 @@ if(pLineWeights !=NULL) //Tylko jeśli już zostało zaalokowane       		//pLine
 		break;		
 	}
 }
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Reactivated source code from Windows (2022.07)
+/// @author Wojciech Borkowski
+/// FOR @LICENCE SEE HERE: https://github.com/borkowsk/Coevo2_model
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 

@@ -1,5 +1,5 @@
 // troficinfo.h: interface for the informacja_troficzna class.
-//
+// MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
 //*////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_)
@@ -14,7 +14,7 @@ using ::wbrtm::array_template;
 
 class informacja_troficzna;
 
-//Klasa służąca do śledzenie kontaktów (troficznych) agenta lub całego klonu
+// Klasa służąca do śledzenie kontaktów (troficznych) agenta lub całego klonu
 class informacja_troficzna  
 {
     struct contacts
@@ -109,3 +109,10 @@ void informacja_troficzna::dolicz_kontakt(void* marker_z_kim,double waga)
 }*/
 
 #endif // !defined(AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_)
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Reactivated source code from Windows (2022.07)
+/// @author Wojciech Borkowski
+/// FOR @LICENCE SEE HERE: https://github.com/borkowsk/Coevo2_model
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

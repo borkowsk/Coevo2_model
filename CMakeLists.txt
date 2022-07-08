@@ -7,8 +7,8 @@ cmake_minimum_required(VERSION 2.9)
 
 project(coevolution2)
 
-set(WBRTM "../../public/symShell2andRTM/RTM/")
-set(SYMSHELL "../../public/symShell2andRTM/SYMSHELL/")
+set( WBRTM "../../public/symShell2andRTM/RTM/" )
+set( SYMSHELL "../../public/symShell2andRTM/SYMSHELL/" )
 
 add_subdirectory( ${SYMSHELL} ${SYMSHELL} )
 
