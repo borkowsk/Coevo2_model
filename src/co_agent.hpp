@@ -12,7 +12,7 @@ const base2 MAXBASE2=(base2)0xffff;//ffffffffffffUL;
 const base  MAXBASE =(base)MAXBASE2;
 const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
 
-//__declspec(align(8))  //TRZEBA ZAPEWNIÆ ¯EBY GENOM BY£ BITOW¥ CA£OŒCI¥
+//__declspec(align(8))  //TRZEBA ZAPEWNIÄ† Å»EBY GENOM BYÅ BITOWÄ„ CAÅOÅšCIÄ„
 //#pragma pack(8)      ???
 struct bity_wzoru
 {
@@ -96,13 +96,13 @@ public:
     unsigned	  sila; // zgromadzona energia
     informacja_klonalna* klon;//Przynaleznosc klonalna i zwiazane z tym informacje
 
-    /* Informacje statystyczne dotyczace indywiduow i klonów */
+    /* Informacje statystyczne dotyczace indywiduow i klonÃ³w */
     static unsigned max;//jaki jest najwiekszy taxon
     static unsigned max_change;//i czy ostatnio max sie zmienil
     static unsigned ile_ind;// ile jest zywych indywiduow
     static unsigned ile_tax;// ile taxonow niezerowych
     static unsigned ile_big_tax;// ile taxonow liczniejszych niz treshold
-    static unsigned liczniki[/*(size_t)MAXBASE2+1*/];// Liczniki liczebnosci aktualnie istniejacych 'taxonow ekologicznych' wg bitów wzoru
+    static unsigned liczniki[/*(size_t)MAXBASE2+1*/];// Liczniki liczebnosci aktualnie istniejacych 'taxonow ekologicznych' wg bitÃ³w wzoru
      
     //Wejscie/wyjscie
     friend
@@ -186,14 +186,14 @@ public:
         else return klon->how_specialised();
     }
     
-    int   how_specialised_autotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
+    int   how_specialised_autotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofÃ³w
     {
         if(!jest_zywy() || !(w.w.geba==0xff)) 
             return -1;
         else return klon->how_specialised();
     }
     
-    int   how_specialised_heterotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofów
+    int   how_specialised_heterotrof() //Poziom specjalizacji mierzony w bitach tylko dla autotrofÃ³w
     {
         if(!jest_zywy() || (w.w.geba==0xff)) 
             return -1;
@@ -222,7 +222,7 @@ public:
     int kill(agent& zabojca,unsigned& energy_flow);// usmiercenie agenta przez drugiego
     int parasit(agent& zabojca,unsigned& energy_flow);//zubazanie agenta przez drugiego. Zwraca 1 jesli zginal
     
-	// oddzialywanie czasu - autotrofy dostaj¹ energiê
+	// oddzialywanie czasu - autotrofy dostajÄ… energiÄ™
 	int uplyw_czasu(float IloscSwiatla);//Zwraca 1 jesli zginal. Marker czasu dla statystyk
     
     //Dla wygody implementacji:
@@ -230,3 +230,10 @@ public:
 };
 
 #endif
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Reactivated source code from Windows (2022.07)
+/// @author Wojciech Borkowski
+/// FOR @LICENCE SEE HERE: https://github.com/borkowsk/Coevo2_model
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+

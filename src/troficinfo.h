@@ -1,6 +1,6 @@
 // troficinfo.h: interface for the informacja_troficzna class.
-//
-//////////////////////////////////////////////////////////////////////
+// MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
+//*////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_)
 #define AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_
@@ -9,12 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "INCLUDE/arrays.hpp"
+#include "arrays.hpp"
 using ::wbrtm::array_template;
 
 class informacja_troficzna;
 
-//Klasa sluzaca do sledzenie kontaktow (troficznych) agenta lub calego klonu
+// Klasa służąca do śledzenie kontaktów (troficznych) agenta lub całego klonu
 class informacja_troficzna  
 {
     struct contacts
@@ -30,27 +30,27 @@ class informacja_troficzna
 public:
 	informacja_troficzna();
 	virtual ~informacja_troficzna();
-    //Czyszczenie kontakt�w
+    //Czyszczenie kontaktów
     virtual void czysc_kontakty(bool freememory=false);
-    //Zapisywanie tablicy kontaktow
+    //Zapisywanie tablicy kontaktów
     virtual void dolicz_kontakt(unsigned long int marker_z_kim,double waga);
-    //void dolicz_kontakt(void* marker_z_kim,double waga);//jednak niepotrzebne
+    //void dolicz_kontakt(void* marker_z_kim,double waga); //jednak niepotrzebne
 
-    //Dostep do odczytu tablicy kontakt�w
-    //const array_template<const contacts>& tablica_kontaktow();
+    //Dostęp do odczytu tablicy kontaktów
+    //const array_template<const contacts>& tablica_kontaktow(); //???
     const contacts& operator [] (size_t ind);     
-    unsigned AktualnaLiczbaKontaktow();  //Proste czytanie aktualnej liczby kontaktow
-    unsigned MaksymalnaLiczbaKontaktow();//Dostep do maksymalnej liczby kontaktow
+    unsigned AktualnaLiczbaKontaktow();   //Proste czytanie aktualnej liczby kontaktów
+    unsigned MaksymalnaLiczbaKontaktow(); //Dostęp do maksymalnej liczby kontaktów
     virtual
-    unsigned Waga()=0;//Domyslna waga dla wezla (liczba osobnikow lub biomasa)
+    unsigned Waga()=0; //Domyślna waga dla węzła (liczba osobników lub biomasa)
     virtual  
-    unsigned X()=0;//X domyslnego polozenia wezla - np maska ataku
+    unsigned X()=0; //X domyślnego położenia węzła, np. maska ataku
     virtual 
-    unsigned Y()=0;//Y domyslnego polozenia wezla - np maska obrony
+    unsigned Y()=0; //Y domyślnego położenia węzła, np. maska obrony
 private:
-    unsigned max_num_of_contacts; //Maksymalna liczba kontaktow w zyciu klonu
-	array_template<contacts> kontakty;//Tablica na zapis kontaktow
-    void _swap(size_t i,size_t j);//Zamienia elementy w powyzszej tablicy
+    unsigned max_num_of_contacts;      //Maksymalna liczba kontaktów w życiu klonu
+	array_template<contacts> kontakty; //Tablica na zapis kontaktów
+    void _swap(size_t i,size_t j);     //Zamienia elementy w powyższej tablicy
 };
 
 inline
@@ -59,11 +59,12 @@ const informacja_troficzna::contacts& informacja_troficzna::operator [] (size_t 
                             assert(ind<kontakty.CurrSize());
     return kontakty[ind];
 }
+
 /*
 inline
 const array_template<const informacja_troficzna::contacts>& informacja_troficzna::tablica_kontaktow()
 {
-    //Strasznie mocne, ale jak inaczej przekazac modyfikowalna tablice jako niemodyfikowalna
+    //Strasznie mocne, ale jak inaczej przekazać modyfikowalna tablice jako niemodyfikowalną?
     return *reinterpret_cast< array_template<const contacts>* >(&kontakty);
 }
 */
@@ -85,19 +86,19 @@ unsigned informacja_troficzna::AktualnaLiczbaKontaktow()
 inline
 unsigned informacja_troficzna::Waga()
 {
-    return 0;//Bo tak naprawde to trzeba to zreimplementowac w klasach potomnych
+    return 0;//Bo tak naprawdę to trzeba to reimplementować w klasach potomnych
 }
 
 inline
 unsigned informacja_troficzna::X()
 {
-    return 0;//Bo tak naprawde to trzeba to zreimplementowac w klasach potomnych
+    return 0;//Bo tak naprawdę to trzeba to reimplementować w klasach potomnych
 }
 
 inline
 unsigned informacja_troficzna::Y()
 {
-    return 0;//Bo tak naprawde to trzeba to zreimplementowac w klasach potomnych
+    return 0;//Bo tak naprawdę to trzeba to reimplementować w klasach potomnych
 }
 
 
@@ -108,3 +109,10 @@ void informacja_troficzna::dolicz_kontakt(void* marker_z_kim,double waga)
 }*/
 
 #endif // !defined(AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_)
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Reactivated source code from Windows (2022.07)
+/// @author Wojciech Borkowski
+/// FOR @LICENCE SEE HERE: https://github.com/borkowsk/Coevo2_model
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
