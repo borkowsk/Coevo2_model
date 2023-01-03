@@ -5,7 +5,7 @@
 #ifndef _EKOLOGIA_HPP_
 #define _EKOLOGIA_HPP_
 
-#include "dataclasses/arrasour.hpp"
+#include "arrasour.hpp"
 using namespace ::wbrtm;
 //using wbrtm::array_template;
 

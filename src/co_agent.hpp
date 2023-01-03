@@ -2,7 +2,7 @@
 #define _COEWO_AGENT_HPP_
 /* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
 /* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
-#include "INCLUDE/wb_bits.h"
+#include "wb_bits.h"
 
 typedef unsigned char base;   // musi byc bez znaku
 typedef unsigned short base2; // musi miescic 2 zmienne base

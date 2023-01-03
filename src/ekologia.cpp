@@ -1,6 +1,7 @@
 // ekologia.cpp: implementation of the ekologia class.
 //*////////////////////////////////////////////////////////////////////
 #include <math.h>
+#include "lingo.hpp"
 #include "ekologia.hpp"
 #include "sshutils.hpp"
 

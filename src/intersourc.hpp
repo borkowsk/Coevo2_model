@@ -3,7 +3,7 @@
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
 
-#include "SYMSHELL/datasour.hpp"
+#include "datasour.hpp"
 
 //Klasa udostępniająca dowolna tablice prostokątna oraz jej wycinki.
 //Jeśli zdefiniowany wycinek wykracza poza tablice źródłowa to funkcja

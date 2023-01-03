@@ -21,7 +21,10 @@ const char*	   ProgramName="CO-EVOLUTION wer. 3.61b DEBUG (c)1994-2013 Wojciech 
 
 int My_Rand_seed=1; //Jak 0 to RANDOMIZE jak inny to SRAND(My_Rand_seed)
 
-unsigned lang_selector=1;     //Jaki język
+namespace wbrtm { /// To jest zadeklarowane, ale trzeba gdzieś zdefiniować z wartością.
+    unsigned _lingo_selector = 1; ///< lang_selector=1;   - Jaki język
+}
+
 //WERSJA 3.61
 //1. Możliwość puszczania z tym samym ziarnem losowym
 
@@ -87,27 +90,39 @@ unsigned lang_selector=1;     //Jaki język
 #include "wb_ptrio.h"
 #include "wb_cpucl.hpp"
 
-#include "dataclasses/datasour.hpp"
-#include "dataclasses/simpsour.hpp"
-#include "dataclasses/filtsour.hpp"
-#include "dataclasses/bifiltso.hpp"
-#include "dataclasses/statsour.hpp"
-#include "dataclasses/dhistosou.hpp"
-#include "dataclasses/fifosour.hpp"
-#include "dataclasses/funcsour.hpp"
-#include "dataclasses/sourmngr.hpp"
-#include "dataclasses/logfile.hpp"
+#include "datasour.hpp"
+#include "simpsour.hpp"
+#include "filtsour.hpp"
+#include "bifiltso.hpp"
+#include "statsour.hpp"
+#include "dhistosou.hpp"
+#include "fifosour.hpp"
+#include "funcsour.hpp"
+#include "sourmngr.hpp"
+#include "logfile.hpp"
 
-#include "charts/gadgets.hpp"
-#include "charts/textarea.hpp"
-#include "charts/graphs.hpp"
-#include "charts/areamngr.hpp"
-#include "charts/mainmngr.hpp"
+#include "gadgets.hpp"
+#include "textarea.hpp"
+#include "graphs.hpp"
+#include "areamngr.hpp"
+#include "mainmngr.hpp"
 
-#include "simulclasses/layer.hpp"
+#include "layer.hpp"
 
 #include "sshutils.hpp"
 #include "sshmenuf.h"
+
+#include "lingo.hpp"
+
+#ifdef _MSC_VER		  //MSVC on Windows only!
+#include <process.h>  //_getpid
+#include <direct.h>   //_getcwd
+#define MyGetPid (::_getpid)
+#else
+#include <unistd.h>   //getpid() ?
+#define MyGetPid (::getpid)
+#define _getcwd  (::getcwd)
+#endif
 
 #include "ResSrc/coewo3rc.h"
 
@@ -1331,7 +1346,8 @@ stats.Reinitialise(); //Czyszczenie lokalnej statystyki
 if(WSP_KATASTROF!=0)
 	kataklizm(); // najwyżej jeden na krok symulacji, choćby bardzo, bardzo mały
 
-long ile= long( sqr(double(DLUG_WIERSZA))/2.0*MonteCarloMultiplic ); // ile na krok MonteCarlo. /2.0 bo to prostokąt a nie kwadrat
+
+long ile= long( (double(DLUG_WIERSZA*DLUG_WIERSZA))/2.0*MonteCarloMultiplic ); // ile na krok MonteCarlo. /2.0 bo to prostokąt a nie kwadrat
 licznik_krokow_w++; //Kolejny krok symulacji
 monte_carlo_licz+=MonteCarloMultiplic; //Licznik kroków MonteCarlo (bezwzględna jednostka czasu)
 
@@ -1521,7 +1537,7 @@ sprintf(bufor,lang("%ld KROK MONTE CARLO [%lu - symulacji]   PID=%lu\n"
 	//agent::nazwy[agent::plot_mode],
 	(unsigned long)this->daj_kroki_monte_carlo(),
 	(unsigned long)this->daj_licznik_krokow(),
-	(unsigned long)_getpid(), //ISO C++ standard name
+	(unsigned long)MyGetPid(),
 	(unsigned long)agent::ile_ind,
 	(unsigned long)autotrofy,
 	(unsigned long)agent::ile_big_tax,
@@ -1554,10 +1570,10 @@ cout<<( "\nCompilation: " __DATE__ " " __TIME__  )<<endl;
 
 if((sizeof(base)*2)!=sizeof(base2))
 	{
-	fprintf(stderr,"Niewłaściwe rozmiary dla typów bazowych:2*%u!=%u\n",
-		sizeof(base),sizeof(base2));
+	cerr<<"Niewłaściwe rozmiary dla typów bazowych: "<< 2*sizeof(base) << " != " << sizeof(base2)  <<endl;
 	exit(1);
 	}
+
 printf(lang("\nROZMIAR GENOMU: %uB\nLICZBA MOŻLIWYCH KLONÓW=%lu\nMAXINT=%d\n",
 			"\nSIZE OF GENOM: %uB\nPOSSIBLE CLONES=%lu\nMAXINT=%d\n"),sizeof(bity_wzoru),(unsigned long)MAXBASE2,INT_MAX);
 
@@ -1593,7 +1609,7 @@ wb_pchar buf(strlen(SCREENDUMPNAME)+20);
 buf.prn("%s_%s",SCREENDUMPNAME,tenSwiat.dumpmarker.get());
 Lufciki.set_dump_name(buf.get());
 printf(lang("\nPID procesu: %u Marker zrzutów ekranu: %lu",
-                   "\nProcess PID: %u Dump files marker: %lu"),_getpid(),tenSwiat.dumpmarker.get());
+                   "\nProcess PID: %u Dump files marker: %lu"),MyGetPid(),tenSwiat.dumpmarker.get());
 }
 
 // zamiast Lufciki.run_input_loop();
@@ -2038,11 +2054,11 @@ for(int i=1;i<argc;i++)
 		}
 	else
 		cerr<<lang("Elastyczne wymijanie - ","Flexible agent moving - ")
-			<<"FLEX: "<<ZAMIANY==0?lang("nie","no"):lang("tak","yes");
+			<<"FLEX: "<< (ZAMIANY==0 ? lang("nie","no"):lang("tak","yes") );
 	}
 	else
-	//"RBIT=2^n - który bit odpowiada za zdolność ruchu\n"
-	//const unsigned	BIT_RUCHU=1024;		// Jak poza maskę obrony to bez możliwości utraty ruchliwości
+	// "RBIT=2^n - który bit odpowiada za zdolność ruchu\n"
+	// const unsigned	BIT_RUCHU=1024;		// Jak poza maskę obrony to bez możliwości utraty ruchliwości
 	if((pom=strstr(argv[i],"RBIT="))!=NULL) //Nie NULL, czyli jest
 	{
 	BIT_RUCHU=atol(pom+5);

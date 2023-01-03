@@ -2,10 +2,10 @@
 //
 //*////////////////////////////////////////////////////////////////////
 #include <assert.h>
-
+#include "lingo.hpp"
 #include "sshutils.hpp"
-#include "dataclasses/simpsour.hpp"
-#include "dataclasses/arrasour.hpp" //analogiczne do #include "mattsour.hpp"
+#include "simpsour.hpp"
+#include "arrasour.hpp" //analogiczne do #include "mattsour.hpp"
 
 #include "kladystyka.hpp"
 
