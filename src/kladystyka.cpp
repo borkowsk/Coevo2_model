@@ -96,8 +96,8 @@ if(	Info.min_time<=klon->data_powstania_klonu() &&
 				<<hex<<klon->feeding_niche()<<klon->defense_niche()<<'\t'<<dec;
 	 Info.out<<endl;
 	 }
+
 // I rekurencyjne wywołanie akcji dla dzieci, i to nawet jak samego nie wypisano!
-// //////////////////////////////////////////////////////////////////////////////
 //_filogOutPutInfo MyInfo(...);   NIEPOTRZEBNE???
 agent::informacja_klonalna* Parent=Info.Klon;
 Info.Klon=klon; //Dla dzieci klonu to on jest rodzicem

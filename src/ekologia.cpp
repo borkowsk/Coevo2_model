@@ -5,9 +5,17 @@
 #include "ekologia.hpp"
 #include "sshutils.hpp"
 
+/*
+/// Compute base-2 logarithm of X.
+static
+double log2(double v)
+{
+    return log(v)/log(2.0);
+}
+*/
+
 //Akcja do wykonania na węźle drzewa taksonów.
 //Jeśli zwróci false, to trawersowanie jest przerywane.
-static
 bool _moja_akcja_trawersowania(informacja_klonalna* current,void* user_data)
 {
     ekologia* Self=reinterpret_cast<ekologia*>(user_data);
@@ -110,7 +118,9 @@ void ekologia::aktualizuj_liste_wezlow(bool /*leftrec*/)
     //Etap III: przygotowanie listy połączeń. Niestety kosztowne, wiec dobrze jest pominąć cześć połączeń.
     {
 		lines.Truncate(0); //Usuwamy stare połączenia, bo odnawianie byłoby kosztowniejsze.
-		for(long i=nodes.CurrSize()-1;i>=0;i--)
+        long i=nodes.CurrSize();
+        if(i>2)
+		for(i-1;i>=0;i--)
         {
             if(nodes[i].Zywych>0)
             {
@@ -183,12 +193,6 @@ void ekologia::ZapiszWFormacieNET(ostream& out,unsigned size_tres,double weight_
                   <<lang("ale 'cienkie' krawędzie są ignorowane!!! ->"," but v.light edges ignored!!! -> ")
                   <<ignored<<endl;
 		out<<flush;
-}
-
-static
-double log2(double v)
-{
-return log(v)/log(2.0); //(v > 0)   ???
 }
 
 void ekologia::ZapiszWFormacieVNA(ostream& out,unsigned size_tres,double weight_tres)

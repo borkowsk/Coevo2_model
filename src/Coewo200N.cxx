@@ -13,7 +13,7 @@
 #ifdef NDEBUG
 const char*	   ProgramName="CO-EVOLUTION wer. 3.61b (c)1994-2013: Wojciech Borkowski [idea i realizacja]";
 #else
-const char*	   ProgramName="CO-EVOLUTION wer. 3.61b DEBUG (c)1994-2013 Wojciech Borkowski";
+const char*	   ProgramName="CO-EVOLUTION wer. 3.61b DEBUG (c)1994-2023 Wojciech Borkowski";
 #endif
 
 #pragma warn -aus //??? i jaki kompilator?
@@ -214,12 +214,12 @@ double		EFEKTYWNOSC_AUTOTROFA=0.99;	// jaka część światła używa autotrof.
 unsigned	NIEPLODNOSC=5;		        // Prawdopodobieństwo rozmnażania jest 1/NIEPLODNOSC.
 double		WYPOSAZENIE_POTOMSTWA=0.05; // Jaką część siły oddać potomkowi. UWAGA! 0.1 to ZA DUŻO!!! {???}
 
-unsigned	MINIMALNY_WIEK=205;	// Rodzi się z tym wiekiem. Do śmierci ma 255-MINIMALNY_WIEK
-unsigned int	ODWROCONY_KOSZT_OSLONY=0; //1 - czy koszty osłony są odwrócone
-unsigned int	ODWROCONY_KOSZT_ATAKU=0; //1 - czy koszty ataku są odwrócone
+unsigned int	MINIMALNY_WIEK=205;	      // Rodzi się z tym wiekiem. Do śmierci ma 255-MINIMALNY_WIEK
+unsigned int	ODWROCONY_KOSZT_OSLONY=0; // 1 - czy koszty osłony są odwrócone
+unsigned int	ODWROCONY_KOSZT_ATAKU=0;  // 1 - czy koszty ataku są odwrócone
 
 unsigned int	PIRACTWO=1;	  //Czy eksploatacja "piracka", czy pasożytnicza.
-unsigned	DYS_RUCHU=1;      //Dystans ruchu w jednym kierunku.
+unsigned int	DYS_RUCHU=1;  //Dystans ruchu w jednym kierunku.
 //unsigned BIT_RUCHU=128;	  //Wyzerowanie których bitów osłony odpowiada za zdolność ruchu
 unsigned	BIT_RUCHU=1024;   //1		//Gdy poza maskę to bez możliwości utraty ruchliwości
 unsigned	ZAMIANY=1; //0//255;        //Czy może przeciskać się na zajęte pola (0 na nie lub inna liczba na tak)
@@ -292,13 +292,14 @@ struct inte_stat
 //-------------------------------
 class swiat
 {
-// Parametry jednowartościowe
+// Parametry jednowartościowe:
+//*////////////////////////////
 size_t			DLUG_WIERSZA;	 // Obwód torusa
 double 			globalneSwiatlo; // Bazowa globalna ilość światła (stała w modelu)
 double 			AktualneSwiatlo; // Aktualna ilość światła (może się zmieniać w czasie)
 
 // Statystyki i liczniki
-// ///////////////////////////////
+//*///////////////////////////////
 unsigned long	licznik_krokow_w; // licznik wywołań procedury kroku symulacji
 unsigned long	monte_carlo_licz; //licznik realnie wykonanych kroków monte-carlo
 
@@ -306,14 +307,14 @@ unsigned 		klon_auto;		// Licznik klonów autotroficznych
 unsigned 		tax_auto;		// Licznik taksonów autotroficznych
 unsigned 		autotrofy;		// Licznik agentów autotroficznych
 
-klad filogeneza;                //Informacje statystyczne z drzewa filogenetycznego
+klad   filogeneza;              //Informacje statystyczne z drzewa filogenetycznego
 ekologia trophNet;              //Informacje statystyczne dla sieci ekologicznej
 
 //  Warstwy symulacji (są torusami, bo taka jest wspólna geometria)
-// //////////////////////////////////////////////////////////////////////
+//*//////////////////////////////////////////////////////////////////////
 rectangle_unilayer<unsigned char> zdatnosc; //Warstwa definiująca zdatność do zasiedlenia
 rectangle_layer_of_agents<agent>    ziemia; //Właściwa warstwa agentów zasiedlających
-rectangle_layer_of_struct<inte_stat> stats; //Warstwa pamiętająca lokalne statystyki zdarzen
+rectangle_layer_of_struct<inte_stat> stats; //Warstwa pamiętająca lokalne statystyki zdarzeń
 
 // Zarządzanie źródlami danych
 // /////////////////////////////////
@@ -328,7 +329,7 @@ method_matrix_source<inte_stat,double>		 *PDynamism; //Lokalne efektywności eks
 logfile										 log;	// plik z zapisem historii symulacji
 
 // Obszary wyświetlania
-// //////////////////////////////////
+//*//////////////////////////////////
 my_area_menager&	MyAreaMenager;
 net_graph*			FilogeneticTree;	//Drzewo filogenetyczne
 net_graph*			TrophicNet;		//Sieć zależności pokarmowych
@@ -337,7 +338,8 @@ text_area*			OutArea; //Obszar do wypisywania statusu symulacji
 public:
 wb_pchar dumpmarker; //Uchwyt do nazwy eksperymentu
 
-//KONSTRUKCJA DESTRUKCJA
+// KONSTRUKCJA DESTRUKCJA
+//*//////////////////////
 swiat(size_t szerokosc,
 	  char* logname,   //Nazwa pliku do zapisywania historii
 	  char* mappname,
@@ -350,28 +352,32 @@ void inicjuj();	  // stan startowy symulacji
 void krok();	  // kolejny krok symulacji
 void kataklizm(); // wygenerowanie katastrofy (ręczne lub losowe)
 
-// Współpraca z menadżerem wyświetlania
-//---------------------------------------------
+// Współpraca z menadżerem wyświetlania:
+//*//////////////////////////////////////////
 void wskazniki(); // aktualizacja nowych wartości wskaźników
 void tworz_lufciki(); //Tworzy domyślne lufciki
 
-// Dostęp do głównych danych
+// Dostęp do głównych danych:
+//*//////////////////////////
 agent& Ziemia(size_t Kolumna,size_t Wiersz) {return ziemia.get(Kolumna,Wiersz);} //Dostęp do podłoża
 float  Swiatlo(size_t Kolumna,size_t Wiersz) {return globalneSwiatlo;} //Dostęp do światła (tu globalnego)
 
 // INNE METODY POMOCNICZE
-// /////////////////////////////////////////
+//*/////////////////////////////////////////
 
-// Do wizualizacji
+// Do wizualizacji:
+//*//////////////////
 void ZmienKoloryDrzewaFil(klad::Kolorowanie co);
 void UstalDetalicznoscSieci(int Ile,bool Relative=true);
 
-//Do statystyk
+// Do statystyk:
+//*///////////////
 unsigned long	daj_licznik_krokow(){return licznik_krokow_w;}		// licznik kroków symulacji
 unsigned long   daj_kroki_monte_carlo(){return monte_carlo_licz;}   //suma realnie wykonanych kroków MC
 void print_params(ostream& out);
 
-//Do dodatkowych logów
+// Do dodatkowych logów:
+//*//////////////////////
 void ZapiszFilogeneze(ostream& out,unsigned min_time=0,unsigned max_time=0,unsigned size_tres=0);
 void ZapiszEkologieNET(ostream& out,unsigned size_tres=0,double weight_tres=0);
 void ZapiszEkologieVNA(ostream& out,unsigned size_tres=0,double weight_tres=0);
@@ -1091,8 +1097,10 @@ swiat::swiat(size_t szerokosc,char* logname,char* mappname,my_area_menager& Area
 	trophNet(NULL,REJESTROWANY_ROZMIAR_WEZLA),
 	globalneSwiatlo(1)
 { // UWAGA!!! Nie można tu jeszcze polegać na wirtualnych metodach klasy 'swiat'
-if(mappname)
-    zdatnosc.init_from_bitmap(mappname);
+if(mappname && mappname[0]!='\0') {
+    cerr<<"Reading from bitmap still not ported! "<<__FILE__<<':'<<__LINE__<<endl;
+    //zdatnosc.init_from_bitmap(mappname);
+}
 informacja_klonalna::podlacz_marker_czasu(&monte_carlo_licz);
 informacja_klonalna::ustaw_maksimum_kasowania(REJESTROWANY_ROZMIAR_TAKSONU-1);
 }
@@ -1336,8 +1344,11 @@ if(mask<=16) // Prowizorka - nieprzenośne, jeśli 'base' > 16bitowe
 return r;
 }
 
-struct vector2
-{ int x,y; };
+struct vector2int
+{
+    vector2int(int ix,int iy):x(ix),y(iy){}
+    int x,y;
+};
 
 void swiat::krok()
 {
@@ -1379,7 +1390,8 @@ for(long i=0;i<ile;i++)
 	int			x1,y1;
 	do{ //Losowanie kierunku ruchu - ??? można by trochę przyśpieszyć, ale chyba tylko trochę...
 	ZNOWU:
-		vector2 dxy={DYS_RUCHU-RANDOM(DYS_RUCHU*2+1),DYS_RUCHU-RANDOM(DYS_RUCHU*2+1)};
+		vector2int dxy{DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1),
+                       DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1) };
 		if(dxy.x==0 && dxy.y==0) goto ZNOWU; //Musi być jakieś przesuniecie
 		if((licznik++)==8) goto JESZCZE_RAZ; //Wyskok kontynuujący pętlę zewnętrzną,
 											//gdy nie można trafić w cos zdatnego
@@ -1681,7 +1693,7 @@ netstateout.close();
 //De-alokacja świata wraz ze wszystkimi składowymi
 cerr<<endl;
 delete &tenSwiat;
-printf(lang("Bye, bye!","Do widzenia!!!\n"));
+printf("%s",lang("Bye, bye!","Do widzenia!!!\n"));
 return 0;
 }
 
