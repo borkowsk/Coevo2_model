@@ -7,6 +7,7 @@
 /* losowo, aby nie zaciemniać modelu dodatkowymi parametrami. 	     */
 
 //MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
+//MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2026.04.30!
 
 //W razie czego:  __sbh_heap_check albo podobne, jeśli jest
 
@@ -21,8 +22,9 @@ const char*	   ProgramName="CO-EVOLUTION wer. 3.61b DEBUG (c)1994-2023 Wojciech 
 
 int My_Rand_seed=1; //Jak 0 to RANDOMIZE jak inny to SRAND(My_Rand_seed)
 
-namespace wbrtm { /// To jest zadeklarowane, ale trzeba gdzieś zdefiniować z wartością.
-    unsigned _lingo_selector = 1; ///< lang_selector=1;   - Jaki język
+// To jest zadeklarowane w "sshutils", ale trzeba gdzieś zdefiniować z wartością.
+extern "C" {
+    unsigned lang_selector = 1;
 }
 
 //WERSJA 3.61

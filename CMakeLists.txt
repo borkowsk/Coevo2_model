@@ -15,33 +15,34 @@ set(CMAKE_CXX_STANDARD 11) # See: https://matgomes.com/setting-cpp-standard-cmak
 IF (WIN32)
   # set stuff for windows
   message( "MS Windows platform assumed.\n\tInside C/C++ code automatic _MSC_VER variable will be used!" )
-  set( WBSLIBS   "../../public/symShell2andRTM" )
-  set( WBRTM     "${WBSLIBS}/RTM")
-  set( SYMSHELL  "${WBSLIBS}/SYMSHELL" )
-  set( SYMSCLSS  "${WBSLIBS}/SYMSHELL_CLASES" )
   add_compile_definitions( _CRT_SECURE_NO_WARNINGS )
   add_definitions( -DUSE_WINDOWS )
   #set( WINDOWS_ONLY_SRC  "${WBRTM}/BASE/wb_assert.c" )
 ELSE()
   # set stuff for other systems
   message( "Linux/unix platform assumed.")
-  set( WBSLIBS   "../../public/symShell2andRTM" )
-  set( WBRTM     "${WBSLIBS}/RTM")
-  set( SYMSHELL  "${WBSLIBS}/SYMSHELL" )
-  set( SYMSCLSS  "${WBSLIBS}/SYMSHELL_CLASES" )
+
   add_definitions( -DHAVE_X11 -DUSE_ZENITY ) # -DUSE_X11  DUSE_CONSOLE_ONLY -DDEF_MAXTHREADS=16 -DMULTITR
   #add_compile_definitions( ... )
   #set( X_ONLY_SRC  "" )
 ENDIF()
 
-#add_subdirectory( ${} ${} )
-add_subdirectory( "${SYMSHELL}/" "${SYMSHELL}/" )
-add_subdirectory( "${SYMSCLSS}/" "${SYMSCLSS}/" )
-add_subdirectory( "${WBRTM}/"   "${WBRTM}/"  )
+if (SYMSHELL2_ALREADY_IMPORTED)
+  message( "Symshell2 libraries already imported from master CMakeLists.txt" )
+else ()
+  set( WBSLIBS   "../../public/symShell2andRTM" )
+  set( WBRTM     "${WBSLIBS}/RTM")
+  set( SYMSHELL  "${WBSLIBS}/SYMSHELL" )
+  set( SYMSCLSS  "${WBSLIBS}/SYMSHELL_CLASES" )
+  #add_subdirectory( ${} ${} )
+  add_subdirectory( "${SYMSHELL}/" "${SYMSHELL}/" )
+  add_subdirectory( "${SYMSCLSS}/" "${SYMSCLSS}/" )
+  add_subdirectory( "${WBRTM}/"   "${WBRTM}/"  )
 
-include_directories( "${SYMSCLSS}/DATACLSS" "${SYMSCLSS}/SIMULCLSS" "${SYMSCLSS}/VISUALCLSS"
-                     "${WBRTM}/INCLUDE"  "${SYMSHELL}"
-                    )
+  include_directories( "${SYMSCLSS}/DATACLSS" "${SYMSCLSS}/SIMULCLSS" "${SYMSCLSS}/VISUALCLSS"
+                             "${WBRTM}/INCLUDE"  "${SYMSHELL}"
+                            )
+endif()
 
 add_executable( coevo2
                 "src/Coewo200N.cxx"

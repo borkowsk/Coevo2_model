@@ -41,7 +41,7 @@ void klad::ZapiszTxt(ostream& out,unsigned min_time,unsigned max_time,unsigned s
 {    
 	_filogOutPutInfo Info(*this,out,min_time,max_time,size_tres,ancestor); //Przodkiem wspólnego przodka jest on sam :-)
 	if(Info.max_time==0) 
-			Info.max_time=ULONG_MAX;
+			Info.max_time=UINT_MAX;
 	out<<"FULLCODE"<<'\t'
 		<<"ORDNUMBER"<<'\t'
 		<<"ANCORDNUM"<<'\t'
