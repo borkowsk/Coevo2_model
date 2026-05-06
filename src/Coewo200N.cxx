@@ -1,4 +1,4 @@
-/* Program symulujący KOEWOLUCJĘ (Wersja z roku 2013 - prawdopodobnie reaktywowana na nową wersję BDS)*/
+/* Program symulujący KOEWOLUCJĘ (Wersja z roku 2013 — prawdopodobnie reaktywowana na nową wersję BDS)*/
 /* Każdy osobnik ma swój bitowy wzorzec odżywiania i bitowy wzorzec */
 /* strategii osłony. Jeśli ATAKOWANY.OSLONA AND ATAKUJACY.Trofia>0 to  */
 /* znaczy, że atak zakończył się powodzeniem.			    */
@@ -41,13 +41,13 @@ extern "C" {
 //Wizualizacja 'on run' serii czasowych daje zawsze równe odstępy punktów, niezależnie
 //od aktualnej multiplikacji MC. Jednak w pliku log jest seria z właściwymi wartościami MC
 
-//Wersja 3 - nowe możliwości
+//Wersja 3 — nowe możliwości
 //1. Różne dane do kolorowania drzewa filogenetycznego wybierane z menu
 //2. Rozbudowa listy parametrów 'wyprowadzonych' na zewnątrz programu i usunięcie blokady na 'światy' większe od ekranu
 //3. Dodanie miernika czasu procesora w głównej pętli i wyprowadzenie wraz z krokiem na konsole
 //4. 25.04.08 Usunięcie błędu w bibliotecznym menadżerze lufcików wywalającego program przy robieniu TILE
 //5. 11.09.08 Wypisywanie do pliku kompletnej filogenezy
-//6. Wersja 3.1 - poprawki techniczne i kompilowalność pod MSVC 2008
+//6. Wersja 3.1 — poprawki techniczne i kompilowalność pod MSVC 2008
 //7. Uelastycznienie wizualizacji sieci ekologicznej i jej zapisywania
 //8. Umożliwienie ciągłych zrzutów zawartości okna graficznego i sieci ekologicznej w dwu formatach
 //9. Regulacja częstość zrzutów. NIEDOKOŃCZONA, bo POWODUJE BŁĘDNĄ NUMERACJĘ PLIKÓW I KROKÓW
@@ -134,6 +134,8 @@ extern "C" {
 #endif
 #endif
 
+using namespace symshell2;
+
 class swiat; //Zapowiedz głównej klasy symulacji
 
 // Manager lufcików z uzupełnioną obsługa i/o (z menu)
@@ -172,10 +174,10 @@ and_exploatation_source ExpDemo(lang("(T AND O)/O * (T AND O)/T","(T AND D)/D * 
 #include "co_agent.hpp"
 
 //BARDZO WAŻNE WSKAŹNIKI DO MASEK CZYLI GENÓW BĘDĄCYCH SKŁADOWYMI STRUKTURY
-//base agent::* geba_ptr=&agent::w.w.geba;      //TAK POWINNO BYC - ALE NIE KOMPILUJE
+//base agent::* geba_ptr=&agent::w.w.geba;      //TAK POWINNO BYC — ALE NIE KOMPILUJE
 //base agent::* oslona_ptr=&agent::w.w.oslona;
 
-#define RECZNIE_WPISZ_PTR //RĘCZNE WPISYWANIE - ZALEŻNE OD 'ENDIAN' I WIDZIMISIĘ TWÓRCÓW KOMPILATORA
+#define RECZNIE_WPISZ_PTR //RĘCZNE WPISYWANIE — ZALEŻNE OD 'ENDIAN' I WIDZIMISIĘ TWÓRCÓW KOMPILATORA
 
 #ifdef  RECZNIE_WPISZ_PTR
 base agent::* geba_ptr=NULL; //Tu w zasadzie tylko deklaracja...
@@ -208,17 +210,17 @@ unsigned REJESTROWANY_ROZMIAR_WEZLA=0; //MINIMALNY_ROZMIAR_TAKSONU-1; //Domyśln
 unsigned	PROMIENIOWANIE=BITS_PER_GENOM*500;	// Co ile kopiowanych bitów następuje mutacja
 bool		UZYWAJ_PELNE_PROM=true;				// Czy używamy pełnego promieniowania, czy obniżonego? NIE UŻYWANE???
 
-int    WSP_KATASTROF=0; //10-100		   // Wykładnik rozkładu katastrof. 0 - wyłączone.
+int    WSP_KATASTROF=0; //10-100		   // Wykładnik rozkładu katastrof. 0 — wyłączone.
 int    DZIELNIK_1_OKRESU_MILANKOVICA=50;   // Przez ile dzielić kroki M C, żeby uzyskać coś do zmian oświetlenia
-double POWER_COS_NASLONECZNIENIA=0;        // "Potęga cyklu słonecznego". 0 - wyłączone; 1 - zwykły cosinus; 2 - tropikalny 3 - pory roku.
+double POWER_COS_NASLONECZNIENIA=0;        // "Potęga cyklu słonecznego". 0 — wyłączone; 1 — zwykły cosinus; 2 — tropikalny 3 — pory roku.
 
 double		EFEKTYWNOSC_AUTOTROFA=0.99;	// jaka część światła używa autotrof.
 unsigned	NIEPLODNOSC=5;		        // Prawdopodobieństwo rozmnażania jest 1/NIEPLODNOSC.
 double		WYPOSAZENIE_POTOMSTWA=0.05; // Jaką część siły oddać potomkowi. UWAGA! 0.1 to ZA DUŻO!!! {???}
 
 unsigned int	MINIMALNY_WIEK=205;	      // Rodzi się z tym wiekiem. Do śmierci ma 255-MINIMALNY_WIEK
-unsigned int	ODWROCONY_KOSZT_OSLONY=0; // 1 - czy koszty osłony są odwrócone
-unsigned int	ODWROCONY_KOSZT_ATAKU=0;  // 1 - czy koszty ataku są odwrócone
+unsigned int	ODWROCONY_KOSZT_OSLONY=0; // 1 — czy koszty osłony są odwrócone
+unsigned int	ODWROCONY_KOSZT_ATAKU=0;  // 1 — czy koszty ataku są odwrócone
 
 unsigned int	PIRACTWO=1;	  //Czy eksploatacja "piracka", czy pasożytnicza.
 unsigned int	DYS_RUCHU=1;  //Dystans ruchu w jednym kierunku.
@@ -437,7 +439,7 @@ if(first!=NULL)
 	index=Sources.insert(sca);        assert(index==0);
 
 // Tylko ze względów demonstracyjnych
-array_source<unsigned>* arr=new array_source<unsigned>(MAXBASE2+1,agent::liczniki,lang("liczniki taksonów - liniowo","taxon counters"));
+array_source<unsigned>* arr=new array_source<unsigned>(MAXBASE2+1,agent::liczniki,lang("liczniki taksonów — liniowo","taxon counters"));
 if(!arr) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(arr);
 
@@ -449,16 +451,16 @@ Sources.insert(Sila);
 Trofia=ziemia.make_source(lang("trofia","trophy"),geba_ptr);
 if(!Trofia) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(Trofia);
-Trofia->setminmax(0,255);
+Trofia->set_min_max(0,255);
 
 Oslona=ziemia.make_source(lang("obrona","defence"),oslona_ptr);
 if(!Oslona) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(Oslona);
-Oslona->setminmax(0,255);
+Oslona->set_min_max(0,255);
 
 Wiek=ziemia.make_source(lang("wiek","age"),&agent::wiek);
 if(!Wiek) goto DO_OBSLUGI_BLEDOW;
-Wiek->setminmax(0,255);
+Wiek->set_min_max(0,255);
 Sources.insert(Wiek);
 
 EDynamism=stats.make_source(lang("Eksploatacja","ExploItation"),&inte_stat::MeanEnergyOfInteraction);
@@ -469,7 +471,7 @@ EDynamism->set_missing(-1);
 // ŹRÓDŁO METODOWE CZYTAJĄCE WIEK TAKSONU, DO KTÓREGO NALEŻY AGENT
 method_matrix_source<agent,unsigned long>* WiekFilog=ziemia.make_source(lang("WiekFilogenetyczny","PhylogeneticAge"),&agent::how_old_taxon);
 if(!WiekFilog) goto DO_OBSLUGI_BLEDOW;
-//WiekFilog->setminmax(0,1);
+//WiekFilog->set_min_max(0,1);
 WiekFilog->set_missing(0xffffffff);
 int inWiekFilog=Sources.insert(WiekFilog);
 
@@ -477,7 +479,7 @@ int inWiekFilog=Sources.insert(WiekFilog);
 // ŹRÓDŁO METODOWE FILTRUJĄCE ŻYWYCH
 method_matrix_source<agent,bool>* Zycie=ziemia.make_source(lang("martwe-żywe","alive or not"),&agent::jest_zywy);
 if(!Zycie) goto DO_OBSLUGI_BLEDOW;
-Zycie->setminmax(0,1);
+Zycie->set_min_max(0,1);
 int inZycie=Sources.insert(Zycie);
 
 GT_filter<method_matrix_source<agent,bool> >* filtrZycia=//Filtr na "Tylko żywe"
@@ -513,7 +515,7 @@ pom=new carpet_graph(0,wys_map,szer_map-1,2*wys_map-1, //domyślne współrzędn
 						GebaZywych); //I alternatywne źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
 //pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
-pom->settitle(lang("PREFERENCJE TROFICZNE (maski ataku)","TROPHIC PREFERENCES (masks of attack)"));
+pom->set_title(lang("PREFERENCJE TROFICZNE (maski ataku)","TROPHIC PREFERENCES (masks of attack)"));
 pom->settitlecolo(255,default_transparent);
 pom->setbackground(default_half_gray);
 MyAreaMenager.insert(pom);
@@ -525,7 +527,7 @@ pom=new carpet_graph(0,2*wys_map,szer_map-1,3*wys_map-1, //domyślne współrzę
 
 if(!pom) goto DO_OBSLUGI_BLEDOW;
 //pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
-pom->settitle(lang("PODATNOŚĆ AGENTÓW NA ATAK (maski obrony)","SENSITIVITY TO THE ATTACK (mask of defence)"));
+pom->set_title(lang("PODATNOŚĆ AGENTÓW NA ATAK (maski obrony)","SENSITIVITY TO THE ATTACK (mask of defence)"));
 pom->settitlecolo(255,default_transparent);
 pom->setbackground(default_half_gray);
 MyAreaMenager.insert(pom);
@@ -536,7 +538,7 @@ pom=new carpet_graph(MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.get
                         SilaZywych); //I alternatywne źródło danych
 pom->setdatacolors(1,254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
 pom->setbackground(default_half_gray);
-pom->settitle(lang("ZASOBY ENERGII AGENTÓW","ENERGY RESOURCES OF AGENTS"));
+pom->set_title(lang("ZASOBY ENERGII AGENTÓW","ENERGY RESOURCES OF AGENTS"));
 pom->settitlecolo(255,default_transparent);
 MyAreaMenager.insert(pom);
 
@@ -544,7 +546,7 @@ MyAreaMenager.insert(pom);
 method_matrix_source<agent,int>* Specjalizacja=ziemia.make_source(lang("bity ustawione","how much specialised"),
                                                                   &agent::how_specialised);
 if(!Specjalizacja) goto DO_OBSLUGI_BLEDOW;
-Specjalizacja->setminmax(1,16);
+Specjalizacja->set_min_max(1,16);
 Specjalizacja->set_missing(-1);
 int inSpecjalizacja=Sources.insert(Specjalizacja);
 
@@ -553,20 +555,20 @@ pom=new carpet_graph(0,3*wys_map,szer_map-1,4*wys_map, //domyślne współrzędn
 //pom->setdatacolors(1,254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
 pom->setbackground(default_half_gray);
 pom->settitlecolo(255,default_transparent);
-pom->settitle(lang("POZIOM SPECJALIZACJI AGENTÓW","LEVEL OF SPECIALISATION"));
+pom->set_title(lang("POZIOM SPECJALIZACJI AGENTÓW","LEVEL OF SPECIALISATION"));
 MyAreaMenager.insert(pom);
 
 method_matrix_source<agent,int>* SpecjalizacjaA=ziemia.make_source(lang("bity autotrofów","spec. bits of autotrophs"),
                                                                    &agent::how_specialised_autotrof);
 if(!SpecjalizacjaA) goto DO_OBSLUGI_BLEDOW;
-SpecjalizacjaA->setminmax(1,16);
+SpecjalizacjaA->set_min_max(1,16);
 SpecjalizacjaA->set_missing(-1);
 int inSpecjalizacjaA=Sources.insert(SpecjalizacjaA);
 
 method_matrix_source<agent,int>* SpecjalizacjaH=ziemia.make_source(lang("bity heterotrofów","spec. bits of heterotrophs"),
                                                                    &agent::how_specialised_heterotrof);
 if(!SpecjalizacjaH) goto DO_OBSLUGI_BLEDOW;
-SpecjalizacjaH->setminmax(1,16);
+SpecjalizacjaH->set_min_max(1,16);
 SpecjalizacjaH->set_missing(-1);
 int inSpecjalizacjaH=Sources.insert(SpecjalizacjaH);
 
@@ -582,7 +584,7 @@ int inCurrLight=Sources.insert(curlpom);
 
 // Bogactwo klonów i gatunków
 template_scalar_source_base<unsigned long>* allclons=
-					new ptr_to_fuction_source<unsigned long>(informacja_klonalna::ile_klonow,lang("klonów od początku","clones from the beginning"));
+					new ptr_to_function_source<unsigned long>(informacja_klonalna::ile_klonow,lang("klonów od początku","clones from the beginning"));
 if(!allclons) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(allclons);
 fifo_source<unsigned long>* flpom=new fifo_source<unsigned long>(allclons,dlugosc_logow);
@@ -590,7 +592,7 @@ if(!flpom)goto DO_OBSLUGI_BLEDOW;
 int inAllclons=Sources.insert(flpom);
 
 template_scalar_source_base<unsigned long>* alltax=
-					new ptr_to_fuction_source<unsigned long>(informacja_klonalna::ile_taksonow,lang("eko-gatunków od początku","species from the beginning"));
+					new ptr_to_function_source<unsigned long>(informacja_klonalna::ile_taksonow,lang("eko-gatunków od początku","species from the beginning"));
 if(!alltax) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(alltax);
 flpom=new fifo_source<unsigned long>(alltax,dlugosc_logow);
@@ -683,7 +685,7 @@ graph* pom1=new sequence_graph(
                                  0/*reskalowanie*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
 pom1->setframe(128);
-pom1->settitle(lang("AGENCI - HISTORIA LICZEBNOŚCI","History of the number of agents"));
+pom1->set_title(lang("AGENCI — HISTORIA LICZEBNOŚCI","History of the number of agents"));
 //pom1->setdatacolors()
 MyAreaMenager.insert(pom1);
 
@@ -701,7 +703,7 @@ pom1=new sequence_graph(szer_map,401,MyAreaMenager.getwidth()-1,MyAreaMenager.ge
 							   1/*Wspolne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
 pom1->setframe(128);
-pom1->settitle(lang("HISTORIA LICZBY TAKSONÓW","History of the number of taxa"));
+pom1->set_title(lang("HISTORIA LICZBY TAKSONÓW","History of the number of taxa"));
 MyAreaMenager.insert(pom1);
 
 
@@ -713,14 +715,14 @@ pom->setdatacolors(50,254); //Potrzebne tylko dwa kolory tak naprawdę
 pom->setframe(32);
 pom->setbackground(default_half_gray);
 pom->settitlecolo(255,default_transparent);
-pom->settitle(lang("ZYWI AGENCI","ALIVE AGENTS"));
+pom->set_title(lang("ZYWI AGENCI","ALIVE AGENTS"));
 MyAreaMenager.insert(pom);
 
 //UDOSTĘPNIANIE I WYŚWIETLANIE BACKGROUNDU SYMULACJI
 rectangle_source_base* Background=zdatnosc.make_source(lang("przydatność terenu","suitability of areas"));
 if(!Background) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(Background);
-Background->setminmax(0,255); //255 odcieni (szarości) - czarne niezdatne
+Background->set_min_max(0,255); //255 odcieni (szarości) — czarne niezdatne
 pom=new carpet_graph(MyAreaMenager.getwidth()-80,21,MyAreaMenager.getwidth()-1,42, //domyślne współrzędne
 					 Background); //I źródło danych
 
@@ -729,7 +731,7 @@ pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
 pom->setframe(64);
 pom->setbackground(default_half_gray);
 pom->settitlecolo(255,default_transparent);
-pom->settitle(lang("Mapa zdatnych obszarów","Map of useful/unusable areas"));
+pom->set_title(lang("Mapa zdatnych obszarów","Map of useful/unusable areas"));
 MyAreaMenager.insert(pom);
 
 //Demo interakcji AND
@@ -738,7 +740,7 @@ pom=new carpet_graph(MyAreaMenager.getwidth()-80,43,MyAreaMenager.getwidth()-1,6
 if(!pom) goto DO_OBSLUGI_BLEDOW;
 //pom->setdatacolors(0,255); //Potrzebne tylko dwa kolory naprawdę
 pom->setframe(64);
-pom->settitle(lang("AND(Trofia,Oslona)","AND(Trophy,Defense)"));
+pom->set_title(lang("AND(Trofia,Oslona)","AND(Trophy,Defense)"));
 MyAreaMenager.insert(pom);
 
 //Demo exploatacji potenclalnej (AND*K)
@@ -747,7 +749,7 @@ pom=new carpet_graph(MyAreaMenager.getwidth()-80,65,MyAreaMenager.getwidth()-1,8
 if(!pom) goto DO_OBSLUGI_BLEDOW;
 //pom->setdatacolors(0,255); //Potrzebne tylko dwa kolory naprawdę
 pom->setframe(64);
-pom->settitle(lang("Eksploatacja potencjalna","exploitation potential"));
+pom->set_title(lang("Eksploatacja potencjalna","exploitation potential"));
 MyAreaMenager.insert(pom);
 
 //Wiek
@@ -757,7 +759,7 @@ pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabowidoczne
 pom->setframe(32);
 pom->setbackground(default_half_gray);
 pom->settitlecolo(255,default_transparent);
-pom->settitle(lang("WIEK AGENTÓW","AGE OF AGENTS"));
+pom->set_title(lang("WIEK AGENTÓW","AGE OF AGENTS"));
 MyAreaMenager.insert(pom);
 
 // OKNO HISTORII SIŁY
@@ -786,7 +788,7 @@ pom1=new sequence_graph(//szer_map,300,szer_map+300,400,
 							   //1/*Wspolne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
 pom1->setframe(128);
-pom1->settitle(lang("HISTORIA ENERGII AGENTÓW","HISTORY OF AGENTS ENERGY"));
+pom1->set_title(lang("HISTORIA ENERGII AGENTÓW","HISTORY OF AGENTS ENERGY"));
 MyAreaMenager.insert(pom1);
 
 // Lokalne przepływy energii
@@ -796,7 +798,7 @@ pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
 //pom->setframe(32);
 pom->setbackground(default_half_gray);
 pom->settitlecolo(255,default_transparent);
-pom->settitle(lang("LOKALNY PRZEPŁYW ENERGII","LOCAL ENERGY FLOW"));
+pom->set_title(lang("LOKALNY PRZEPŁYW ENERGII","LOCAL ENERGY FLOW"));
 MyAreaMenager.insert(pom);
 
 // Dywanowa mapa używanych nisz ekologicznych
@@ -824,7 +826,7 @@ if(!pom) goto DO_OBSLUGI_BLEDOW;
 pom->setdatacolors(0,255);
 pom->settitlecolo(255,default_transparent);
 pom->setbackground(default_dark_gray);
-pom->settitle(lang("MAPA UŻYWANYCH NISZ EKOLOGICZNYCH","USAGE OF ECOLOGICAL NICHES"));
+pom->set_title(lang("MAPA UŻYWANYCH NISZ EKOLOGICZNYCH","USAGE OF ECOLOGICAL NICHES"));
 MyAreaMenager.insert(pom);
 
 //  Wiek filogenetyczny klonów
@@ -835,7 +837,7 @@ pom1=new carpet_graph(0,0,szer_map-1,wys_map-1, //domyślne współrzędne
 pom1->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
 pom1->setbackground(default_half_gray);
 pom1->settitlecolo(255,default_transparent);
-pom1->settitle(lang("FILOGENETYCZNY WIEK AGENTÓW","PHYLOGENETIC AGE OF AGENTS"));
+pom1->set_title(lang("FILOGENETYCZNY WIEK AGENTÓW","PHYLOGENETIC AGE OF AGENTS"));
 MyAreaMenager.insert(pom1);
 
 // Okno historii liczby taksonów od początku
@@ -851,7 +853,7 @@ pom1=new sequence_graph(//szer_map+301,300,MyAreaMenager.getwidth()-1,400, //dom
 							   //1/*Wspólne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
 pom1->setframe(32);
-pom1->settitle(lang("PRZYROST DRZEWA FILOGENETYCZNEGO","GROWTH OF PHYLOGENETIC TREE"));
+pom1->set_title(lang("PRZYROST DRZEWA FILOGENETYCZNEGO","GROWTH OF PHYLOGENETIC TREE"));
 MyAreaMenager.insert(pom1);
 
 // HISTOGRAM SPECJALIZACJI AUTOTROFÓW
@@ -881,7 +883,7 @@ pom=new bars_graph(//szer_map+1,130,szer_map+119,130+84, //domyślne współrzę
 				   histspecjA);
 pom->setdatacolors(200,250); //max kolor to kolor ostatniego słupka
 pom->setframe(232);
-pom->settitle(lang("SPECJALIZACJA AUTOTROFÓW","SPECIALISATION OF AUTOTROPHS"));
+pom->set_title(lang("SPECJALIZACJA AUTOTROFÓW","SPECIALISATION OF AUTOTROPHS"));
 MyAreaMenager.insert(pom);
 
 // HISTOGRAM SPECJALIZACJI HETEROTROFÓW
@@ -901,7 +903,7 @@ pom=new bars_graph(//szer_map+1,130+85,szer_map+119,299, //domyślne współrzę
 					histspecjH);
 pom->setdatacolors(0,64); //max kolor to kolor ostatniego słupka
 pom->setframe(32);
-pom->settitle(lang("SPECJALIZACJA HETEROTROFÓW","SPECIALISATION OF HETEROTROPHS"));
+pom->set_title(lang("SPECJALIZACJA HETEROTROFÓW","SPECIALISATION OF HETEROTROPHS"));
 MyAreaMenager.insert(pom);
 
 // FILOGENEZA TAKSONÓW -  MOŻE BYĆ KOSZTOWNE W RYSOWANIU
@@ -930,9 +932,9 @@ pom=FilogeneticTree=new net_graph(szer_map+170,130,MyAreaMenager.getwidth()-81,2
 pom->setframe(128);
 pom->setbackground(default_light_gray);
 wb_pchar buf(1024);
-buf.prn(lang("FILOGENEZA - taksony powyżej %d agentów",
-			 "PHYLOGENETIC TREE - taxa larger than %d individuals"),REJESTROWANY_ROZMIAR_TAKSONU-1);
-pom->settitle(buf.get());
+buf.prn(lang("FILOGENEZA — taksony powyżej %d agentów",
+			 "PHYLOGENETIC TREE — taxa larger than %d individuals"),REJESTROWANY_ROZMIAR_TAKSONU-1);
+pom->set_title(buf.get());
 MyAreaMenager.insert(pom);
 
 // Sieciowa mapa zależności ekologicznych
@@ -967,7 +969,7 @@ pom=TrophicNet=new net_graph(szer_map+1,130,szer_map+169,299,
 pom->setframe(128);
 //pom->setdatacolors(0,128);
 pom->setbackground(default_light_gray);
-pom->settitle(lang("SIEC TROFICZNA","TROPHIC WEB"));
+pom->set_title(lang("SIEC TROFICZNA","TROPHIC WEB"));
 MyAreaMenager.insert(pom);
 
 //szer_map+1,130,szer_map+119,130+84
@@ -980,7 +982,7 @@ OutArea=new text_area(
 					  lang("Informacje","Information_area"),
 					  default_white,default_black,128,40);
 if(!OutArea) goto DO_OBSLUGI_BLEDOW;
-OutArea->settitle("STATUS:");
+OutArea->set_title("STATUS:");
 int out_area=MyAreaMenager.insert(OutArea);
 
 
@@ -1037,7 +1039,7 @@ void swiat::UstalDetalicznoscSieci(int Ile,bool Relative)
 
 void swiat::ZapiszFilogeneze(ostream& out,unsigned min_time,unsigned max_time,unsigned size_tres)
 {
-	//Tu być może trzeba cos dodać, ale na razie tak - bez kontroli
+	//Tu być może trzeba cos dodać, ale na razie tak — bez kontroli
 	//...
 	//Informacje nagłówkowe
 	out<<lang("ISTOTNIEJSZE LINIE FILOGENETYCZNE","IMPORTANT PHYLOGENETIC LINES");
@@ -1167,7 +1169,7 @@ istream& operator >> (istream& i,agent& a)
 	return i;
 }
 
-/* NAJWAŻNIEJSZE FUNKCJE - GŁÓWNA IDEA SYMULACJI */
+/* NAJWAŻNIEJSZE FUNKCJE — GŁÓWNA IDEA SYMULACJI */
 
 // inicjacja każdego nowego indywiduum
 int agent::init(base trof,base osl, unsigned isila)
@@ -1278,7 +1280,7 @@ if(zabojca.sila==0)
            return 0; //Juz niezdolny zabijac
                                         assert(w.w.oslona>0 && w._full>0);
 
-int ret=parasit(zabojca,energy_flow); //Zubażanie. 1 - gdy zabił. Parametr 'energy_flow' daje ilość przejętej energii (?)
+int ret=parasit(zabojca,energy_flow); //Zubażanie. 1 — gdy zabił. Parametr 'energy_flow' daje ilość przejętej energii (?)
 
 if(ret==1) return ret;
 	else   return kill(); // Potem ofiara i tak ginie. Niewykorzystana siła/biomasa idzie w kosmos.
@@ -1338,7 +1340,7 @@ if(sila==0 || wiek==0) //Czy CAŁKIEM brak siły, lub życie się 'przekręciło
 base2 agent::duplikuj(base2 r)
 {
 base2 mask=RANDOM(PROMIENIOWANIE);
-if(mask<=16) // Prowizorka - nieprzenośne, jeśli 'base' > 16bitowe
+if(mask<=16) // Prowizorka — nieprzenośne, jeśli 'base' > 16bitowe
 	{
 	mask=0x1<<mask;
 	r^=mask;
@@ -1390,7 +1392,7 @@ for(long i=0;i<ile;i++)
 	//Losowanie sąsiedniego miejsca
 	unsigned	a=0,licznik=0;
 	int			x1,y1;
-	do{ //Losowanie kierunku ruchu - ??? można by trochę przyśpieszyć, ale chyba tylko trochę...
+	do{ //Losowanie kierunku ruchu — ??? można by trochę przyśpieszyć, ale chyba tylko trochę...
 	ZNOWU:
 		vector2int dxy{DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1),
                        DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1) };
@@ -1415,7 +1417,7 @@ for(long i=0;i<ile;i++)
 			}
 		}
 	   }
-	   else // Jeśli na wylosowanym polu jest żywy - potencjalna ofiara
+	   else // Jeśli na wylosowanym polu jest żywy — potencjalna ofiara
 		   //-------------------------------------------------------------------------
 	   {
 		   if( Ziemia(x,y).w.w.geba!=AUTOTROF &&					  //atakujący nie jest autotrofem
@@ -1472,7 +1474,7 @@ for(long i=0;i<ile;i++)
 	}
 
 	if(Liczniki)
-		Liczniki->setminmax(0,agent::max); //Oszczędza liczenia max
+		Liczniki->set_min_max(0,agent::max); //Oszczędza liczenia max
 
 	Sources.new_data_version(1,1); //Oznajmia seriom, że dane się uaktualniły
 
@@ -1528,7 +1530,7 @@ if(this->monte_carlo_licz%LogRatio==0)      //Czy tu?????????????????????
 char bufor[2048]; // Bufor jest co prawda ze sporym zapasem
 bufor[2047]='A';  // STRAŻNIK. Może zostać albo 'A', albo NULL, ale jak coś innego to przepełniony.
 
-sprintf(bufor,lang("%ld KROK MONTE CARLO [%lu - symulacji]   PID=%lu\n"
+sprintf(bufor,lang("%ld KROK MONTE CARLO [%lu — symulacji]   PID=%lu\n"
 							"LICZBA AGENTÓW:%lu "
 							"(%lu AUTOTROFICZNYCH)\n"
 							"LICZBA EKO-GATUNKÓW:%lu "
@@ -2048,7 +2050,7 @@ for(int i=1;i<argc;i++)
 				   "The longer side of simulation world SIDE=")<<IBOKSWIATA<<endl;
 	}
 	else
-	//"FLEX=y/n - czy można zamieniać się z właścicielem komórki\n"
+	//"FLEX=y/n — czy można zamieniać się z właścicielem komórki\n"
 	//const unsigned	ZAMIANY=255; //Czy może przeciskać się na zajęte pola (0 na nie lub inna liczba na tak)
 	if((pom=strstr(argv[i],"FLEX="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2067,11 +2069,11 @@ for(int i=1;i<argc;i++)
 		getchar();
 		}
 	else
-		cerr<<lang("Elastyczne wymijanie - ","Flexible agent moving - ")
+		cerr<<lang("Elastyczne wymijanie — ","Flexible agent moving — ")
 			<<"FLEX: "<< (ZAMIANY==0 ? lang("nie","no"):lang("tak","yes") );
 	}
 	else
-	// "RBIT=2^n - który bit odpowiada za zdolność ruchu\n"
+	// "RBIT=2^n — który bit odpowiada za zdolność ruchu\n"
 	// const unsigned	BIT_RUCHU=1024;		// Jak poza maskę obrony to bez możliwości utraty ruchliwości
 	if((pom=strstr(argv[i],"RBIT="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2096,12 +2098,12 @@ for(int i=1;i<argc;i++)
 				<<lang(" bit maski obrony jest bitem ruchu",
 					   "-th bit of defence mask is responsible on moving ability")<<endl;
 		else
-			cerr<<lang("Bit ruchu jest poza maską obrony - wszyscy agenci mają możliwość ruchu",
-					   "The move bit is outside the defence mask - all agents are able to move")<<endl;
+			cerr<<lang("Bit ruchu jest poza maską obrony — wszyscy agenci mają możliwość ruchu",
+					   "The move bit is outside the defence mask — all agents are able to move")<<endl;
 		}
 	}
 	else
-	//MAXA=nnn - maksymalny wiek. Nie większy niż 255. Ujemne oznacza śmierci losowe\n"
+	//MAXA=nnn — maksymalny wiek. Nie większy niż 255. Ujemne oznacza śmierci losowe\n"
 	//const unsigned	MINIMALNY_WIEK=205;	// Rodzi się z tym wiekiem. Do śmierci ma 255-MINIMALNY_WIEK
 	if((pom=strstr(argv[i],"MAXA="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2122,7 +2124,7 @@ for(int i=1;i<argc;i++)
 		}
 	}
 	else
-	// "IFER=NN - prawdopodobieństwo rozmnażania to 1/IFER\n"
+	// "IFER=NN — prawdopodobieństwo rozmnażania to 1/IFER\n"
 	// const unsigned	NIEPLODNOSC=5;		// Prawdopodobieństwo rozmnażania jest 1/NIEPLODNOSC.
 	if((pom=strstr(argv[i],"IFER="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2152,7 +2154,7 @@ for(int i=1;i<argc;i++)
 		  cerr<<lang("- eksploatacja pasożytnicza","- parasitic exploitation")<<endl;
 	}
 	else
-	//"POSA=0.XX - jaki ułamek siły  oddane potomkowi\n"
+	//"POSA=0.XX — jaki ułamek siły  oddane potomkowi\n"
 	//const double	WYPOSAZENIE_POTOMSTWA=0.05; // jaką cześć siły oddać potomkowi. Czy 0.1 to ZA DUŻO?
 	if((pom=strstr(argv[i],"DOWR="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2193,9 +2195,9 @@ for(int i=1;i<argc;i++)
 		cerr<<lang("Współczynnik katastrof CATA=",
 			   "Coefficient of disasters CATA=")<<WSP_KATASTROF<<endl;
 		if(WSP_KATASTROF<=0)
-			cerr<<lang(" - zatem katastrofy wyłączone"," - so disasters are off")<<endl;
+			cerr<<lang(" — zatem katastrofy wyłączone"," — so disasters are off")<<endl;
 		else
-			cerr<<lang(" - zatem katastrofy możliwe"," - so disasters are possible")<<endl;
+			cerr<<lang(" — zatem katastrofy możliwe"," — so disasters are possible")<<endl;
 	}
 	else
 	if((pom=strstr(argv[i],"AUTO="))!=NULL) //Nie NULL, czyli jest
@@ -2253,7 +2255,7 @@ for(int i=1;i<argc;i++)
 		}
 	}
 	else
-	//"INLO=NNNN - długość wewnętrznych logów\n"
+	//"INLO=NNNN — długość wewnętrznych logów\n"
 	// const unsigned długość_logow=50000;
 	if((pom=strstr(argv[i],"INLO="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2281,7 +2283,7 @@ for(int i=1;i<argc;i++)
 				   "Map file name MAPF=")<<MappName<<endl;
 	}
 	else
-	//"DMPF=name - rdzen/początek nazwy plików dump\n"
+	//"DMPF=name — rdzen/początek nazwy plików dump\n"
 	//char     SCREENDUMPNAME[256]="CO-EVO-3a";
 	if((pom=strstr(argv[i],"DMPF="))!=NULL) //Nie NULL, czyli jest
 	{
@@ -2308,48 +2310,48 @@ for(int i=1;i<argc;i++)
 	cerr<<"===================================================================="<<endl;
 	cerr<<lang("MOŻLIWE TO: (W nawiasach wartości domyślne)",
 				"POSSIBLE ONES ARE: (default values in parentheses)")<<endl;
-	cerr<<lang("SIDE=NN - dłuższy bok obszaru symulacji ",
-			   "SIDE=NN - the longer side of simulation world")<<'('<<IBOKSWIATA<<')'<<endl; //unsigned	IBOKSWIATA=300; // FAKTYCZNIE UŻYWANY BOK ŚWIATA
-	cerr<<lang("MAPF=plik_init.gif - nazwa pliku z mapa zamieszkiwalności",
-			   "MAPF=init_file.gif - name of availability map file")<<'('<<MappName<<')'<<endl; //Inicjalizacja świata. Pola czarne, miejsca niezamieszkiwalne.
-	cerr<<lang("AUTO=0.XX - efektywność autotrofów ",
-			   "AUTO=0.XX - productivity of autotrophs ")<<'('<<EFEKTYWNOSC_AUTOTROFA<<')'<<endl; //double	EFEKTYWNOSC_AUTOTROFA=0.5; // jaka część światła używa autotrof
-	cerr<<lang("PRED=0/1 - gospodarka pasożytnicza versus drapieżnicza ",
-			   "PRED=0/1 - predatory vs. parasitic exploitation ")<<'('<<PIRACTWO<<')'<<endl; //unsigned int	PIRACTWO=1; // Czy eksploatacja piracka, czy pasożytnicza
-	cerr<<lang("DIST=NN - maksymalny krok ruchu agenta ",
-			   "DIST=NN - maximal one step walk of agent ")<<'('<<DYS_RUCHU<<')'<<endl; //unsigned	DYS_RUCHU=1; // Dystans ruchu w jednym kierunku
-	cerr<<lang("FLEX=y/n - czy można zamieniać się z właścicielem komórki ",
-			   "FLEX=y/n - exchange position when agents bump")<<'('<<ZAMIANY<<')'<<endl; //const unsigned	ZAMIANY=255; //Czy może przeciskać się na zajęte pola (0 na nie lub inna liczba na tak)
-	cerr<<lang("RBIT=2^n - który bit odpowiada za zdolność ruchu ",
-			   "RBIT=2^n - weight of bit responsible for moving ability ")<<'('<<BIT_RUCHU<<')'<<endl; //const unsigned	BIT_RUCHU=1024;	// Poza maskę to bez możliwości utraty ruchliwości
-	cerr<<lang("MUTD=NNN - co ile kopiowanych bitów trafia się mutacja ",
-			   "MUTD=NNN - how often mutation occurs when copying bits ")<<"(every "<<PROMIENIOWANIE<<" bits)"<<endl; //unsigned	PROMIENIOWANIE=BITS_PER_GENOM*100; // Co ile kopiowanych bitów nastepuje mutacja
-	cerr<<lang("DOWR=0.XX - jaki ułamek energii oddane potomkowi ",
-			   "DOWR=0.XX - dowry for offspring as % of parent energy ")<<'('<<WYPOSAZENIE_POTOMSTWA<<')'<<endl; //const double	WYPOSAZENIE_POTOMSTWA=0.05; // jaka część siły  oddać potomkowi 0.1 to ZA DUZO!!! {???}
-	cerr<<lang("IFER=NN - prawdopodobieństwo rozmnażania to. 1/IFER = 1/",
-			   "IFER=NN - how often agent try to make child. 1/IFER = 1/")<<'('<<NIEPLODNOSC<<')'<<endl; //const unsigned	NIEPLODNOSC=5;		// Prawdopodobieństwo rozmnażania jest 1/NIEPLODNOSC
-	cerr<<lang("MAXA=nnn - maksymalny wiek. Nie większy niż 255. ",
-			   "MAXA=nnn - maximal age. Not grater than 255. ")<<'('<<255-MINIMALNY_WIEK<<')'<<endl; // Ujemne BĘDZIE oznaczać śmierci losowe"<<'('<<xxx<<')'<<endl; //const unsigned	MINIMALNY_WIEK=205;	// Rodzi się z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
-	cerr<<lang("CATA=NN - wykładnik częstości katastrof ",
-			   "CATA=NN - ..............................")<<'('<<WSP_KATASTROF<<')'<<endl; //int	WSP_KATASTROF=0; //10-100 Wykładnik rozkładu katastrof - 0 -wyłączone
-	cerr<<lang("TAXS=NN - minimalny rozmiar taksonu rejestrowanego w drzewie. Nie mniej niż 10! ",
-			   "TAXS=NN - minimal taxon size to be registered in phylogenetic tree. No less than 10! ")<<'('<<REJESTROWANY_ROZMIAR_TAKSONU<<')'<<endl; //unsigned REJESTROWANY_ROZMIAR_TAKSONU=MINIMALNY_ROZMIAR_TAKSONU; //Domyslna wartość  kasowania w wizualizacji drzewa
-					//unsigned int	ODWROCONY_KOSZT_OSLONY=0; //1 - czy koszty osłony są odwrócone
-					//unsigned int	ODWROCONY_KOSZT_ATAKU=0; //1 - czy koszty ataku są odwrócone
+	cerr<<lang("SIDE=NN — dłuższy bok obszaru symulacji ",
+			   "SIDE=NN — the longer side of simulation world")<<'('<<IBOKSWIATA<<')'<<endl; //unsigned	IBOKSWIATA=300; // FAKTYCZNIE UŻYWANY BOK ŚWIATA
+	cerr<<lang("MAPF=plik_init.gif — nazwa pliku z mapa zamieszkiwalności",
+			   "MAPF=init_file.gif — name of availability map file")<<'('<<MappName<<')'<<endl; //Inicjalizacja świata. Pola czarne, miejsca niezamieszkiwalne.
+	cerr<<lang("AUTO=0.XX — efektywność autotrofów ",
+			   "AUTO=0.XX — productivity of autotrophs ")<<'('<<EFEKTYWNOSC_AUTOTROFA<<')'<<endl; //double	EFEKTYWNOSC_AUTOTROFA=0.5; // jaka część światła używa autotrof
+	cerr<<lang("PRED=0/1 — gospodarka pasożytnicza versus drapieżnicza ",
+			   "PRED=0/1 — predatory vs. parasitic exploitation ")<<'('<<PIRACTWO<<')'<<endl; //unsigned int	PIRACTWO=1; // Czy eksploatacja piracka, czy pasożytnicza
+	cerr<<lang("DIST=NN — maksymalny krok ruchu agenta ",
+			   "DIST=NN — maximal one step walk of agent ")<<'('<<DYS_RUCHU<<')'<<endl; //unsigned	DYS_RUCHU=1; // Dystans ruchu w jednym kierunku
+	cerr<<lang("FLEX=y/n — czy można zamieniać się z właścicielem komórki ",
+			   "FLEX=y/n — exchange position when agents bump")<<'('<<ZAMIANY<<')'<<endl; //const unsigned	ZAMIANY=255; //Czy może przeciskać się na zajęte pola (0 na nie lub inna liczba na tak)
+	cerr<<lang("RBIT=2^n — który bit odpowiada za zdolność ruchu ",
+			   "RBIT=2^n — weight of bit responsible for moving ability ")<<'('<<BIT_RUCHU<<')'<<endl; //const unsigned	BIT_RUCHU=1024;	// Poza maskę to bez możliwości utraty ruchliwości
+	cerr<<lang("MUTD=NNN — co ile kopiowanych bitów trafia się mutacja ",
+			   "MUTD=NNN — how often mutation occurs when copying bits ")<<"(every "<<PROMIENIOWANIE<<" bits)"<<endl; //unsigned	PROMIENIOWANIE=BITS_PER_GENOM*100; // Co ile kopiowanych bitów nastepuje mutacja
+	cerr<<lang("DOWR=0.XX — jaki ułamek energii oddane potomkowi ",
+			   "DOWR=0.XX — dowry for offspring as % of parent energy ")<<'('<<WYPOSAZENIE_POTOMSTWA<<')'<<endl; //const double	WYPOSAZENIE_POTOMSTWA=0.05; // jaka część siły  oddać potomkowi 0.1 to ZA DUZO!!! {???}
+	cerr<<lang("IFER=NN — prawdopodobieństwo rozmnażania to. 1/IFER = 1/",
+			   "IFER=NN — how often agent try to make child. 1/IFER = 1/")<<'('<<NIEPLODNOSC<<')'<<endl; //const unsigned	NIEPLODNOSC=5;		// Prawdopodobieństwo rozmnażania jest 1/NIEPLODNOSC
+	cerr<<lang("MAXA=nnn — maksymalny wiek. Nie większy niż 255. ",
+			   "MAXA=nnn — maximal age. Not grater than 255. ")<<'('<<255-MINIMALNY_WIEK<<')'<<endl; // Ujemne BĘDZIE oznaczać śmierci losowe"<<'('<<xxx<<')'<<endl; //const unsigned	MINIMALNY_WIEK=205;	// Rodzi się z tym wiekiem. Do smierci ma 255-MINIMALNY_WIEK
+	cerr<<lang("CATA=NN — wykładnik częstości katastrof ",
+			   "CATA=NN — ..............................")<<'('<<WSP_KATASTROF<<')'<<endl; //int	WSP_KATASTROF=0; //10-100 Wykładnik rozkładu katastrof — 0 -wyłączone
+	cerr<<lang("TAXS=NN — minimalny rozmiar taksonu rejestrowanego w drzewie. Nie mniej niż 10! ",
+			   "TAXS=NN — minimal taxon size to be registered in phylogenetic tree. No less than 10! ")<<'('<<REJESTROWANY_ROZMIAR_TAKSONU<<')'<<endl; //unsigned REJESTROWANY_ROZMIAR_TAKSONU=MINIMALNY_ROZMIAR_TAKSONU; //Domyslna wartość  kasowania w wizualizacji drzewa
+					//unsigned int	ODWROCONY_KOSZT_OSLONY=0; //1 — czy koszty osłony są odwrócone
+					//unsigned int	ODWROCONY_KOSZT_ATAKU=0; //1 — czy koszty ataku są odwrócone
 
-					//"MITA=NNN - minimalny rozmiar taksonu z def.\n" //unsigned	 MINIMALNY_ROZMIAR_TAKSONU=100;  //Arbitralny rozmiar klonu, żeby go uznać za zarejestrowany takson
-	cerr<<lang("INLO=NNNN - długość wewnętrznych logów ",
-			   "INLO=NNNN - ")<<'('<<dlugosc_logow<<')'<<endl; // const unsigned dlugosc_logow=50000;
-	cerr<<lang("LOGF=nazwa.log - nazwa pliku z logiem ",
-			   "LOGF=name.log - ")<<'('<<LogName<<')'<<endl;
-	cerr<<lang("LOGR=N - częstość zapisów do zewnętrznego logu ",
-			   "LOGR=N - ")<<'('<<LogRatio<<')'<<endl; //unsigned	LogRatio=1; // Co ile kroków zapisywać do logu
-	cerr<<lang("DMPF=nazwa - rdzeń/początek nazwy plików dump ",
-			   "DMPF=name - ")<<'('<<SCREENDUMPNAME<<')'<<endl; //char     SCREENDUMPNAME[256]="CO-EVO-3a";
-	cerr<<lang("STMX=NNNN - największa możliwa liczba kroków symulacji ",
-			   "STMX=NNNN - ")<<'('<<MAX_ITERATIONS<<')'<<endl; //unsigned long	MAX_ITERATIONS=0xffffffff; // największa liczba iteracji
-	cerr<<lang("WIDTHWIN=,HEIGHTWIN= - rozmiary obszaru roboczego okna ",
-			   "WIDTHWIN=,HEIGHTWIN= - ")<<'('<<SWIDTH<<'x'<<SHEIGHT<<')'<<endl;	//unsigned SWIDTH=1200; //750; //1200; Tez zadziała
+					//"MITA=NNN — minimalny rozmiar taksonu z def.\n" //unsigned	 MINIMALNY_ROZMIAR_TAKSONU=100;  //Arbitralny rozmiar klonu, żeby go uznać za zarejestrowany takson
+	cerr<<lang("INLO=NNNN — długość wewnętrznych logów ",
+			   "INLO=NNNN — ")<<'('<<dlugosc_logow<<')'<<endl; // const unsigned dlugosc_logow=50000;
+	cerr<<lang("LOGF=nazwa.log — nazwa pliku z logiem ",
+			   "LOGF=name.log — ")<<'('<<LogName<<')'<<endl;
+	cerr<<lang("LOGR=N — częstość zapisów do zewnętrznego logu ",
+			   "LOGR=N — ")<<'('<<LogRatio<<')'<<endl; //unsigned	LogRatio=1; // Co ile kroków zapisywać do logu
+	cerr<<lang("DMPF=nazwa — rdzeń/początek nazwy plików dump ",
+			   "DMPF=name — ")<<'('<<SCREENDUMPNAME<<')'<<endl; //char     SCREENDUMPNAME[256]="CO-EVO-3a";
+	cerr<<lang("STMX=NNNN — największa możliwa liczba kroków symulacji ",
+			   "STMX=NNNN — ")<<'('<<MAX_ITERATIONS<<')'<<endl; //unsigned long	MAX_ITERATIONS=0xffffffff; // największa liczba iteracji
+	cerr<<lang("WIDTHWIN=,HEIGHTWIN= — rozmiary obszaru roboczego okna ",
+			   "WIDTHWIN=,HEIGHTWIN= — ")<<'('<<SWIDTH<<'x'<<SHEIGHT<<')'<<endl;	//unsigned SWIDTH=1200; //750; //1200; Tez zadziała
 																				    //unsigned SHEIGHT=750; //550; //1000;
 	return 0;
 	}
@@ -2359,6 +2361,8 @@ if(DYS_RUCHU>IBOKSWIATA/4)
 	 DYS_RUCHU=IBOKSWIATA/4;
 return 1;
 }
+
+wbrtm::size_t  wbrtm::int_key_container_base::index=0; // Żeby nie ciągnąć z biblioteki
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Reactivated source code from Windows (2022.07)

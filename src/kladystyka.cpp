@@ -1,5 +1,5 @@
 // kladystyka.cpp: implementation of the klad class.
-//
+// @date 2026 (modification)
 //*////////////////////////////////////////////////////////////////////
 #include <assert.h>
 #include "lingo.hpp"
@@ -8,6 +8,8 @@
 #include "arrasour.hpp" //analogiczne do #include "mattsour.hpp"
 
 #include "kladystyka.hpp"
+
+//using namespace symshell2;
 
 // Powinno być zadeklarowane w klasie klad, ale wtedy nie chce się kompilować!!! TODO
 unsigned long (agent::informacja_klonalna::*how_weighted)(); //Wskaźnik do funkcji zwracającej jakiś atrybut klonu jako wagę połączenia
@@ -331,7 +333,7 @@ linear_source_base* klad::LineWeights()
     {
 		pLineWeights  =  new struct_array_source<connection,unsigned long>
 			(lines.CurrSize(),lines.GetTabPtr(),&connection::node_weight,lang("Specjalizacja","Specialisation"));
-		pLineWeights->setminmax(0,16); //Specjalizacja: Od 0 do 16 wyzerowanych bitów
+		pLineWeights->set_min_max(0,16); //Specjalizacja: Od 0 do 16 wyzerowanych bitów
 		return pLineWeights;
 	}
 }
@@ -343,39 +345,39 @@ if(pLineWeights !=NULL) //Tylko jeśli już zostało zaalokowane       		//pLine
 	switch(co){
 	case K_ILUBYLOIJEST:
 		how_weighted=&agent::informacja_klonalna::magnitude;
-		pLineWeights->settitle(lang("jako log2 z D.orA agentów","in log2 of D.orA. agents."));
-		pLineWeights->setminmax(0,0); //Czytanie aktualnego min i max
+		pLineWeights->set_title(lang("jako log2 z D.orA agentów","in log2 of D.orA. agents."));
+		pLineWeights->set_min_max(0,0); //Czytanie aktualnego min i max
 		aktualizuj_liste_zstepnych();
 		break;
 	case K_SPECTROFIA:
 		how_weighted=&agent::informacja_klonalna::how_specialised_in_feeding;
-		pLineWeights->settitle(lang("jako specjalizacja trof.","in trophy spec."));
-		pLineWeights->setminmax(0,8); //Obrona jako wartość
+		pLineWeights->set_title(lang("jako specjalizacja trof.","in trophy spec."));
+		pLineWeights->set_min_max(0,8); //Obrona jako wartość
 		aktualizuj_liste_zstepnych();
 		break;
 	case K_SPECOBRONA:
 		how_weighted=&agent::informacja_klonalna::how_specialised_in_defense;
-		pLineWeights->settitle(lang("","in defence spec."));
-		pLineWeights->setminmax(0,8); //Obrona jako wartość
+		pLineWeights->set_title(lang("","in defence spec."));
+		pLineWeights->set_min_max(0,8); //Obrona jako wartość
 		aktualizuj_liste_zstepnych();
 		break;
 	case K_OBRONA:
 		how_weighted=&agent::informacja_klonalna::defense_niche;
-		pLineWeights->settitle("Defence niches");
-		pLineWeights->setminmax(0,255); //Obrona jako wartość
+		pLineWeights->set_title("Defence niches");
+		pLineWeights->set_min_max(0,255); //Obrona jako wartość
 		aktualizuj_liste_zstepnych();
 		break;
 	case K_TROFIA:
 		how_weighted=&agent::informacja_klonalna::feeding_niche;
-		pLineWeights->settitle("Feeding niches");
-		pLineWeights->setminmax(0,255); //Trofia jako wartość
+		pLineWeights->set_title("Feeding niches");
+		pLineWeights->set_min_max(0,255); //Trofia jako wartość
 		aktualizuj_liste_zstepnych();
 		break;		
 	case K_SPECJALIZACJA:
 	default:
 		how_weighted=&agent::informacja_klonalna::how_specialised;
-		pLineWeights->settitle("Specialisation");
-		pLineWeights->setminmax(0,16); //Specjalizacja: Od 0 do 16 wyzerowanych bitów
+		pLineWeights->set_title("Specialisation");
+		pLineWeights->set_min_max(0,16); //Specjalizacja: Od 0 do 16 wyzerowanych bitów
 		aktualizuj_liste_zstepnych();
 		break;		
 	}

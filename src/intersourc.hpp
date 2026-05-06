@@ -31,11 +31,11 @@ and_interaction_source( const char* itit):
     //Ile elementów, wartość minimalna i maksymalna
     void  bounds(size_t& num,double& min,double& max)
 	{
-	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
+	num=get_rect_geometry()->get_width()*get_rect_geometry()->get_height();
 
-	if(ymin<ymax) //Sa dane
+	if(y_min<y_max) //Sa dane
 		{
-		min=ymin;max=ymax;
+		min=y_min;max=y_max;
 		return;
 		}
 
@@ -60,7 +60,7 @@ double get(iteratorh& p)
 //Przetwarza index uzyskany z geometrii
 double get(size_t index)
 	{ //na wartość z serii, o ile jest możliwe czytanie losowe
-	assert(index<getrectgeometry()->get_size());
+	assert(index<get_rect_geometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
 	return bit_and(A,B);
@@ -95,11 +95,11 @@ and_exploatation_source( const char* itit):
     //Ile elementów, wartość minimalna i maksymalna
     void  bounds(size_t& num,double& min,double& max)
 	{
-	num=getrectgeometry()->get_width()*getrectgeometry()->get_height();
+	num=get_rect_geometry()->get_width()*get_rect_geometry()->get_height();
 
-	if(ymin<ymax)//Sa dane
+	if(y_min<y_max)//Sa dane
 		{
-		min=ymin;max=ymax;
+		min=y_min;max=y_max;
 		return;
 		}
 
@@ -125,7 +125,7 @@ and_exploatation_source( const char* itit):
     //na wartość z serii, o ile jest możliwe czytanie losowe.
     double get(size_t index)
 	{
-	assert(index<getrectgeometry()->get_size());
+	assert(index<get_rect_geometry()->get_size());
 	unsigned A=index/256;
 	unsigned B=index%256;
 	return comp_and(A,B);
