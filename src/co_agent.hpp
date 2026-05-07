@@ -1,16 +1,21 @@
+/// @file
+/// @brief Definicja agenta "coewo" i wszystko co potrzebne, żeby ją zrobić.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef _COEWO_AGENT_HPP_
 #define _COEWO_AGENT_HPP_
-/* ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA */
-/* JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2 */
+
 #include "wb_bits.h"
 
-typedef unsigned char base;   // musi byc bez znaku
-typedef unsigned short base2; // musi miescic 2 zmienne base
+/** ROZMIAR TYPU BASE DECYDUJE O MOZLIWEJ KOMPLIKACJI SWIATA.
+ * JEST TYLE MOZLIWYCH TAXONOW ILE WZORCOW BITOWYCH W base2. */
+typedef unsigned char base;   ///< musi byc bez znaku
+typedef unsigned short base2; ///< musi mieścic 2 zmienne base
 
-const unsigned BITS_PER_GENOM=16;   //!!! TO JEST ZAFIKSOWANE PRZEZ ROZMIAR base i base2
-const base2 MAXBASE2=(base2)0xffff;//ffffffffffffUL;
+const unsigned BITS_PER_GENOM=16;   ///< TO JEST ZAFIKSOWANE PRZEZ ROZMIAR base i base2.
+const base2 MAXBASE2=(base2)0xffff; ///< ffffffffffffUL;
 const base  MAXBASE =(base)MAXBASE2;
-const base  AUTOTROF=MAXBASE;// wzor bitowy autotrofa - swiat go zywi
+const base  AUTOTROF=MAXBASE; ///< wzor bitowy autotrofa - swiat go zywi
 
 //__declspec(align(8))  //TRZEBA ZAPEWNIĆ ŻEBY GENOM BYŁ BITOWĄ CAŁOŚCIĄ
 //#pragma pack(8)      ???
@@ -27,8 +32,7 @@ union wzor
     //void clear(){_full=0;}
 };
 
-//WLASCIWA DEKLARACJA AGENTA
-///////////////////////////////////////////////////
+/// DEKLARACJA KLASY AGENTA.
 class agent//:public agent_base
 {    
 public:

@@ -1,9 +1,11 @@
-// ekologia.hpp.h: interface for the ekologia class.
-// MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
-//*////////////////////////////////////////////////////////////////////
-
-#ifndef _EKOLOGIA_HPP_
-#define _EKOLOGIA_HPP_
+/// @file
+/// @brief interface for the ekologia class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ekologia.hpp.h: MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
+//
+#ifndef COEWO2_EKOLOGIA_HPP_INCLUDED_
+#define COEWO2_EKOLOGIA_HPP_INCLUDED_
 
 #include "arrasour.hpp"
 using namespace ::wbrtm;
@@ -62,12 +64,12 @@ private:
     array_template<node_info>  nodes; //Lista węzłów sieci ekologicznej.
     array_template<connection> lines; //Lista linii rozpinających.
 
-    struct_array_source<node_info,unsigned int>* pNodeX; //Współrzędne poziome węzłów w aranżacji
-    struct_array_source<node_info,unsigned int>* pNodeY; //Współrzędne pionowe węzłów w aranżacji
-    struct_array_source<node_info,unsigned int>* pNodeWeight; //Waga węzłów
-	struct_array_source<connection,size_t>* pConnPrey; //Indeksy początków linii łączących węzły sieci
-	struct_array_source<connection,size_t>* pConnPred; //Indeksy końców linii łączących węzły sieci
-	struct_array_source<connection,unsigned long>* pConnWeight; //Przepływ w danej linii
+    sym2::data::struct_array_source<node_info,unsigned int>* pNodeX; //Współrzędne poziome węzłów w aranżacji
+    sym2::data::struct_array_source<node_info,unsigned int>* pNodeY; //Współrzędne pionowe węzłów w aranżacji
+    sym2::data::struct_array_source<node_info,unsigned int>* pNodeWeight; //Waga węzłów
+    sym2::data::struct_array_source<connection,size_t>* pConnPrey; //Indeksy początków linii łączących węzły sieci
+    sym2::data::struct_array_source<connection,size_t>* pConnPred; //Indeksy końców linii łączących węzły sieci
+    sym2::data::struct_array_source<connection,unsigned long>* pConnWeight; //Przepływ w danej linii
 
 	void _update_source_ptrs(); //Poprawia wskaźniki do tablic, które mogą się dezaktualizować podczas wypełniania list
 	void _empty_source_ptrs(); //Zmienia źródła na puste (o długości 0)
@@ -85,18 +87,18 @@ public:
 	void set_tax_size_tres(size_t T); //Ustawia granice wizualizacji (od następnego updajtu!)
 
 	// Udostępnianie podstawowych serii danych do budowania sieci
-	linear_source_base* NodeX(); //Położenie węzła, np. maska ataku
-	linear_source_base* NodeY(); //Położenie węzła, np. maska obrony
-	linear_source_base* NodeWeight(); //Waga węzła, np. liczba osobników (ewentualnie biomasa)
+    sym2::data::linear_source_base* NodeX(); //Położenie węzła, np. maska ataku
+    sym2::data::linear_source_base* NodeY(); //Położenie węzła, np. maska obrony
+    sym2::data::linear_source_base* NodeWeight(); //Waga węzła, np. liczba osobników (ewentualnie biomasa)
 	//linear_source_base* NodeScaledWeight(); //Pierwiastkowana waga węzła, lepsze dla kółek
 
 	// Informacje o połączeniach
-	linear_source_base* ConnPrey(); //Start połączenia w ofierze (prey)
-	linear_source_base* ConnPred(); //Koniec połączenia w drapieżniku (predator)
-	linear_source_base* ConnWeight(); //Liczba ofiar lub pozyskana biomasa ofiar
+    sym2::data::linear_source_base* ConnPrey(); //Start połączenia w ofierze (prey)
+    sym2::data::linear_source_base* ConnPred(); //Koniec połączenia w drapieżniku (predator)
+    sym2::data::linear_source_base* ConnWeight(); //Liczba ofiar lub pozyskana biomasa ofiar
 
 	// Interfejs konieczny
-	ekologia(agent::informacja_klonalna* TheAncestor,
+	explicit ekologia(agent::informacja_klonalna* TheAncestor,
 			 unsigned int user_node_treshold=-1,
 			 double connection_treshold=0);
 	virtual ~ekologia();

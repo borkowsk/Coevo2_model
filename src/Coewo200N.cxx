@@ -1,10 +1,14 @@
-/* Program symulujący KOEWOLUCJĘ (Wersja z roku 2013 — prawdopodobnie reaktywowana na nową wersję BDS)*/
-/* Każdy osobnik ma swój bitowy wzorzec odżywiania i bitowy wzorzec */
-/* strategii osłony. Jeśli ATAKOWANY.OSLONA AND ATAKUJACY.Trofia>0 to  */
-/* znaczy, że atak zakończył się powodzeniem.			    */
-/* Osobniki rozmnażają się kosztem wolnego miejsca i zgromadzonej energii */
-/* Ruchy własne, ofiara ataku, jak i moment rozmnażania wybierane są */
-/* losowo, aby nie zaciemniać modelu dodatkowymi parametrami. 	     */
+/// @file
+/// @brief Program symulujący KOEWOLUCJĘ (Wersja z roku 2013 — prawdopodobnie reaktywowana na nową wersję BDS)
+/// @date 2026 (modified)
+///       --------------------------------------------------------------------------------------------------------------
+/* @details
+* Każdy osobnik ma swój bitowy wzorzec odżywiania i bitowy wzorzec
+* strategii osłony. Jeśli ATAKOWANY.OSLONA AND ATAKUJACY.Trofia>0 to
+* znaczy, że atak zakończył się powodzeniem
+* Osobniki rozmnażają się kosztem wolnego miejsca i zgromadzonej energii
+* Ruchy własne, ofiara ataku, jak i moment rozmnażania wybierane są
+* losowo, aby nie zaciemniać modelu dodatkowymi parametrami. 	     */
 
 //MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
 //MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2026.04.30!
@@ -135,6 +139,7 @@ extern "C" {
 #endif
 
 using namespace symshell2;
+using namespace sym2::data;
 
 class swiat; //Zapowiedz głównej klasy symulacji
 

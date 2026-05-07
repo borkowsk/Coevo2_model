@@ -1,7 +1,9 @@
-// klonalinfo.hpp: interface for the klonalinfo class.
+/// @file
+/// @brief interface for the klonalinfo class..
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// klonalinfo.hpp:
 //
-//*////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_KLADYSTYKA_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_)
 #define AFX_KLADYSTYKA_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_
 
@@ -70,13 +72,13 @@ private:
 	agent::informacja_klonalna* ancestor; //Wskaźnik do wspólnego przodka
 //	unsigned (agent::informacja_klonalna::*how_weighted)();//Wskaźnik do funkcji zwracającej jakiś atrybut klonu jako wagę połączenia
 	size_t _for_simple_dispersing;
-	
-	struct_array_source<node_info,unsigned long>* pNodeTime;   //Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
-	struct_array_source<node_info,unsigned long>* pNodeSpread; //Sztuczny rozrzut węzłów dla czytelności drzewa
-//  method_array_source<node_info,unsigned long>* pNodeWeights; //Kolorystyczne markery punktów. Takie jak linii (np. żeby była narysowana skala)
-	struct_array_source<connection,size_t>* pLineStarts; //Indeksy początków linii łączących węzły drzewa (po 2 na klon)
-	struct_array_source<connection,size_t>* pLineEnds;   //Indeksy końców linii łączących węzły drzewa (po 2 na klon)
-	struct_array_source<connection,unsigned long>* pLineWeights; //Kolorystyczne markery linii
+
+    sym2::data::struct_array_source<node_info,unsigned long>* pNodeTime;   //Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
+    sym2::data::struct_array_source<node_info,unsigned long>* pNodeSpread; //Sztuczny rozrzut węzłów dla czytelności drzewa
+//  sym2::data::method_array_source<node_info,unsigned long>* pNodeWeights; //Kolorystyczne markery punktów. Takie jak linii (np. żeby była narysowana skala)
+    sym2::data::struct_array_source<connection,size_t>* pLineStarts; //Indeksy początków linii łączących węzły drzewa (po 2 na klon)
+    sym2::data::struct_array_source<connection,size_t>* pLineEnds;   //Indeksy końców linii łączących węzły drzewa (po 2 na klon)
+    sym2::data::struct_array_source<connection,unsigned long>* pLineWeights; //Kolorystyczne markery linii
    
 	void _update_source_ptrs(); //Poprawia wskaźniki do tablic, które mogą się dezaktualizować podczas wypełniania list
 	void _empty_source_ptrs();  //Zmienia źródła na puste (o długości 0)
@@ -129,13 +131,13 @@ protected:
 	bool _wypisz_takson(informacja_klonalna* klon,void* user_data); //'Downgrade typów' żeby uzgodnić z metodą for_each_child
 public:
 	// Udostępnianie podstawowych serii danych do budowania drzewa
-	linear_source_base* NodeTime();   //Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
-	linear_source_base* NodeSpread(); //Sztuczny rozrzut węzłów dla czytelności drzewa
-	linear_source_base* LineStarts(); //Indeksy początków linii łączących węzły drzewa (po 2 na klon)
-	linear_source_base* LineEnds();   //Indeksy końców linii łączących węzły drzewa (po 2 na klon)
+    sym2::data::linear_source_base* NodeTime();   //Punkty czasowe węzłów drzewa: specjacji, początku i konca istnienia klonu (po 3 na klon)
+    sym2::data::linear_source_base* NodeSpread(); //Sztuczny rozrzut węzłów dla czytelności drzewa
+    sym2::data::linear_source_base* LineStarts(); //Indeksy początków linii łączących węzły drzewa (po 2 na klon)
+    sym2::data::linear_source_base* LineEnds();   //Indeksy końców linii łączących węzły drzewa (po 2 na klon)
 
 	//Informacje o węzłach
-	linear_source_base* NodeWeight(); //Domyślne kolorystyczne markery punktów
+    sym2::data::linear_source_base* NodeWeight(); //Domyślne kolorystyczne markery punktów
 	//Informacje dodatkowe o kladach
 //    linear_source_base* LineSpec(); //Specjalizacja linii wyrażona liczba wyzerowanych bitów
 //    linear_source_base* LineTrof(); //Trofia linii wyrażona wartością 0..1^Liczba_bitów_maski_ataku
@@ -160,7 +162,7 @@ public:
 	enum Kolorowanie {K_SPECJALIZACJA=1,K_TROFIA,K_OBRONA,K_SPECTROFIA,K_SPECOBRONA,K_ILUBYLOIJEST};
 
     //Domyślne kolorystyczne markery linii
-	linear_source_base* LineWeights(); //Domyślne kolorystyczne markery linii
+    sym2::data::linear_source_base* LineWeights(); //Domyślne kolorystyczne markery linii
 	void ChangeLineWeightsSource(Kolorowanie co); //Zmiana kolorowania kladów
 };
 

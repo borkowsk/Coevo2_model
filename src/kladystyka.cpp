@@ -1,6 +1,9 @@
-// kladystyka.cpp: implementation of the klad class.
-// @date 2026 (modification)
-//*////////////////////////////////////////////////////////////////////
+/// @file
+/// @brief implementation of the klad class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// kladystyka.cpp:
+
 #include <assert.h>
 #include "lingo.hpp"
 #include "sshutils.hpp"
@@ -9,7 +12,7 @@
 
 #include "kladystyka.hpp"
 
-//using namespace symshell2;
+using namespace sym2::data;
 
 // Powinno być zadeklarowane w klasie klad, ale wtedy nie chce się kompilować!!! TODO
 unsigned long (agent::informacja_klonalna::*how_weighted)(); //Wskaźnik do funkcji zwracającej jakiś atrybut klonu jako wagę połączenia

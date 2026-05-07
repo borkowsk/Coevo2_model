@@ -1,15 +1,14 @@
-// Żródła do demonstracji interakcji drapieżnik/ofiara za pomocą masek bitowych
-//*///////////////////////////////////////////////////////////////////////////////
+/// @file
+/// @brief Źródła do demonstracji interakcji drapieżnik/ofiara za pomocą masek bitowych
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 #ifndef __COEWO_INTERACTIONS_SOURCES_HPP_
 #define __COEWO_INTERACTIONS_SOURCES_HPP_
 
 #include "datasour.hpp"
 
-//Klasa udostępniająca dowolna tablice prostokątna oraz jej wycinki.
-//Jeśli zdefiniowany wycinek wykracza poza tablice źródłowa to funkcja
-//'get' zwraca wartość 'miss' podawaną w konstruktorze. Alternatywnie
-//wycinek może realizować geometrie torusa i wtedy miss nie jest
-//potrzebne.
+/// Klasa udostępniająca mapę interakcji `bit_and`.
 class and_interaction_source:public rectangle_source_base
 //--------------------------------------------------------------
 {
@@ -67,7 +66,7 @@ double get(size_t index)
 	}
 };
 
-
+/// Klasa udostępniająca mapę interakcji `comp_and`.
 class and_exploatation_source:public rectangle_source_base
 {
 double comp_and(unsigned A,unsigned B)

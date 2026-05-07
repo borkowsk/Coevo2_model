@@ -1,7 +1,9 @@
-// ekologia.hpp.h: interface for the ekologia class.
+/// @file
+/// @brief Outdated interface for the ekologia class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ekologia.hpp.h:
 //
-//*////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_EKOLOGIA_HPP_H__5ED2EEC1_E452_4836_AAEC_BC300462CFB9__INCLUDED_)
 #define AFX_EKOLOGIA_HPP_H__5ED2EEC1_E452_4836_AAEC_BC300462CFB9__INCLUDED_
 
@@ -9,12 +11,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+/// Zastarzały zarodek klasy `ekologia`.
 class ekologia  
 {
 public:
 	ekologia();
 	virtual ~ekologia();
-
 };
 
 #endif // !defined(AFX_EKOLOGIA_HPP_H__5ED2EEC1_E452_4836_AAEC_BC300462CFB9__INCLUDED_)

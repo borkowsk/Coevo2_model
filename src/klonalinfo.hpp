@@ -1,6 +1,9 @@
-// klonalinfo.hpp: interface for the klonalinfo class.
-//*////////////////////////////////////////////////////////////////////
-
+/// @file
+/// @brief interface for the klonalinfo class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// klonalinfo.hpp:
+//
 #if !defined(AFX_KLONALINFO_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_)
 #define AFX_KLONALINFO_HPP__5A44210C_F5AD_4B72_9E75_E043CCEEAB52__INCLUDED_
 

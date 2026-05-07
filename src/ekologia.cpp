@@ -1,6 +1,9 @@
-// ekologia.cpp: implementation of the ekologia class.
-//*////////////////////////////////////////////////////////////////////
-#include <math.h>
+/// @file
+/// @brief implementation of the ekologia class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <cmath>
 #include "lingo.hpp"
 #include "ekologia.hpp"
 #include "sshutils.hpp"
@@ -395,7 +398,7 @@ void ekologia::_empty_source_ptrs()
 }
 
 //Położenie poziome węzła na wykresie. Może być np. maska ataku
-linear_source_base* ekologia::NodeX()
+sym2::data::linear_source_base* ekologia::NodeX()
 {
     if(pNodeX !=NULL) 
     {
@@ -403,13 +406,13 @@ linear_source_base* ekologia::NodeX()
     }
     else
     {
-        return pNodeX  =  new struct_array_source<node_info,unsigned int>
+        return pNodeX  =  new sym2::data::struct_array_source<node_info,unsigned int>
             (nodes.CurrSize(),nodes.GetTabPtr(),&node_info::X_lub_maska_ataku,"X");
     }
 }
 
 //Położenie pionowe węzła na wykresie. Może być np. maska obrony
-linear_source_base* ekologia::NodeY()
+sym2::data::linear_source_base* ekologia::NodeY()
 {
     if(pNodeY !=NULL) 
     {
@@ -417,13 +420,13 @@ linear_source_base* ekologia::NodeY()
     }
     else
     {
-        return pNodeY  =  new struct_array_source<node_info,unsigned int>
+        return pNodeY  =  new sym2::data::struct_array_source<node_info,unsigned int>
             (nodes.CurrSize(),nodes.GetTabPtr(),&node_info::Y_lub_maska_obrony,"Y");
     }
 }
 
 // Waga węzła. Może być np. liczba osobników (a ewentualnie biomasa)
-linear_source_base* ekologia::NodeWeight()
+sym2::data::linear_source_base* ekologia::NodeWeight()
 {
     if(pNodeWeight !=NULL) 
     {
@@ -431,7 +434,7 @@ linear_source_base* ekologia::NodeWeight()
     }
     else
     {
-        return pNodeWeight  =  new struct_array_source<node_info,unsigned int>
+        return pNodeWeight  =  new sym2::data::struct_array_source<node_info,unsigned int>
             (nodes.CurrSize(),nodes.GetTabPtr(),&node_info::Zywych,"Weight");
     }
 }
@@ -440,7 +443,7 @@ linear_source_base* ekologia::NodeWeight()
 
 // Informacje o połączeniach predator-prey.
 // Start połączenia w ofierze (prey)
-linear_source_base* ekologia::ConnPrey()
+sym2::data::linear_source_base* ekologia::ConnPrey()
 {
     if(pConnPrey !=NULL) 
     {
@@ -448,14 +451,14 @@ linear_source_base* ekologia::ConnPrey()
     }
     else
     {
-        return pConnPrey  = new struct_array_source<connection,size_t>
+        return pConnPrey  = new sym2::data::struct_array_source<connection,size_t>
             (lines.CurrSize(),lines.GetTabPtr(),&connection::start_node,"-Prey-");
     }
 }
 
 // Informacje o połączeniach predator-prey.
 // Koniec połączenia w drapieżniku (predator).
-linear_source_base* ekologia::ConnPred()
+sym2::data::linear_source_base* ekologia::ConnPred()
 {
     if(pConnPred !=NULL) 
     {
@@ -463,13 +466,13 @@ linear_source_base* ekologia::ConnPred()
     }
     else
     {
-        return pConnPred  =  new struct_array_source<connection,size_t>
+        return pConnPred  =  new sym2::data::struct_array_source<connection,size_t>
             (lines.CurrSize(),lines.GetTabPtr(),&connection::end_node,"-Pred-");
     }
 }
 
 // Liczba ofiar lub pozyskana biomasa ofiar
-linear_source_base* ekologia::ConnWeight()
+sym2::data::linear_source_base* ekologia::ConnWeight()
 {
     if(pConnWeight !=NULL) 
     {
@@ -477,7 +480,7 @@ linear_source_base* ekologia::ConnWeight()
     }
     else
     {
-        pConnWeight  =  new struct_array_source<connection,unsigned long>
+        pConnWeight  =  new sym2::data::struct_array_source<connection,unsigned long>
             (lines.CurrSize(),lines.GetTabPtr(),&connection::weight,"Prey biomas");       
         return pConnWeight;
     }

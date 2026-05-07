@@ -1,7 +1,9 @@
-// troficinfo.h: interface for the informacja_troficzna class.
-// MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
-//*////////////////////////////////////////////////////////////////////
-
+/// @file
+/// @brief interface for the informacja_troficzna class.
+/// @date 2026 (modified)
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// troficinfo.h: MODYFIKACJE DLA UMOŻLIWIENIA KOMPILACJI 2022.07!
+//
 #if !defined(AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_)
 #define AFX_TROFICINFO_H__D045F0BF_A73E_4B64_8BD7_9E70DFC79225__INCLUDED_
 
@@ -14,7 +16,7 @@ using ::wbrtm::array_template;
 
 class informacja_troficzna;
 
-// Klasa służąca do śledzenie kontaktów (troficznych) agenta lub całego klonu
+/// Klasa służąca do śledzenie kontaktów (troficznych) agenta lub całego klonu.
 class informacja_troficzna  
 {
     struct contacts
