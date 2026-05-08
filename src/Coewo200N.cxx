@@ -407,10 +407,10 @@ DO_OBSLUGI_BLEDOW: ;
 }
 
 graph* pom;
-size_t wys_map=MyAreaMenager.getheight()/4;
+size_t wys_map= MyAreaMenager.get_height() / 4;
 size_t szer_map=size_t(wys_map*2.3);
-if((long)szer_map>MyAreaMenager.getwidth()-280)
-		szer_map=MyAreaMenager.getwidth()-280;
+if((long)szer_map> MyAreaMenager.get_width() - 280)
+		szer_map= MyAreaMenager.get_width() - 280;
 
 #ifdef RECZNIE_WPISZ_PTR
 {
@@ -519,10 +519,10 @@ pom=new carpet_graph(0,wys_map,szer_map-1,2*wys_map-1, //domyślne współrzędn
 						//TrofiaZ);  //I źródło danych
 						GebaZywych); //I alternatywne źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-//pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
+//pom->set_data_colors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
 pom->set_title(lang("PREFERENCJE TROFICZNE (maski ataku)","TROPHIC PREFERENCES (masks of attack)"));
-pom->settitlecolo(255,default_transparent);
-pom->setbackground(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
+        pom->set_background(default_half_gray);
 MyAreaMenager.insert(pom);
 
 // OSŁONA
@@ -531,20 +531,20 @@ pom=new carpet_graph(0,2*wys_map,szer_map-1,3*wys_map-1, //domyślne współrzę
 						OslonaZywych); //I alternatywne źródło danych
 
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-//pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
+//pom->set_data_colors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
 pom->set_title(lang("PODATNOŚĆ AGENTÓW NA ATAK (maski obrony)","SENSITIVITY TO THE ATTACK (mask of defence)"));
-pom->settitlecolo(255,default_transparent);
-pom->setbackground(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
+        pom->set_background(default_half_gray);
 MyAreaMenager.insert(pom);
 
 //Energia
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21,
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 87 + 21 + 1 + 21 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21 + 21,
 //						Sila); //I źródło danych
                         SilaZywych); //I alternatywne źródło danych
-pom->setdatacolors(1,254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
-pom->setbackground(default_half_gray);
+        pom->set_data_colors(1, 254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
+        pom->set_background(default_half_gray);
 pom->set_title(lang("ZASOBY ENERGII AGENTÓW","ENERGY RESOURCES OF AGENTS"));
-pom->settitlecolo(255,default_transparent);
+        pom->set_title_colors(255, default_transparent);
 MyAreaMenager.insert(pom);
 
 //ŹRÓDŁA O SPECJALIZACJI
@@ -557,9 +557,9 @@ int inSpecjalizacja=Sources.insert(Specjalizacja);
 
 pom=new carpet_graph(0,3*wys_map,szer_map-1,4*wys_map, //domyślne współrzędne
 						Specjalizacja); //I źródło danych
-//pom->setdatacolors(1,254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
-pom->setbackground(default_half_gray);
-pom->settitlecolo(255,default_transparent);
+//pom->set_data_colors(1,254); //Żeby nie używać białego, który jest tłem, a także całkiem czarnych.
+        pom->set_background(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
 pom->set_title(lang("POZIOM SPECJALIZACJI AGENTÓW","LEVEL OF SPECIALISATION"));
 MyAreaMenager.insert(pom);
 
@@ -681,45 +681,45 @@ int fifautoagents=Sources.insert(fpom);
 // WYŚWIETLACZ HISTORII LICZEBNOŚCI
 graph* pom1=new sequence_graph(
                                //szer_map,300,szer_map+300,400, //z wycięciem na male kwadratowe okienko
-                               szer_map,300,MyAreaMenager.getwidth()-1,400, //równolegle do okna liczby taksonów
-							   3,Sources.make_series_info(
+                               szer_map, 300, MyAreaMenager.get_width() - 1, 400, //równolegle do okna liczby taksonów
+							   3, Sources.make_series_info(
 										inCurrLight,fifagents,fifautoagents,
 										-1
 										).get_ptr_val(),
 							  // 1/*Wspólne minimum/maximum*/);
                                  0/*reskalowanie*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
-pom1->setframe(128);
+        pom1->set_frame(128);
 pom1->set_title(lang("AGENCI — HISTORIA LICZEBNOŚCI","History of the number of agents"));
-//pom1->setdatacolors()
+//pom1->set_data_colors()
 MyAreaMenager.insert(pom1);
 
 // Historia siły
-//szer_map+301,300,MyAreaMenager.getwidth()-1,400,
+//szer_map+301,300,MyAreaMenager.get_width()-1,400,
 
 // Historia liczby taksonów
-pom1=new sequence_graph(szer_map,401,MyAreaMenager.getwidth()-1,MyAreaMenager.getheight()-1,
-							   6,Sources.make_series_info(
+pom1=new sequence_graph(szer_map, 401, MyAreaMenager.get_width() - 1, MyAreaMenager.get_height() - 1,
+                        6, Sources.make_series_info(
 										inCurrLight,
 										fiftaxa,fifklona,
 										fiftax,fifklon,
 													-1
 										).get_ptr_val(),
-							   1/*Wspolne minimum/maximum*/);
+                        1/*Wspolne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
-pom1->setframe(128);
+        pom1->set_frame(128);
 pom1->set_title(lang("HISTORIA LICZBY TAKSONÓW","History of the number of taxa"));
 MyAreaMenager.insert(pom1);
 
 
 // WIZUALIZACJA FILTRU ŻYCIA
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,0,MyAreaMenager.getwidth()-1,20, //domyślne współrzędne
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 0, MyAreaMenager.get_width() - 1, 20, //domyślne współrzędne
 						filtrZycia); //I źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-pom->setdatacolors(50,254); //Potrzebne tylko dwa kolory tak naprawdę
-pom->setframe(32);
-pom->setbackground(default_half_gray);
-pom->settitlecolo(255,default_transparent);
+        pom->set_data_colors(50, 254); //Potrzebne tylko dwa kolory tak naprawdę
+        pom->set_frame(32);
+        pom->set_background(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
 pom->set_title(lang("ZYWI AGENCI","ALIVE AGENTS"));
 MyAreaMenager.insert(pom);
 
@@ -728,42 +728,42 @@ rectangle_source_base* Background=zdatnosc.make_source(lang("przydatność teren
 if(!Background) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(Background);
 Background->set_min_max(0,255); //255 odcieni (szarości) — czarne niezdatne
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,21,MyAreaMenager.getwidth()-1,42, //domyślne współrzędne
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 21, MyAreaMenager.get_width() - 1, 42, //domyślne współrzędne
 					 Background); //I źródło danych
 
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
-pom->setframe(64);
-pom->setbackground(default_half_gray);
-pom->settitlecolo(255,default_transparent);
+        pom->set_data_colors(0, 255); //Pierwsze 25 kolorów będzie słabo widoczne
+        pom->set_frame(64);
+        pom->set_background(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
 pom->set_title(lang("Mapa zdatnych obszarów","Map of useful/unusable areas"));
 MyAreaMenager.insert(pom);
 
 //Demo interakcji AND
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,43,MyAreaMenager.getwidth()-1,64, //domyślne współrzędne
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 43, MyAreaMenager.get_width() - 1, 64, //domyślne współrzędne
 						&AndDemo); //I źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-//pom->setdatacolors(0,255); //Potrzebne tylko dwa kolory naprawdę
-pom->setframe(64);
+//pom->set_data_colors(0,255); //Potrzebne tylko dwa kolory naprawdę
+        pom->set_frame(64);
 pom->set_title(lang("AND(Trofia,Oslona)","AND(Trophy,Defense)"));
 MyAreaMenager.insert(pom);
 
 //Demo exploatacji potenclalnej (AND*K)
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,65,MyAreaMenager.getwidth()-1,86, //domyślne współrzędne
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 65, MyAreaMenager.get_width() - 1, 86, //domyślne współrzędne
 						&ExpDemo); //I źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
-//pom->setdatacolors(0,255); //Potrzebne tylko dwa kolory naprawdę
-pom->setframe(64);
+//pom->set_data_colors(0,255); //Potrzebne tylko dwa kolory naprawdę
+        pom->set_frame(64);
 pom->set_title(lang("Eksploatacja potencjalna","exploitation potential"));
 MyAreaMenager.insert(pom);
 
 //Wiek
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,87,MyAreaMenager.getwidth()-1,87+21, //domyślne współrzędne
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 87, MyAreaMenager.get_width() - 1, 87 + 21, //domyślne współrzędne
 						Wiek); //I źródło danych
-pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabowidoczne
-pom->setframe(32);
-pom->setbackground(default_half_gray);
-pom->settitlecolo(255,default_transparent);
+        pom->set_data_colors(0, 255); //Pierwsze 25 kolorów będzie słabowidoczne
+        pom->set_frame(32);
+        pom->set_background(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
 pom->set_title(lang("WIEK AGENTÓW","AGE OF AGENTS"));
 MyAreaMenager.insert(pom);
 
@@ -784,25 +784,25 @@ if(!dpom) goto DO_OBSLUGI_BLEDOW;
 int SdSilaFifoIndex=Sources.insert(dpom);
 
 pom1=new sequence_graph(//szer_map,300,szer_map+300,400,
-                        MyAreaMenager.getwidth()-80,87+21+1,MyAreaMenager.getwidth()-1,87+21+21, //domyślne współrzędne
-								4,Sources.make_series_info(
+        MyAreaMenager.get_width() - 80, 87 + 21 + 1, MyAreaMenager.get_width() - 1, 87 + 21 + 21, //domyślne współrzędne
+								4, Sources.make_series_info(
 								inCurrLight,MeanSilaFifoIndex,SdSilaFifoIndex,MaxSilaFifoIndex,
 													-1
 										).get_ptr_val(),
-								0/* Z reskalowaniem */);
+                        0/* Z reskalowaniem */);
 							   //1/*Wspolne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
-pom1->setframe(128);
+        pom1->set_frame(128);
 pom1->set_title(lang("HISTORIA ENERGII AGENTÓW","HISTORY OF AGENTS ENERGY"));
 MyAreaMenager.insert(pom1);
 
 // Lokalne przepływy energii
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,87+21+1+21,MyAreaMenager.getwidth()-1,87+21+1+21+21,
-						EDynamism); //I źródło danych
-pom->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
-//pom->setframe(32);
-pom->setbackground(default_half_gray);
-pom->settitlecolo(255,default_transparent);
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 87 + 21 + 1 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21,
+                     EDynamism); //I źródło danych
+        pom->set_data_colors(0, 255); //Pierwsze 25 kolorów będzie słabo widoczne
+//pom->set_frame(32);
+        pom->set_background(default_half_gray);
+        pom->set_title_colors(255, default_transparent);
 pom->set_title(lang("LOKALNY PRZEPŁYW ENERGII","LOCAL ENERGY FLOW"));
 MyAreaMenager.insert(pom);
 
@@ -822,42 +822,42 @@ if(!fl) goto DO_OBSLUGI_BLEDOW;
 //fl->set_missing(0);
 
 //pom=new fast_carpet_graph< log_1_plus_F_filter<matrix_source<unsigned> > >
-pom=new carpet_graph(MyAreaMenager.getwidth()-80,87+21+1+21+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21+21, //domyślne współrzędne
-                     //MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21,
-						fl,1); //I źródło danych
+pom=new carpet_graph(MyAreaMenager.get_width() - 80, 87 + 21 + 1 + 21 + 21 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21 + 21 + 21, //domyślne współrzędne
+                     //MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.get_width()-1,87+21+1+21+21+21,
+						fl, 1); //I źródło danych
 if(!pom) goto DO_OBSLUGI_BLEDOW;
 
-//pom->setbackground(0);
-pom->setdatacolors(0,255);
-pom->settitlecolo(255,default_transparent);
-pom->setbackground(default_dark_gray);
+//pom->set_background(0);
+        pom->set_data_colors(0, 255);
+        pom->set_title_colors(255, default_transparent);
+        pom->set_background(default_dark_gray);
 pom->set_title(lang("MAPA UŻYWANYCH NISZ EKOLOGICZNYCH","USAGE OF ECOLOGICAL NICHES"));
 MyAreaMenager.insert(pom);
 
 //  Wiek filogenetyczny klonów
 // //////////////////////////////////////////////////
 pom1=new carpet_graph(0,0,szer_map-1,wys_map-1, //domyślne współrzędne
-					  //MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21,
+					  //MyAreaMenager.getwidth()-80,87+21+1+21+21,MyAreaMenager.get_width()-1,87+21+1+21+21+21,
 						WiekFilogZ); //I źródło danych
-pom1->setdatacolors(0,255); //Pierwsze 25 kolorów będzie słabo widoczne
-pom1->setbackground(default_half_gray);
-pom1->settitlecolo(255,default_transparent);
+        pom1->set_data_colors(0, 255); //Pierwsze 25 kolorów będzie słabo widoczne
+        pom1->set_background(default_half_gray);
+        pom1->set_title_colors(255, default_transparent);
 pom1->set_title(lang("FILOGENETYCZNY WIEK AGENTÓW","PHYLOGENETIC AGE OF AGENTS"));
 MyAreaMenager.insert(pom1);
 
 // Okno historii liczby taksonów od początku
 // ////////////////////////////////////////////////
-pom1=new sequence_graph(//szer_map+301,300,MyAreaMenager.getwidth()-1,400, //domyślne współrzędne
-						//MyAreaMenager.getwidth()-80,199,MyAreaMenager.getwidth()-1,299, //nowe domyślne współrzędne
-						MyAreaMenager.getwidth()-80,87+21+1+21+21+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21+21+21, //domyślne współrzędne
-								2,Sources.make_series_info(
+pom1=new sequence_graph(//szer_map+301,300,MyAreaMenager.get_width()-1,400, //domyślne współrzędne
+						//MyAreaMenager.getwidth()-80,199,MyAreaMenager.get_width()-1,299, //nowe domyślne współrzędne
+        MyAreaMenager.get_width() - 80, 87 + 21 + 1 + 21 + 21 + 21 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21 + 21 + 21 + 21, //domyślne współrzędne
+								2, Sources.make_series_info(
 									inAllclons,inAlltax,
 													-1
 										).get_ptr_val(),
-								0/* Z reskalowaniem */);
+                        0/* Z reskalowaniem */);
 							   //1/*Wspólne minimum/maximum*/);
 if(!pom1) goto DO_OBSLUGI_BLEDOW;
-pom1->setframe(32);
+        pom1->set_frame(32);
 pom1->set_title(lang("PRZYROST DRZEWA FILOGENETYCZNEGO","GROWTH OF PHYLOGENETIC TREE"));
 MyAreaMenager.insert(pom1);
 
@@ -884,10 +884,10 @@ generic_discrete_histogram_source*  histspecjA=
 if(!histspecjA) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(histspecjA);
 pom=new bars_graph(//szer_map+1,130,szer_map+119,130+84, //domyślne współrzędne
-					MyAreaMenager.getwidth()-80,87+21+1+21+21+21+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21+21+21+21, //domyślne współrzędne
+        MyAreaMenager.get_width() - 80, 87 + 21 + 1 + 21 + 21 + 21 + 21 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21 + 21 + 21 + 21 + 21, //domyślne współrzędne
 				   histspecjA);
-pom->setdatacolors(200,250); //max kolor to kolor ostatniego słupka
-pom->setframe(232);
+        pom->set_data_colors(200, 250); //max kolor to kolor ostatniego słupka
+        pom->set_frame(232);
 pom->set_title(lang("SPECJALIZACJA AUTOTROFÓW","SPECIALISATION OF AUTOTROPHS"));
 MyAreaMenager.insert(pom);
 
@@ -904,10 +904,10 @@ generic_discrete_histogram_source*  histspecjH=
 if(!histspecjH) goto DO_OBSLUGI_BLEDOW;
 Sources.insert(histspecjH);
 pom=new bars_graph(//szer_map+1,130+85,szer_map+119,299, //domyślne współrzędne
-				   MyAreaMenager.getwidth()-80,87+21+21+1+21+21+21+21+21,MyAreaMenager.getwidth()-1,87+21+1+21+21+21+21+21+21+21, //domyślne współrzędne
+        MyAreaMenager.get_width() - 80, 87 + 21 + 21 + 1 + 21 + 21 + 21 + 21 + 21, MyAreaMenager.get_width() - 1, 87 + 21 + 1 + 21 + 21 + 21 + 21 + 21 + 21 + 21, //domyślne współrzędne
 					histspecjH);
-pom->setdatacolors(0,64); //max kolor to kolor ostatniego słupka
-pom->setframe(32);
+        pom->set_data_colors(0, 64); //max kolor to kolor ostatniego słupka
+        pom->set_frame(32);
 pom->set_title(lang("SPECJALIZACJA HETEROTROFÓW","SPECIALISATION OF HETEROTROPHS"));
 MyAreaMenager.insert(pom);
 
@@ -924,18 +924,18 @@ Sources.insert(Le);
 linear_source_base* Lw=filogeneza.LineWeights();
 Sources.insert(Lw);
 //Drzewo filogenetyczne
-pom=FilogeneticTree=new net_graph(szer_map+170,130,MyAreaMenager.getwidth()-81,299, //domyślne współrzędne
-				  Tm,0,
-				  Sp,0,
-                  Ls,0,
-				  Le,0,
-				  Lw,0, //Kolory linii jako punktów. Powoduje narysowanie skali barwnej, ale działa tylko dlatego, że domyślna figura jest NULL!
-                  NULL,0, //Rozmiary punktów faktycznie nie są potrzebne.
-                  NULL,0, //I rozmiary grotów też nie.
-				  Lw,0
+pom=FilogeneticTree=new net_graph(szer_map+170, 130, MyAreaMenager.get_width() - 81, 299, //domyślne współrzędne
+				  Tm, 0,
+                                  Sp, 0,
+                                  Ls, 0,
+                                  Le, 0,
+                                  Lw, 0, //Kolory linii jako punktów. Powoduje narysowanie skali barwnej, ale działa tylko dlatego, że domyślna figura jest NULL!
+                  NULL, 0, //Rozmiary punktów faktycznie nie są potrzebne.
+                  NULL, 0, //I rozmiary grotów też nie.
+				  Lw, 0
 				  );
-pom->setframe(128);
-pom->setbackground(default_light_gray);
+        pom->set_frame(128);
+        pom->set_background(default_light_gray);
 wb_pchar buf(1024);
 buf.prn(lang("FILOGENEZA — taksony powyżej %d agentów",
 			 "PHYLOGENETIC TREE — taxa larger than %d individuals"),REJESTROWANY_ROZMIAR_TAKSONU-1);
@@ -971,9 +971,9 @@ pom=TrophicNet=new net_graph(szer_map+1,130,szer_map+169,299,
 					  CW,0,
 					  new circle_point,1
 					  );
-pom->setframe(128);
-//pom->setdatacolors(0,128);
-pom->setbackground(default_light_gray);
+        pom->set_frame(128);
+//pom->set_data_colors(0,128);
+        pom->set_background(default_light_gray);
 pom->set_title(lang("SIEC TROFICZNA","TROPHIC WEB"));
 MyAreaMenager.insert(pom);
 
@@ -983,9 +983,9 @@ MyAreaMenager.insert(pom);
 // INFORMACJE STATYSTYCZNE I STATUSOWE
 // ///////////////////////////////////////////////////
 OutArea=new text_area(
-                      szer_map+1,0,MyAreaMenager.getwidth()-81,87+21+21, //domyślne współrzędne
+                      szer_map+1, 0, MyAreaMenager.get_width() - 81, 87 + 21 + 21, //domyślne współrzędne
 					  lang("Informacje","Information_area"),
-					  default_white,default_black,128,40);
+                      default_white, default_black, 128, 40);
 if(!OutArea) goto DO_OBSLUGI_BLEDOW;
 OutArea->set_title("STATUS:");
 int out_area=MyAreaMenager.insert(OutArea);
