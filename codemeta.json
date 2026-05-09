@@ -34,7 +34,7 @@
     ],
     "softwareRequirements": [
         "C++ compiler, cmake, make",
-        "SymShell library from GitHub"
+        "SymShellLight library from GitHub"
     ],
     "relatedLink": [
         "https://www.researchgate.net/project/Macroevolution-coevolution-in-CA-network-like-models",
