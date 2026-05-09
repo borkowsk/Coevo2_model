@@ -4,6 +4,8 @@ __CO-EVO-lution / macroevolution model developed from 1997-2012 (paper published
 
 _Please contact me if you want use this for your purpose!_
 
+<img src="./doc/rebuilding-house.gif" width="200" title="Code under renovation">
+
 wborkowski@uw.edu.pl
 
 ## PUBLICATIONS
