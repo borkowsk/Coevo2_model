@@ -144,7 +144,7 @@ using namespace sym2::data;
 class swiat; //Zapowiedz głównej klasy symulacji
 
 // Manager lufcików z uzupełnioną obsługa i/o (z menu)
-class my_area_menager:public main_area_menager
+class my_area_menager:public main_area_manager
 {
 	bool trace_fillog_tree;
 	bool trace_trophi_netw;
@@ -154,10 +154,10 @@ public:
 
 	my_area_menager(size_t size, //Konstruktor dający zarządcę o określonym rozmiarze listy
 				int width,int height,
-				unsigned ibkg=default_color):main_area_menager(size,width,height,ibkg),
-				trace_fillog_tree(true),
-				trace_trophi_netw(true),
-				MojSwiat(NULL)
+				unsigned ibkg=default_color): main_area_manager(size, width, height, ibkg),
+                                              trace_fillog_tree(true),
+                                              trace_trophi_netw(true),
+                                              MojSwiat(NULL)
 	{}
 	int start(const char* wintitle,int argc=0,const char** argv=NULL,int double_buffering=-1); //Zwraca 1, jeśli OK.
 	void connect(swiat* sw) {MojSwiat=sw;}
@@ -1745,7 +1745,7 @@ void koszty()
 // Zwraca 1 jeśli   ok
 int my_area_menager::start(const char* wintitle,int argc,const char** argv,int double_buffering)
 {
-	int ret=main_area_menager::start(wintitle,argc,argv,double_buffering);
+	int ret=main_area_manager::start(wintitle, argc, argv, double_buffering);
 	if(ret==1)
 	{
 		ssh_menu_handle menu=ssh_main_menu();

@@ -1,7 +1,8 @@
 # CMAKE configuration for COEVO-lution2 simulation project
 ######################################################################
+# @date 2023-01-03 (last modification)
 # @author	: Wojciech Borkowski
-# @date	: 2023-01-03 (last modification)
+
 
 cmake_minimum_required(VERSION 3.0)
 
@@ -63,14 +64,14 @@ IF (WIN32)
 #target_compile_options( coevo2  PRIVATE ...)
 target_link_libraries( coevo2
 #       "-L ${MYLIBS}"
-        wbsyshclss wbsyshLight  wbrtm
+        wbsyshclss wbrtm wbsyshLight
 #       ${CMAKE_THREAD_LIBS_INIT}
      )
 ELSE()
 target_compile_options( coevo2  PRIVATE "${CMAKE_CXX_FLAGS}" "-pthread" "-fpermissive")
 target_link_libraries( coevo2
 #        "-L ${MYLIBS}"
-        wbsyshclss wbsyshLight  wbrtm
+        wbsyshclss wbrtm wbsyshLight
         X11 Xpm
         ${CMAKE_THREAD_LIBS_INIT}
         pthread
