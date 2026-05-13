@@ -2231,7 +2231,7 @@ for(int i=1;i<argc;i++)
 				   "The maximum number of iterations of the model STMX=")<<MAX_ITERATIONS<<endl;
 		if(MAX_ITERATIONS<=0)
 		{
-			cerr<<lang("Nie moze byc <= 0!!!","It can not be <= 0");
+			cerr<<lang("Nie może byc <= 0!!!","It can not be <= 0");
 			return 0;
 		}
 	}

@@ -38,7 +38,7 @@ class agent//:public agent_base
 public:
 	class informacja_klonalna:public ::informacja_klonalna, public informacja_troficzna
 	{
-		wzor genom; //zeby bylo wiadomo co to za klon
+		wzor genom; //zeby było wiadomo co to za klon
 		unsigned  _specjalised;
 		unsigned _defensespec;
 		unsigned _feedingspec;
@@ -115,7 +115,7 @@ public:
     friend
         istream& operator >> (istream& i,agent& a);
     
-    // rejestracja zmiany wartosci taxonu 
+    // rejestracja zmiany wartości taxonu
     inline static   void tax(base2);  
     
     //Nie wirtualna metoda czyszczaca
@@ -127,7 +127,7 @@ public:
                 delete klon;
             klon=NULL;
         }
-        w.w.geba=0; //Lepiej by bylo gdyby mozna ustawic -1
+        w.w.geba=0; //Lepiej by było gdyby mozna ustawic -1
         w.w.oslona=0;
         wiek=sila=0;
     }
