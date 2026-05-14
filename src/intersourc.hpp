@@ -44,8 +44,8 @@ and_interaction_source( const char* itit):
 	}
 
 //Daje następna z la*lb liczb!!!
-double get(iteratorh& p)
-	{                                                              assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
+double get(iterator_h& p)
+	{                                                              assert("get(iterator_h& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
 	if(p==NULL) return miss;
 	/*
@@ -107,9 +107,9 @@ and_exploatation_source( const char* itit):
 	}
 
     //Daje następną z la*lb liczb!!!
-    double get(iteratorh& p)
+    double get(iterator_h& p)
 	{
-	                                                               assert("get(iteratorh& p) NOT IMPLEMENTED!!!"==NULL);
+	                                                               assert("get(iterator_h& p) NOT IMPLEMENTED!!!"==NULL);
 	//assert(p!=NULL);
 	if(p==NULL) return miss;
 	/*

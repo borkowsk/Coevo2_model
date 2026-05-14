@@ -327,7 +327,7 @@ rectangle_layer_of_struct<inte_stat> stats; //Warstwa pamiętająca lokalne stat
 
 // Zarządzanie źródlami danych
 // /////////////////////////////////
-sources_menager								 Sources;  //Zarządca serii danych (przekaźnikowych)
+sources_manager								 Sources;  //Zarządca serii danych (przekaźnikowych)
 matrix_source<unsigned>						 *Liczniki; //Udostępnienie liczników taksonów
 struct_matrix_source<agent,unsigned char >	 *Wiek;
 struct_matrix_source<agent,unsigned>		 *Sila;
@@ -869,7 +869,7 @@ MyAreaMenager.insert(pom1);
 		DATA_SOURCE* ini=NULL,  // Klasa źródłowa.
 								// Jeśli nie pokrywa się z minX-maxX, to faktycznie liczony jest wycinek.
 		const char* format="DISCR.DISTRIBUTION(%s[%d..%d])",
-		sources_menager_base* MyMenager=NULL,
+		sources_manager_base* MyMenager=NULL,
 		size_t table_size=11	//BEZ ZAPASU
 		):
 		*/
