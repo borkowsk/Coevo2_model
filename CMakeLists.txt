@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.0)
 project(coevolution2)
 
 set(CMAKE_CXX_STANDARD 11) # See: https://matgomes.com/setting-cpp-standard-cmake/
-#set(CMAKE_CXX_STANDARD_REQUIRED On)
+set(CMAKE_CXX_STANDARD_REQUIRED On)
 #set(CMAKE_CXX_EXTENSIONS Off)
 
 
