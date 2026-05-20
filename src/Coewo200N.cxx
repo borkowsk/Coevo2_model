@@ -83,7 +83,7 @@ extern "C" {
 #include <csignal>
 #include <cassert>
 
-#include <time.h>
+#include <ctime>
 //#include <process.h>
 
 //#include "INCLUDE/platform.hpp"
@@ -140,6 +140,9 @@ extern "C" {
 
 using namespace sym2;
 using namespace sym2::data;
+using namespace sym2::shell;
+using namespace sym2::visual;
+
 
 class swiat; //Zapowiedz głównej klasy symulacji
 
