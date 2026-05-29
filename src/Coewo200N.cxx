@@ -324,7 +324,7 @@ ekologia trophNet;              //Informacje statystyczne dla sieci ekologicznej
 
 //  Warstwy symulacji (są torusami, bo taka jest wspólna geometria)
 //*//////////////////////////////////////////////////////////////////////
-rectangle_unilayer<unsigned char> zdatnosc; //Warstwa definiująca zdatność do zasiedlenia
+rectangle_layer_of<unsigned char> zdatnosc; //Warstwa definiująca zdatność do zasiedlenia
 rectangle_layer_of_agents<agent>    ziemia; //Właściwa warstwa agentów zasiedlających
 rectangle_layer_of_struct<inte_stat> stats; //Warstwa pamiętająca lokalne statystyki zdarzeń
 
