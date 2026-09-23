@@ -1,6 +1,6 @@
 /// @file
 /// @brief Program symulujący KOEWOLUCJĘ (Wersja z roku 2013 — prawdopodobnie reaktywowana na nową wersję BDS)
-/// @date 2026 (modified)
+/// @date 2026-09-22 (modified)
 ///       --------------------------------------------------------------------------------------------------------------
 /* @details
 * Każdy osobnik ma swój bitowy wzorzec odżywiania i bitowy wzorzec
@@ -1369,7 +1369,6 @@ stats.Reinitialise(); //Czyszczenie lokalnej statystyki
 if(WSP_KATASTROF!=0)
     kataklizm(); // najwyżej jeden na krok symulacji, choćby bardzo, bardzo mały
 
-
 long ile= long( (double(DLUG_WIERSZA*DLUG_WIERSZA))/2.0*MonteCarloMultiplic ); // ile na krok MonteCarlo. /2.0 bo to prostokąt a nie kwadrat
 licznik_krokow_w++; //Kolejny krok symulacji
 monte_carlo_licz+=MonteCarloMultiplic; //Licznik kroków MonteCarlo (bezwzględna jednostka czasu)
@@ -1379,6 +1378,7 @@ if(POWER_COS_NASLONECZNIENIA>0)
     AktualneSwiatlo=pow(cos(monte_carlo_licz/double(DZIELNIK_1_OKRESU_MILANKOVICA)),POWER_COS_NASLONECZNIENIA)+1.3;
     else
     AktualneSwiatlo=1;
+
 AktualneSwiatlo*=globalneSwiatlo;
 AktualneSwiatlo*=100;
 
@@ -1401,7 +1401,7 @@ for(long i=0;i<ile;i++)
     unsigned	a=0,licznik=0;
     int			x1,y1;
     do{ //Losowanie kierunku ruchu — ??? można by trochę przyśpieszyć, ale chyba tylko trochę...
-    ZNOWU:
+    ZNOWU: //TODO "Narrowing conversion" poniżej może wskazywać na jakiś głębszy problem!
         vector2int dxy{DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1),
                        DYS_RUCHU - RANDOM(DYS_RUCHU * 2 + 1) };
         if(dxy.x==0 && dxy.y==0) goto ZNOWU; //Musi być jakieś przesuniecie
@@ -1417,7 +1417,7 @@ for(long i=0;i<ile;i++)
         {
             Ziemia(x1,y1).init(Ziemia(x,y));
         }
-        else					   //lub przemieszczenie, jeśli ma zdolności ruchu
+        else            //lub przemieszczenie, jeśli ma zdolności ruchu
         {
             if(!(Ziemia(x,y).w.w.oslona&BIT_RUCHU))//...czyli BIT_RUCHU jest wyzerowany
             {
