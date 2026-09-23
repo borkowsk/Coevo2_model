@@ -1,5 +1,7 @@
+CMakeFiles/
 cmake-build-debug/
 cmake-build-release/
 .idea/
 ._bak/
-
+coevolution2.cbp
+cmake_install.cmake
