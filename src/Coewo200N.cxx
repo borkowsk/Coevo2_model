@@ -1656,7 +1656,7 @@ while(tenSwiat.daj_kroki_monte_carlo()<MAX_ITERATIONS) //Do założonego koÃ±c
 
     wb_cpu_clock steptimer;
     tenSwiat.krok();  //Kolejny krok symulacji
-    double czas_kroku=steptimer;
+    double czas_kroku=(double)steptimer;
 
      // Ciągłe zrzuty plików, jeśli jest potrzeba.
      if(DumpScreenContinously)  //Obrazek ekranu
