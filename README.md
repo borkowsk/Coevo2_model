@@ -10,8 +10,8 @@ wborkowski@uw.edu.pl
 
 ## PUBLICATIONS
 
-* Computer simulated macroevolution: beyond Bak-Sneppen and generalized Lotka-Voltera models (https://www.researchgate.net/publication/295955459_Computer_simulated_macroevolution_beyond_Bak-Sneppen_and_generalized_Lotka-Voltera_models)
-* Cellular Automata Model of Macroevolution (https://www.researchgate.net/publication/24014499_Cellular_Automata_Model_of_Macroevolution)
+* [Computer simulated macroevolution: beyond Bak-Sneppen and generalized Lotka-Voltera models](https://www.researchgate.net/publication/295955459_Computer_simulated_macroevolution_beyond_Bak-Sneppen_and_generalized_Lotka-Voltera_models)
+* [Cellular Automata Model of Macroevolution](https://www.researchgate.net/publication/24014499_Cellular_Automata_Model_of_Macroevolution)
 
 ## INSTITUTIONS
 
@@ -24,7 +24,7 @@ wborkowski@uw.edu.pl
 
 ## LICENCE:
 
-* AFL-3.0 (https://spdx.org/licenses/AFL-3.0.html)
+* [AFL-3.0](https://spdx.org/licenses/AFL-3.0.html)
 
 ## COFFEE 
 
